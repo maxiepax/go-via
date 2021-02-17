@@ -3,8 +3,10 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 	"honnef.co/go/tools/config"
@@ -15,6 +17,8 @@ var (
 	commit  = "none"
 	date    = "unknown"
 )
+
+var db *gorm.DB
 
 // @title go-via
 // @version 0.1
@@ -44,6 +48,28 @@ func main() {
 		}).Fatalf("failed to load config")
 	}
 
-	fmt.Println("hello world")
+	//check if database is present
+	if _, err := os.Stat("sqlite-database.db"); os.IsNotExist(err) {
+		//Database does not exist, so create it.
+
+		file, err := os.Create("sqlite-database.db")
+		if err != nil {
+			logrus.Fatal(err.Error())
+		}
+		file.Close()
+		logrus.Info("No database found, sqlite-database.db created")
+	} else {
+		//Database exists, moving on.
+
+		logrus.Info("Existing database sqlite-database.db found")
+	}
+
+	//connect to sqlite databaes
+	db, err = gorm.Open("sqlite3", "sqlite-database.db")
+	if err != nil {
+		logrus.Error("Failed to open the SQLite database.")
+	}
+
+	defer db.Close()
 
 }
