@@ -1,11 +1,5 @@
 {
     "network": {
         "interfaces": ["enx00051ba176ea"]
-    },
-    "sqlite": {
-        "server": "127.0.0.1",
-        "username": "root",
-        "password": "secret",
-        "database": "master"
     }
 }
