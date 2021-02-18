@@ -11,7 +11,7 @@ type GroupForm struct {
 	ImageID  string `json:"image_id" gorm:"type:BIGINT"`
 }
 
-type GroupClass struct {
+type Group struct {
 	ID int `json:"id" gorm:"primary_key"`
 
 	GroupForm
