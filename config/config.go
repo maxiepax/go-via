@@ -5,7 +5,6 @@ type Config struct {
 	Port    int `default:"8080"`
 	File    string
 	Network Network
-	SQLite  SQLte
 }
 
 type Network struct {
