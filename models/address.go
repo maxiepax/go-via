@@ -5,7 +5,7 @@ import (
 )
 
 type AddressForm struct {
-	IP         string    `json:"ip_address" gorm:"type:varchar(15);not null;index:uniqIp,unique"`
+	IP         string    `json:"ip" gorm:"type:varchar(15);not null;index:uniqIp,unique"`
 	Mac        string    `json:"mac" gorm:"type:varchar(17);not null"`
 	Hostname   string    `json:"hostname" gorm:"type:varchar(255)"`
 	Reserved   bool      `json:"reserved" gorm:"type:bool;index:uniqIp,unique"`

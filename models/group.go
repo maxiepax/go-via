@@ -5,6 +5,7 @@ import (
 )
 
 type GroupForm struct {
+	Name     string `json:"name" gorm:"type:varchar(255)"`
 	DNS      string `json:"dns" gorm:"type:varchar(255)"`
 	NTP      string `json:"ntp" gorm:"type:varchar(255)"`
 	Password string `json:"password" gorm:"type:varchar(255)"`
