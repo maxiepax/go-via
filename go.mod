@@ -17,6 +17,7 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
+	github.com/swaggo/swag v1.7.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.12

@@ -1,0 +1,1180 @@
+basePath: /v1
+definitions:
+  models.APIError:
+    properties:
+      error_message:
+        type: string
+      error_status:
+        type: integer
+    type: object
+  models.Address:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      expires_at:
+        type: string
+      first_seen:
+        type: string
+      hostname:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      last_seen:
+        type: string
+      last_seen_relay:
+        description: DHCP parameters
+        type: string
+      mac:
+        type: string
+      managed_reference:
+        type: string
+      missing_options:
+        type: string
+      pool:
+        $ref: '#/definitions/models.Pool'
+      pool_id:
+        type: integer
+      reserved:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+  models.AddressForm:
+    properties:
+      hostname:
+        type: string
+      ip:
+        type: string
+      mac:
+        type: string
+      managed_reference:
+        type: string
+      pool_id:
+        type: integer
+      reserved:
+        type: boolean
+    type: object
+  models.DeviceClass:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      vendor_class:
+        type: string
+    type: object
+  models.DeviceClassForm:
+    properties:
+      name:
+        type: string
+      vendor_class:
+        type: string
+    type: object
+  models.Group:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      dns:
+        type: string
+      id:
+        type: integer
+      image_id:
+        type: string
+      name:
+        type: string
+      ntp:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.GroupForm:
+    properties:
+      dns:
+        type: string
+      image_id:
+        type: string
+      name:
+        type: string
+      ntp:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Option:
+    properties:
+      address:
+        $ref: '#/definitions/models.Address'
+      address_id:
+        type: integer
+      created_at:
+        type: string
+      data:
+        type: string
+      deleted_at:
+        type: string
+      device_class_id:
+        type: integer
+      id:
+        type: integer
+      opcode:
+        type: integer
+      pool:
+        $ref: '#/definitions/models.Pool'
+      pool_id:
+        type: integer
+      priority:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - data
+    - opcode
+    - priority
+    type: object
+  models.OptionForm:
+    properties:
+      address_id:
+        type: integer
+      data:
+        type: string
+      device_class_id:
+        type: integer
+      opcode:
+        type: integer
+      pool_id:
+        type: integer
+      priority:
+        type: integer
+    required:
+    - data
+    - opcode
+    - priority
+    type: object
+  models.Pool:
+    properties:
+      authorized_vlan:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      end_address:
+        type: string
+      gateway:
+        type: string
+      id:
+        type: integer
+      lease_time:
+        type: integer
+      managed_reference:
+        type: string
+      name:
+        type: string
+      net_address:
+        type: string
+      netmask:
+        type: integer
+      only_serve_reserved:
+        type: boolean
+      start_address:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - end_address
+    - gateway
+    - lease_time
+    - name
+    - netmask
+    - start_address
+    type: object
+  models.PoolForm:
+    properties:
+      authorized_vlan:
+        type: integer
+      end_address:
+        type: string
+      gateway:
+        type: string
+      lease_time:
+        type: integer
+      managed_reference:
+        type: string
+      name:
+        type: string
+      netmask:
+        type: integer
+      only_serve_reserved:
+        type: boolean
+      start_address:
+        type: string
+    required:
+    - end_address
+    - gateway
+    - lease_time
+    - name
+    - netmask
+    - start_address
+    type: object
+info:
+  contact: {}
+  description: VMware Imaging Appliances written in GO with full HTTP-REST
+  title: go-via
+  version: "0.1"
+paths:
+  /Groups:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Group'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all groups
+      tags:
+      - groups
+  /Groups/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing option
+      tags:
+      - Groups
+  /addresses:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Address'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all addresses
+      tags:
+      - addresses
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add ip address
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new addresses or update an existing based on managed_reference
+      tags:
+      - addresses
+  /addresses/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing address
+      tags:
+      - addresses
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing address
+      tags:
+      - addresses
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an ip address
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing address
+      tags:
+      - addresses
+  /addresses/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Fields to search for
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Address'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Search for an address
+      tags:
+      - addresses
+  /device_classes:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DeviceClass'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all device classes
+      tags:
+      - device_classes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add an device class
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeviceClassForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceClass'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new device class
+      tags:
+      - device_classes
+  /device_classes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: DeviceClass ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing device class
+      tags:
+      - device_classes
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: DeviceClass ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceClass'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing device class
+      tags:
+      - device_classes
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: DeviceClass ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an ip device class
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeviceClassForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceClass'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing device class
+      tags:
+      - device_classes
+  /device_classes/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Fields to search for
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeviceClass'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceClass'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Search for an device class
+      tags:
+      - device_classes
+  /groups:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add ip option
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new option
+      tags:
+      - groups
+  /groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing option
+      tags:
+      - groups
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an option
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing option
+      tags:
+      - groups
+  /groups/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Fields to search for
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Group'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Search for an option
+      tags:
+      - Groups
+  /options:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Option'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all options
+      tags:
+      - options
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add ip option
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.OptionForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Option'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new option
+      tags:
+      - options
+  /options/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Option ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing option
+      tags:
+      - options
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Option ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Option'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing option
+      tags:
+      - options
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Option ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an option
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.OptionForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Option'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing option
+      tags:
+      - options
+  /options/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Fields to search for
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Option'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Option'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Search for an option
+      tags:
+      - options
+  /pools:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Pool'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all pools
+      tags:
+      - pools
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add ip pool
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.PoolForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new pool
+      tags:
+      - pools
+  /pools/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pool ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing pool
+      tags:
+      - pools
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pool ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing pool
+      tags:
+      - pools
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pool ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an ip pool
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.PoolForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing pool
+      tags:
+      - pools
+  /pools/{id}/next:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pool ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get the next free lease from a pool
+      tags:
+      - pools
+  /pools/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Fields to search for
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pool'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Search for an pool
+      tags:
+      - pools
+  /relay/{relay}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Relay host IP
+        in: path
+        name: relay
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing pool by the relay host IP
+      tags:
+      - pools
+swagger: "2.0"

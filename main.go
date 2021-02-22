@@ -18,6 +18,8 @@ import (
 	"github.com/koding/multiconfig"
 
 	"github.com/sirupsen/logrus"
+
+	_ "github.com/maxieoax/go-via/docs"
 )
 
 var (
@@ -61,6 +63,8 @@ func main() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	//db.DB.FirstOrCreate(&models.DeviceClass, DeviceClass{VendorClass: "PXEClient:Arch:00007"})
 
 	//REST API
 
@@ -115,6 +119,16 @@ func main() {
 			device_class.POST("", api.CreateDeviceClass)
 			device_class.PATCH(":id", api.UpdateDeviceClass)
 			device_class.DELETE(":id", api.DeleteDeviceClass)
+		}
+
+		groups := v1.Group("/groups")
+		{
+			groups.GET("", api.ListGroups)
+			groups.GET(":id", api.GetGroup)
+			groups.POST("/search", api.SearchGroup)
+			groups.POST("", api.CreateGroup)
+			groups.PATCH(":id", api.UpdateGroup)
+			groups.DELETE(":id", api.DeleteGroup)
 		}
 	}
 
