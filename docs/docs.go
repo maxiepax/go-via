@@ -24,86 +24,6 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/Groups": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "summary": "Get all groups",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Group"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/Groups/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Groups"
-                ],
-                "summary": "Get an existing option",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Group"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            }
-        },
         "/addresses": {
             "get": {
                 "consumes": [
@@ -641,6 +561,35 @@ var doc = `{
             }
         },
         "/groups": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Get all groups",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Group"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -651,10 +600,10 @@ var doc = `{
                 "tags": [
                     "groups"
                 ],
-                "summary": "Create a new option",
+                "summary": "Create a new group",
                 "parameters": [
                     {
-                        "description": "Add ip option",
+                        "description": "Add ip group",
                         "name": "item",
                         "in": "body",
                         "required": true,
@@ -685,8 +634,8 @@ var doc = `{
                 }
             }
         },
-        "/groups/search": {
-            "post": {
+        "/groups/{id}": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -694,18 +643,16 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Groups"
+                    "groups"
                 ],
-                "summary": "Search for an option",
+                "summary": "Get an existing group",
                 "parameters": [
                     {
-                        "description": "Fields to search for",
-                        "name": "item",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Group"
-                        }
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -734,9 +681,7 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/groups/{id}": {
+            },
             "delete": {
                 "consumes": [
                     "application/json"
@@ -747,7 +692,7 @@ var doc = `{
                 "tags": [
                     "groups"
                 ],
-                "summary": "Remove an existing option",
+                "summary": "Remove an existing group",
                 "parameters": [
                     {
                         "type": "integer",
@@ -785,7 +730,7 @@ var doc = `{
                 "tags": [
                     "groups"
                 ],
-                "summary": "Update an existing option",
+                "summary": "Update an existing group",
                 "parameters": [
                     {
                         "type": "integer",
@@ -795,7 +740,7 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "description": "Update an option",
+                        "description": "Update an group",
                         "name": "item",
                         "in": "body",
                         "required": true,

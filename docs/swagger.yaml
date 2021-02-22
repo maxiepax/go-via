@@ -236,58 +236,6 @@ info:
   title: go-via
   version: "0.1"
 paths:
-  /Groups:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Group'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIError'
-      summary: Get all groups
-      tags:
-      - groups
-  /Groups/{id}:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: Group ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Group'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIError'
-      summary: Get an existing option
-      tags:
-      - Groups
   /addresses:
     get:
       consumes:
@@ -639,11 +587,30 @@ paths:
       tags:
       - device_classes
   /groups:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Group'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all groups
+      tags:
+      - groups
     post:
       consumes:
       - application/json
       parameters:
-      - description: Add ip option
+      - description: Add ip group
         in: body
         name: item
         required: true
@@ -664,7 +631,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIError'
-      summary: Create a new option
+      summary: Create a new group
       tags:
       - groups
   /groups/{id}:
@@ -690,7 +657,38 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIError'
-      summary: Remove an existing option
+      summary: Remove an existing group
+      tags:
+      - groups
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing group
       tags:
       - groups
     patch:
@@ -702,7 +700,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Update an option
+      - description: Update an group
         in: body
         name: item
         required: true
@@ -727,42 +725,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIError'
-      summary: Update an existing option
+      summary: Update an existing group
       tags:
       - groups
-  /groups/search:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Fields to search for
-        in: body
-        name: item
-        required: true
-        schema:
-          $ref: '#/definitions/models.Group'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Group'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIError'
-      summary: Search for an option
-      tags:
-      - Groups
   /options:
     get:
       consumes:

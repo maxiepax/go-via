@@ -125,7 +125,6 @@ func main() {
 		{
 			groups.GET("", api.ListGroups)
 			groups.GET(":id", api.GetGroup)
-			groups.POST("/search", api.SearchGroup)
 			groups.POST("", api.CreateGroup)
 			groups.PATCH(":id", api.UpdateGroup)
 			groups.DELETE(":id", api.DeleteGroup)

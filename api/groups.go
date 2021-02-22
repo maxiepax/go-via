@@ -20,19 +20,19 @@ import (
 // @Produce  json
 // @Success 200 {array} models.Group
 // @Failure 500 {object} models.APIError
-// @Router /Groups [get]
+// @Router /groups [get]
 func ListGroups(c *gin.Context) {
 	var items []models.Group
-	if res := db.DB.Preload("Pool").Find(&items); res.Error != nil {
+	if res := db.DB.Preload("Pool").Preload("Option").Find(&items); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
 	c.JSON(http.StatusOK, items) // 200
 }
 
-// GetGroup Get an existing option
-// @Summary Get an existing option
-// @Tags Groups
+// GetGroup Get an existing group
+// @Summary Get an existing group
+// @Tags groups
 // @Accept  json
 // @Produce  json
 // @Param  id path int true "Group ID"
@@ -40,7 +40,7 @@ func ListGroups(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /Groups/{id} [get]
+// @Router /groups/{id} [get]
 func GetGroup(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -62,51 +62,12 @@ func GetGroup(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// SearchGroup Search for an option
-// @Summary Search for an option
-// @Tags Groups
-// @Accept  json
-// @Produce  json
-// @Param item body models.Group true "Fields to search for"
-// @Success 200 {object} models.Group
-// @Failure 400 {object} models.APIError
-// @Failure 404 {object} models.APIError
-// @Failure 500 {object} models.APIError
-// @Router /groups/search [post]
-func SearchGroup(c *gin.Context) {
-	form := make(map[string]interface{})
-
-	if err := c.ShouldBind(&form); err != nil {
-		Error(c, http.StatusBadRequest, err) // 400
-		return
-	}
-
-	query := db.DB
-
-	for k, v := range form {
-		query = query.Where(k, v)
-	}
-
-	// Load the item
-	var item models.Group
-	if res := query.Preload("Pool").First(&item); res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
-		} else {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, item) // 200
-}
-
 // CreateGroup Create a new groups
-// @Summary Create a new option
+// @Summary Create a new group
 // @Tags groups
 // @Accept  json
 // @Produce  json
-// @Param item body models.GroupForm true "Add ip option"
+// @Param item body models.GroupForm true "Add ip group"
 // @Success 200 {object} models.Group
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
@@ -135,13 +96,13 @@ func CreateGroup(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// UpdateGroup Update an existing option
-// @Summary Update an existing option
+// UpdateGroup Update an existing group
+// @Summary Update an existing group
 // @Tags groups
 // @Accept  json
 // @Produce  json
 // @Param  id path int true "Group ID"
-// @Param  item body models.GroupForm true "Update an option"
+// @Param  item body models.GroupForm true "Update an group"
 // @Success 200 {object} models.Group
 // @Failure 400 {object} models.APIError
 // @Failure 404 {object} models.APIError
@@ -192,8 +153,8 @@ func UpdateGroup(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// DeleteGroup Remove an existing option
-// @Summary Remove an existing option
+// DeleteGroup Remove an existing group
+// @Summary Remove an existing group
 // @Tags groups
 // @Accept  json
 // @Produce  json
