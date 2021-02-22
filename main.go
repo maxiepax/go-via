@@ -19,7 +19,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	_ "github.com/maxieoax/go-via/docs"
+	_ "github.com/maxiepax/go-via/docs"
 )
 
 var (
