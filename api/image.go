@@ -1,0 +1,194 @@
+package api
+
+import (
+	"errors"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/imdario/mergo"
+	"github.com/maxiepax/go-via/db"
+	"github.com/maxiepax/go-via/models"
+	"gorm.io/gorm"
+	"github.com/qor/media"
+)
+
+media.RegisterCallbacks(DB)
+
+// ListImages Get a list of all images
+// @Summary Get all images
+// @Tags images
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.Image
+// @Failure 500 {object} models.APIError
+// @Router /images [get]
+func ListImages(c *gin.Context) {
+	var items []models.Image
+	if res := db.DB.Find(&items); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+	c.JSON(http.StatusOK, items) // 200
+}
+
+// GetImage Get an existing image
+// @Summary Get an existing image
+// @Tags images
+// @Accept  json
+// @Produce  json
+// @Param  id path int true "Image ID"
+// @Success 200 {object} models.Image
+// @Failure 400 {object} models.APIError
+// @Failure 404 {object} models.APIError
+// @Failure 500 {object} models.APIError
+// @Router /images/{id} [get]
+func GetImage(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	// Load the item
+	var item models.Image
+	if res := db.DB.First(&item, id); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+		} else {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, item) // 200
+}
+
+// CreateImage Create a new images
+// @Summary Create a new image
+// @Tags images
+// @Accept  json
+// @Produce  json
+// @Param item body models.ImageForm true "Add ip image"
+// @Success 200 {object} models.Image
+// @Failure 400 {object} models.APIError
+// @Failure 500 {object} models.APIError
+// @Router /images [post]
+func CreateImage(c *gin.Context) {
+	var form models.ImageForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	item := models.Image{ImageForm: form}
+
+	if res := db.DB.Create(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	// Load a new version with relations
+	if res := db.DB.First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusOK, item) // 200
+}
+
+// UpdateImage Update an existing image
+// @Summary Update an existing image
+// @Tags images
+// @Accept  json
+// @Produce  json
+// @Param  id path int true "Image ID"
+// @Param  item body models.ImageForm true "Update an image"
+// @Success 200 {object} models.Image
+// @Failure 400 {object} models.APIError
+// @Failure 404 {object} models.APIError
+// @Failure 500 {object} models.APIError
+// @Router /images/{id} [patch]
+func UpdateImage(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	// Load the form data
+	var form models.ImageForm
+	if err := c.ShouldBind(&form); err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	// Load the item
+	var item models.Image
+	if res := db.DB.First(&item, id); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+		} else {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+		}
+		return
+	}
+
+	// Merge the item and the form data
+	if err := mergo.Merge(&item, models.Image{ImageForm: form}, mergo.WithOverride); err != nil {
+		Error(c, http.StatusInternalServerError, err) // 500
+	}
+
+	// Save it
+	if res := db.DB.Save(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	// Load a new version with relations
+	if res := db.DB.First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusOK, item) // 200
+}
+
+// DeleteImage Remove an existing image
+// @Summary Remove an existing image
+// @Tags images
+// @Accept  json
+// @Produce  json
+// @Param  id path int true "Image ID"
+// @Success 204
+// @Failure 404 {object} models.APIError
+// @Failure 500 {object} models.APIError
+// @Router /images/{id} [delete]
+func DeleteImage(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	// Load the item
+	var item models.Image
+	if res := db.DB.First(&item, id); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+		} else {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+		}
+		return
+	}
+
+	// Save it
+	if res := db.DB.Delete(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{}) //204
+}

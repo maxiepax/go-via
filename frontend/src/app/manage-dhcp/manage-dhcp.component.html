@@ -1,0 +1,66 @@
+<p>Please configure an ip-scope that the VIA service will offer bare metal provisioning to</p>
+
+<h3> Add DHCP scope </h3>
+<br />
+<form [formGroup]="form" cds-layout="compact" (ngSubmit)="submit()">
+<cds-form-group control-width="shrink">
+<cds-input-group layout="horizontal">
+    <label>Network/Mask</label>
+    <cds-input style="max-width:84px">
+      <label>Network</label>
+      <input placeholder="192.168.0.0" type="url" formControlName="net_address"/>
+    </cds-input>
+    <cds-input style="max-width:18px">
+      <label></label>
+      <input placeholder="/" type="text" readonly />
+    </cds-input>
+    <cds-input style="max-width:45px">
+      <label>Mask</label>
+      <input placeholder="24" type="number" formControlName="netmask" />
+    </cds-input>
+</cds-input-group>
+<cds-input>
+	<label>Network name</label>
+	<input placeholder="eg. mgmt network"type="text" formControlName="name" name="name"/>
+</cds-input>
+<cds-input>
+	<label>IP pool start</label>
+	<input placeholder="eg. 172.16.13.10"type="text" formControlName="start_address" name="start_address"/>
+</cds-input>
+<cds-input>
+	<label>IP pool end</label>
+    <input placeholder="eg. 172.16.13.110" type="text" formControlName="end_address" name="end_address"/>
+</cds-input>
+<cds-input>
+	<label>Gateway</label>
+    <input placeholder="eg. 172.16.13.1" type="text" formControlName="gateway" name="gateway"/>
+</cds-input>
+<cds-input>
+	<label>DNS servers</label>
+    <input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns"/>
+</cds-input>
+<button class="btn">Create</button>
+</cds-form-group>
+</form>
+
+<br />
+
+<div *ngFor="let error of errors | keyvalue"> {{error.value}} </div>
+
+<h3> DHCP Scopes </h3>
+<clr-datagrid>
+	<clr-dg-column>Network</clr-dg-column>
+	<clr-dg-column>Netmask</clr-dg-column>
+    <clr-dg-column>Name</clr-dg-column>
+    <clr-dg-column>Start Address</clr-dg-column>
+    <clr-dg-column>End Address</clr-dg-column>
+    <clr-dg-column>action</clr-dg-column>
+
+	<clr-dg-row *ngFor="let pool of pools">
+        <clr-dg-cell>{{pool.net_address}}</clr-dg-cell>
+        <clr-dg-cell>{{pool.netmask}}</clr-dg-cell>
+        <clr-dg-cell>{{pool.name}}</clr-dg-cell>
+        <clr-dg-cell>{{pool.start_address}}</clr-dg-cell>
+        <clr-dg-cell>{{pool.end_address}}</clr-dg-cell>
+        <clr-dg-cell><button class="btn btn-primary btn-sm">edit scope</button></clr-dg-cell>
+    </clr-dg-row>

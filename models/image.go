@@ -2,12 +2,14 @@ package models
 
 import (
 	"time"
+
+	"github.com/qor/media/oss"
 )
 
 type ImageForm struct {
-	ISO    string `json:"iso" gorm:"type:varchar(255)"`
-	Path   string `json:"path" gorm:"type:varchar(255)"`
-	Active bool   `json:"active" gorm:"type:bool"`
+	ISOImage string `json:"iso_image" gorm:"type:varchar(255)"`
+	Path     string `json:"path" gorm:"type:varchar(255)"`
+	Image    oss.OSS
 }
 
 type Image struct {

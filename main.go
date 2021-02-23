@@ -64,7 +64,8 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	//db.DB.FirstOrCreate(&models.DeviceClass, DeviceClass{VendorClass: "PXEClient:Arch:00007"})
+	//db.DB.FirstOrCreate(&models.DeviceClass{}, models.DeviceClass{VendorClass: "PXEClient:Arch:00007"})
+	//db.DB.Where(DeviceClass{VendorClass: "PXEClient:Arch:00007"}).Attrs(DeviceClass{Name: "PXE-UEFI_x86"}).FirstOrCreate(models.DeviceClass)
 
 	//REST API
 
@@ -128,6 +129,15 @@ func main() {
 			groups.POST("", api.CreateGroup)
 			groups.PATCH(":id", api.UpdateGroup)
 			groups.DELETE(":id", api.DeleteGroup)
+		}
+
+		images := v1.Group("/images")
+		{
+			images.GET("", api.ListImages)
+			images.GET(":id", api.GetImage)
+			images.POST("", api.CreateImage)
+			images.PATCH(":id", api.UpdateImage)
+			images.DELETE(":id", api.DeleteImage)
 		}
 	}
 
