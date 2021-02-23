@@ -15,6 +15,9 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
+	github.com/qor/admin v0.0.0-20210219061928-a49ef5557414 // indirect
+	github.com/qor/media v0.0.0-20201118025607-96c1f2487abe
+	github.com/qor/qor v0.0.0-20200729071734-d587cffbbb93 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0

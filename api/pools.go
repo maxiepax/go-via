@@ -121,32 +121,9 @@ func CreatePool(c *gin.Context) {
 
 	item := models.Pool{PoolForm: form}
 
-	// If we have a managed reference, try to find the item
-	if form.ManagedRef != "" {
-		if res := db.DB.Where("managed_ref", form.ManagedRef).First(&item); res.Error != nil {
-			if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				Error(c, http.StatusInternalServerError, res.Error) // 500
-				return
-			}
-		} else {
-			// We found it, update the data
-			if err := mergo.Merge(&item, models.Pool{PoolForm: form}, mergo.WithOverride); err != nil {
-				Error(c, http.StatusInternalServerError, err) // 500
-			}
-			item.OnlyServeReserved = form.OnlyServeReserved
-		}
-	}
-
-	if item.ID != 0 { // Save if its an existing item
-		if res := db.DB.Save(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
-		}
-	} else { // Create a new item
-		if res := db.DB.Create(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
-		}
+	if res := db.DB.Create(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
 	}
 
 	c.JSON(http.StatusOK, item) // 200

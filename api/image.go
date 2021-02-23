@@ -11,10 +11,7 @@ import (
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"gorm.io/gorm"
-	"github.com/qor/media"
 )
-
-media.RegisterCallbacks(DB)
 
 // ListImages Get a list of all images
 // @Summary Get all images
