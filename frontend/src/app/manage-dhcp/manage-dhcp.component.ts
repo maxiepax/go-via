@@ -22,14 +22,12 @@ export class ManageDhcpComponent implements OnInit {
 		end_address: ['', [Validators.required]],
 		gateway: ['', [Validators.required]],
 		dns: ['', [Validators.required]],
-		image: ['', [Validators.required]],
 	});
   }
 
   ngOnInit(): void {
 	this.apiService.getPools().subscribe((data:any)=>{
-		console.log(data);
-		this.pools = data.pools;
+		this.pools = data;
 	});
 
   }
@@ -39,6 +37,7 @@ export class ManageDhcpComponent implements OnInit {
 	const data={ 
 		...this.form.value,
 		only_serve_reserved: true,
+		lease_time: 7000,
 	}
 
 	this.apiService.addPool(data).subscribe((data:any)=>{
@@ -46,8 +45,8 @@ export class ManageDhcpComponent implements OnInit {
 		if (data.error) {
 			this.errors = data.error;
 		}
-		if (data.pool) {
-			this.pools.push(data.pool);
+		if (data) {
+			this.pools.push(data);
 			this.form.reset();
 		}
 	});
