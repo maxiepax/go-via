@@ -244,7 +244,7 @@ func DeleteAddress(c *gin.Context) {
 		return
 	}
 
-	// Save it
+	// delete it
 	if res := db.DB.Delete(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return

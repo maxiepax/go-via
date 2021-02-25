@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -113,6 +114,7 @@ func SearchPool(c *gin.Context) {
 // @Router /pools [post]
 func CreatePool(c *gin.Context) {
 	var form models.PoolForm
+	var opt models.Option
 
 	if err := c.ShouldBind(&form); err != nil {
 		Error(c, http.StatusBadRequest, err) // 400
@@ -124,6 +126,19 @@ func CreatePool(c *gin.Context) {
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
+	}
+
+	for i, value := range item.DNS {
+		//opt.ID =
+		opt.PoolID = item.ID
+		opt.OpCode = 6
+		opt.Data = value
+		opt.Priority = i + 1
+		spew.Dump(opt.ID)
+		/*if res := db.DB.Create(&opt); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}*/
 	}
 
 	c.JSON(http.StatusOK, item) // 200

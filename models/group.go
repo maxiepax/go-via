@@ -18,8 +18,9 @@ type Group struct {
 
 	GroupForm
 
-	Pool   *Pool    `json:"pool,omitempty" gorm:"foreignkey:PoolID"`
-	Option []Option `json:"option,omitempty" gorm:"foreignkey:PoolID"`
+	Pool    *Pool     `json:"pool,omitempty" gorm:"foreignkey:PoolID"`
+	Option  []Option  `json:"option,omitempty" gorm:"foreignkey:PoolID"`
+	Address []Address `json:"option,omitempty" gorm:"foreignkey:GroupID"`
 
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`

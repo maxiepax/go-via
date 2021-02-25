@@ -29,13 +29,13 @@ export class ManageHostsComponent implements OnInit {
   ngOnInit(): void {
 	this.apiService.getHosts().subscribe((data:any)=>{
 		console.log(data);
-		this.hosts = data.hosts;
+		this.hosts = data;
 	});
 
-	this.apiService.getImages().subscribe((data:any)=>{
-		console.log(data);
-		this.images = data.images;
-	});
+//	this.apiService.getImages().subscribe((data:any)=>{
+//		console.log(data);
+//		this.images = data.images;
+//	});
   }
 
   submit() {
@@ -50,15 +50,30 @@ export class ManageHostsComponent implements OnInit {
 			this.errors = data.error;
 		}
 		if (data.host) {
-			this.hosts.push(data.host);
+			this.hosts.push(data);
 			this.form.reset();
 		}
 	});
 
   }
-  remove() {
-	console.log('remove');
+
+  remove(id) {
+    console.log(id);
+    this.apiService.deleteHost(id).subscribe((data:any)=>{
+		console.log("return data");
+        console.log(data);
+		this.hosts = this.hosts.filter(item => item.id !== id);
+	/*
+        if (data.error) {
+            this.errors = data.error;
+        } else {
+            this.hosts = this.hosts.filter(item => item.id !== id);
+        }
+	*/
+    });
   }
+
+
 
 }
 

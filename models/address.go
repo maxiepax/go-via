@@ -8,9 +8,11 @@ type AddressForm struct {
 	IP         string    `json:"ip" gorm:"type:varchar(15);not null;index:uniqIp,unique"`
 	Mac        string    `json:"mac" gorm:"type:varchar(17);not null"`
 	Hostname   string    `json:"hostname" gorm:"type:varchar(255)"`
+	Domain     string    `json:"domain" gorm:"type:varchar(255)"`
 	Reserved   bool      `json:"reserved" gorm:"type:bool;index:uniqIp,unique"`
 	PoolID     NullInt32 `json:"pool_id" gorm:"type:BIGINT" swaggertype:"integer"`
 	ManagedRef string    `json:"managed_reference"`
+	GroupID    NullInt32 `json:"group_id" gorm:"type:BIGINT" swaggertype:"integer"`
 }
 
 type Address struct {
