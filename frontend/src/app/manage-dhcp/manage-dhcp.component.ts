@@ -52,4 +52,13 @@ export class ManageDhcpComponent implements OnInit {
 	});
   }
 
+  remove(id) {
+    console.log(id);
+    this.apiService.deletePool(id).subscribe((data:any)=>{
+		console.log("return data");
+        console.log(data);
+		this.pools = this.pools.filter(item => item.id !== id);
+    });
+  }
+
 }

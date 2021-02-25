@@ -62,5 +62,8 @@
         <clr-dg-cell>{{pool.name}}</clr-dg-cell>
         <clr-dg-cell>{{pool.start_address}}</clr-dg-cell>
         <clr-dg-cell>{{pool.end_address}}</clr-dg-cell>
-        <clr-dg-cell><button class="btn btn-primary btn-sm">edit scope</button></clr-dg-cell>
+        <clr-dg-cell>
+          <button class="btn btn-primary btn-sm">edit scope</button>
+          <button class="btn btn-warning-outline btn-sm" (click)="remove(pool.id)">remove</button>
+        </clr-dg-cell>
     </clr-dg-row>

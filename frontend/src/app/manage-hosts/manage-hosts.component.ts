@@ -63,17 +63,7 @@ export class ManageHostsComponent implements OnInit {
 		console.log("return data");
         console.log(data);
 		this.hosts = this.hosts.filter(item => item.id !== id);
-	/*
-        if (data.error) {
-            this.errors = data.error;
-        } else {
-            this.hosts = this.hosts.filter(item => item.id !== id);
-        }
-	*/
     });
   }
-
-
-
 }
 

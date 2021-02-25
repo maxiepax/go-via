@@ -30,6 +30,10 @@ export class ApiService {
   public addPool(data){
   	return this.httpClient.post('http://localhost:8080/v1/pools', data);
   }
+
+  public deletePool(id){
+    return this.httpClient.delete(`http://localhost:8080/v1/pools/${id}`);
+  }
   
   public getImages(){
   	return this.httpClient.get('http://localhost:8080/api/image');
@@ -37,6 +41,18 @@ export class ApiService {
 
   public addImage(data){
   	return this.httpClient.post('http://localhost:8080/api/image', data);
+  }
+
+  public getGroups(){
+  	return this.httpClient.get('http://localhost:8080/v1/groups');
+  }
+
+  public addGroup(data){
+  	return this.httpClient.post('http://localhost:8080/v1/groups', data);
+  }
+
+  public deleteGroup(id){
+    return this.httpClient.delete(`http://localhost:8080/v1/groups/${id}`);
   }
 
 }
