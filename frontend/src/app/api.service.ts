@@ -8,10 +8,6 @@ export class ApiService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getGroups(){
-  	return this.httpClient.get('http://localhost:8080/v1/groups');
-  }
-
   public getHosts(){
   	return this.httpClient.get('http://localhost:8080/v1/addresses');
   }

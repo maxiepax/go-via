@@ -14,6 +14,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ManageDhcpComponent } from './manage-dhcp/manage-dhcp.component';
 
 import '@cds/core/alert/register.js';
+import '@cds/core/button/register.js';
+import '@cds/core/accordion/register.js';
+
 
 @NgModule({
   declarations: [

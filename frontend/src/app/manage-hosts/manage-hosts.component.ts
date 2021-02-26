@@ -19,33 +19,35 @@ export class ManageHostsComponent implements OnInit {
   constructor(private apiService: ApiService, private formBuilder: FormBuilder) {
   	this.form = this.formBuilder.group({
 		fqdn: ['', [Validators.required]],
-		ip_address: ['', [Validators.required]],
+		ip: ['', [Validators.required]],
 		mac: ['', [Validators.required]],
-	    password: ['', [Validators.required]],
-	    image_id: ['', [Validators.required]],
+	    group_id: ['', [Validators.required]],
 	});
   }
 
   ngOnInit(): void {
-	this.apiService.getHosts().subscribe((data:any)=>{
-		console.log(data);
-		this.hosts = data;
-	});
 
-//	this.apiService.getImages().subscribe((data:any)=>{
-//		console.log(data);
-//		this.images = data.images;
-//	});
+	this.apiService.getGroups().subscribe((groups:any)=>{	
+		this.apiService.getHosts().subscribe((hosts:any)=>{
+			this.groups = groups.map(item => {
+				item.hosts = hosts.filter(host => host.group_id === item.id)
+				return item
+			});
+		});
+	});	
+
   }
 
   submit() {
 	const data={
 		...this.form.value,
-		active:true,
+		//active:true,
 		hostname: this.form.value.fqdn.split(".")[0],
+		domain: this.form.value.fqdn.split(".").slice(1).join('.'),
+		group_id: parseInt(this.form.value.group_id),
 	}
+
 	this.apiService.addHost(data).subscribe((data:any)=>{
-		console.log(data);
 		if (data.error) {
 			this.errors = data.error;
 		}
@@ -60,9 +62,15 @@ export class ManageHostsComponent implements OnInit {
   remove(id) {
     console.log(id);
     this.apiService.deleteHost(id).subscribe((data:any)=>{
+		/*
 		console.log("return data");
         console.log(data);
-		this.hosts = this.hosts.filter(item => item.id !== id);
+		this.groups.hosts = this.groups.hosts.filter(item => item.id !== id);
+		*/
+		this.group = this.groups.map(item => {
+			item.hosts = item.hosts.filter(host => id !== host.id)
+			return item
+		});
     });
   }
 }
