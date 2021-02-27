@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HelpComponent } from './help/help.component';
-import { ManageDhcpPoolsComponent } from './manage-dhcp-pools/manage-dhcp-pools.component';
+import { ManageDhcpPoolsComponent } from './manage-dhcp-pools/manage-dhcp-pools.component';
 import { ManageGroupsComponent } from './manage-groups/manage-groups.component';
 import { ManageImagesComponent } from './manage-images/manage-images.component';
 
