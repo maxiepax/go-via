@@ -32,11 +32,11 @@ export class ApiService {
   }
   
   public getImages(){
-  	return this.httpClient.get('http://localhost:8080/api/image');
+  	return this.httpClient.get('http://localhost:8080/v1/images');
   }
 
   public addImage(data){
-  	return this.httpClient.post('http://localhost:8080/api/image', data);
+  	return this.httpClient.post('http://localhost:8080/v1/images', data);
   }
 
   public getGroups(){

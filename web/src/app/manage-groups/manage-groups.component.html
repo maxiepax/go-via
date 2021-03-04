@@ -2,6 +2,18 @@
 <p>Host groups are used to organize your hosts into groups that share the same image and configuration properties. This saves you time by being able to organize all hosts that will look the same, and simply configure the group with properties.</p>
 <button class="btn btn-outline btn-sm" (click)="addGroup()">Add Group</button>
 
+<div class="alert alert-danger" role="alert" *ngIf="errors">
+	<div class="alert-items">
+	  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+		<div class="alert-icon-wrapper">
+		  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+		</div>
+		<span class="alert-text">
+			{{error.value}}
+		</span>
+	  </div>
+	</div>
+</div>
 
 <div *ngFor="let group of groups">
 	<h6>{{group.name}}</h6>
@@ -19,11 +31,13 @@
 			<clr-dg-cell>{{host.mac}}</clr-dg-cell>
 			<clr-dg-cell></clr-dg-cell>
 			<clr-dg-cell>
-				<button class="btn btn-warning-outline btn-sm" (click)="remove(host.id)">remove</button>
+				<button class="btn btn-warning-outline btn-sm" (click)="removeHost(host.id)">remove</button>
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
     <button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
+	<button class="btn btn-outline btn-sm">Edit Group</button>
+    <button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
 </div>
 
 <clr-modal [(clrModalOpen)]="showHostFormModal">
@@ -56,7 +70,7 @@
 				</span>
 			  </div>
 			</div>
-		  </div>
+		</div>
 	</div>
 	<div class="modal-footer">
 	  <button type="button" class="btn btn-outline" (click)="showHostFormModal = false">Cancel</button>
@@ -86,8 +100,14 @@
 					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password"/>
 				</cds-input>
 				<cds-select  control-width="shrink">
+					<label>Pool</label>
+					<select name="pool_id" formControlName="pool_id">
+						<option *ngFor="let pool of pools" [value]=pool.id >{{pool.name}}</option>
+					</select>
+			  </cds-select>
+				<cds-select  control-width="shrink">
 					<label>Image</label>
-					<select name="image" formControlName="image">
+					<select name="image_id" formControlName="image_id">
 						<option *ngFor="let image of images" [value]=image.id >{{image.iso_image}}</option>
 					</select>
 			  </cds-select>
@@ -104,7 +124,7 @@
 				</span>
 			  </div>
 			</div>
-		  </div>
+		</div>
 	</div>
 	<div class="modal-footer">
 	  <button type="button" class="btn btn-outline" (click)="showGroupFormModal = false">Cancel</button>

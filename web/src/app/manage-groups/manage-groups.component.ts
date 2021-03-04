@@ -31,6 +31,7 @@ export class ManageGroupsComponent implements OnInit {
 	images;
 	errors;
   groups;
+  pools;
 	Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
@@ -49,7 +50,8 @@ export class ManageGroupsComponent implements OnInit {
 		dns: ['', [Validators.required]],
 		ntp: ['', [Validators.required]],
 	  password: ['', [Validators.required]],
-    image: ['', [Validators.required]],
+    image_id: ['', [Validators.required]],
+    pool_id: ['', [Validators.required]],
 	});
   }
 
@@ -66,6 +68,11 @@ export class ManageGroupsComponent implements OnInit {
     });
     this.apiService.getImages().subscribe((images:any)=>{
       this.images = images;
+      console.log(images)
+    });
+    this.apiService.getPools().subscribe((pools:any)=>{
+      this.pools = pools;
+      console.log(pools)
     });
   }
 
@@ -96,7 +103,6 @@ export class ManageGroupsComponent implements OnInit {
         this.showHostFormModal = false;
       }
     },(data:any)=>{
-      console.log(data);
       if (data.status) {
         this.errors = data.error;
       } else {
@@ -107,42 +113,49 @@ export class ManageGroupsComponent implements OnInit {
   
   submit_group() {
     const data={
-      ...this.Hostform.value,
+      ...this.Groupform.value,
+      image_id: parseInt(this.Groupform.value.image_id),
+      pool_id: parseInt(this.Groupform.value.pool_id),
+
       //active:true,
-      hostname: this.Hostform.value.fqdn.split(".")[0],
-      domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
-      group_id: parseInt(this.groupid),
     }
   
-    this.apiService.addHost(data).subscribe((data:any)=>{
-      
+    this.apiService.addGroup(data).subscribe((data:any)=>{
       if (data.id) {
-        this.groups.find(group => group.id === data.group_id).hosts.push(data)
-        this.Hostform.reset();
-        this.showHostFormModal = false;
+        this.groups.push(data);
+        this.Groupform.reset();
+        this.showGroupFormModal = false;
       }
     },(data:any)=>{
-      console.log(data);
       if (data.status) {
         this.errors = data.error;
       } else {
         this.errors = [data.message];
       }
+      
     });
+  
   }
 
-    remove(id) {
+    removeHost(id) {
       console.log(id);
       this.apiService.deleteHost(id).subscribe((data:any)=>{
-      /*
-      console.log("return data");
-          console.log(data);
-      this.groups.hosts = this.groups.hosts.filter(item => item.id !== id);
-      */
       this.groups = this.groups.map(item => {
         item.hosts = item.hosts.filter(host => id !== host.id)
         return item
       });
       });
+    }
+
+    removeGroup(id) {
+      //check to see if group is empty
+      var grp = this.groups.find(group => group.id === id);
+      if (grp.hosts === undefined || grp.hosts.length == 0 ) {
+        this.apiService.deleteGroup(id).subscribe((data:any)=>{
+        this.groups = this.groups.filter(group => group.id !== id);
+      });
+      } else {
+        this.errors = ["The group is not empty, please delete all the hosts in the group first."];
+      }
     }
 }
