@@ -3,6 +3,7 @@ import { ApiService } from '../api.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+
 @Component({
   selector: 'app-manage-dhcp-pools',
   templateUrl: './manage-dhcp-pools.component.html',
@@ -12,6 +13,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
 	pools;
 	errors;
 	form: FormGroup;
+  showPoolFormModal = false;
 
   constructor(private apiService: ApiService, private formBuilder: FormBuilder) { 
     this.form = this.formBuilder.group({
@@ -31,12 +33,16 @@ export class ManageDhcpPoolsComponent implements OnInit {
     });
   }
   
-  submit() {
+  addPool() {
+    this.showPoolFormModal = true;
+  }
 
+  submit() {
     const data={ 
       ...this.form.value,
       only_serve_reserved: true,
       lease_time: 7000,
+      dns: this.form.value.dns.split(','),
     }
   
     this.apiService.addPool(data).subscribe((data:any)=>{
@@ -52,10 +58,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
     }
   
     remove(id) {
-      console.log(id);
       this.apiService.deletePool(id).subscribe((data:any)=>{
-      console.log("return data");
-          console.log(data);
       this.pools = this.pools.filter(item => item.id !== id);
       });
     }
