@@ -29,7 +29,7 @@
 <clr-modal [(clrModalOpen)]="showHostFormModal">
 	<h3 class="modal-title">Add Host</h3>
 	<div class="modal-body">
-		<form clrForm [formGroup]="form" (ngSubmit)="submit_host()">
+		<form clrForm [formGroup]="Hostform" (ngSubmit)="submit_host()">
 			<cds-form-group control-width="shrink" layout="horizontal">
 				<cds-input>
 					<label>FQDN</label>
@@ -67,20 +67,30 @@
   <clr-modal [(clrModalOpen)]="showGroupFormModal">
 	<h3 class="modal-title">Add Host</h3>
 	<div class="modal-body">
-		<form clrForm [formGroup]="form" (ngSubmit)="submit_group()">
+		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
 			<cds-form-group control-width="shrink" layout="horizontal">
 				<cds-input>
-					<label>FQDN</label>
-					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
+					<label>Group name</label>
+					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name"/>
 				</cds-input>
 				<cds-input>
-					<label>IPAddress</label>
-					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
+					<label>DNS</label>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns"/>
 				</cds-input>
 				<cds-input>
-					<label>mac</label>
-					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
+					<label>NTP</label>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp"/>
 				</cds-input>
+				<cds-input>
+					<label>Password</label>
+					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password"/>
+				</cds-input>
+				<cds-select  control-width="shrink">
+					<label>Image</label>
+					<select name="image" formControlName="image">
+						<option *ngFor="let image of images" [value]=image.id >{{image.iso_image}}</option>
+					</select>
+			  </cds-select>
 			</cds-form-group>
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">

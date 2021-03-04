@@ -31,17 +31,25 @@ export class ManageGroupsComponent implements OnInit {
 	images;
 	errors;
   groups;
-	form: FormGroup;
+	Hostform: FormGroup;
+  Groupform: FormGroup;
   groupid = null;
   showHostFormModal = false;
   showGroupFormModal = false;
 
-  constructor(private apiService: ApiService, private formBuilder: FormBuilder) {
-  	this.form = this.formBuilder.group({
+  constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
+  	this.Hostform = this.HostformBuilder.group({
 		fqdn: ['', [Validators.required]],
 		ip: ['', [Validators.required]],
 		mac: ['', [Validators.required]],
-	    group_id: ['', [Validators.required]],
+	  group_id: ['', [Validators.required]],
+	});
+    this.Groupform = this.GroupformBuilder.group({
+		name: ['', [Validators.required]],
+		dns: ['', [Validators.required]],
+		ntp: ['', [Validators.required]],
+	  password: ['', [Validators.required]],
+    image: ['', [Validators.required]],
 	});
   }
 
@@ -53,13 +61,16 @@ export class ManageGroupsComponent implements OnInit {
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
-        //console.log(groups);
+        console.log(groups);
       });
+    });
+    this.apiService.getImages().subscribe((images:any)=>{
+      this.images = images;
     });
   }
 
   addGroup() {
-    
+    this.showGroupFormModal = true;
   }
 
   addHostToGroup(id) {
@@ -70,10 +81,10 @@ export class ManageGroupsComponent implements OnInit {
 
   submit_host() {
     const data={
-      ...this.form.value,
+      ...this.Hostform.value,
       //active:true,
-      hostname: this.form.value.fqdn.split(".")[0],
-      domain: this.form.value.fqdn.split(".").slice(1).join('.'),
+      hostname: this.Hostform.value.fqdn.split(".")[0],
+      domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
     }
   
@@ -81,7 +92,7 @@ export class ManageGroupsComponent implements OnInit {
       
       if (data.id) {
         this.groups.find(group => group.id === data.group_id).hosts.push(data)
-        this.form.reset();
+        this.Hostform.reset();
         this.showHostFormModal = false;
       }
     },(data:any)=>{
@@ -96,10 +107,10 @@ export class ManageGroupsComponent implements OnInit {
   
   submit_group() {
     const data={
-      ...this.form.value,
+      ...this.Hostform.value,
       //active:true,
-      hostname: this.form.value.fqdn.split(".")[0],
-      domain: this.form.value.fqdn.split(".").slice(1).join('.'),
+      hostname: this.Hostform.value.fqdn.split(".")[0],
+      domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
     }
   
@@ -107,7 +118,7 @@ export class ManageGroupsComponent implements OnInit {
       
       if (data.id) {
         this.groups.find(group => group.id === data.group_id).hosts.push(data)
-        this.form.reset();
+        this.Hostform.reset();
         this.showHostFormModal = false;
       }
     },(data:any)=>{
