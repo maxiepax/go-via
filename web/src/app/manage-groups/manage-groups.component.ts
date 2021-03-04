@@ -32,8 +32,9 @@ export class ManageGroupsComponent implements OnInit {
 	errors;
   groups;
 	form: FormGroup;
-  show = false;
-  panel1Expanded = true;
+  groupid = null;
+  showHostFormModal = false;
+  showGroupFormModal = false;
 
   constructor(private apiService: ApiService, private formBuilder: FormBuilder) {
   	this.form = this.formBuilder.group({
@@ -44,6 +45,7 @@ export class ManageGroupsComponent implements OnInit {
 	});
   }
 
+
   ngOnInit(): void {
     this.apiService.getGroups().subscribe((groups:any)=>{	
       this.apiService.getHosts().subscribe((hosts:any)=>{
@@ -51,31 +53,73 @@ export class ManageGroupsComponent implements OnInit {
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
+        //console.log(groups);
       });
     });
   }
 
-  submit() {
+  addGroup() {
+    
+  }
+
+  addHostToGroup(id) {
+    this.showHostFormModal = true;
+    this.groupid = id;
+  }
+
+
+  submit_host() {
     const data={
       ...this.form.value,
       //active:true,
       hostname: this.form.value.fqdn.split(".")[0],
       domain: this.form.value.fqdn.split(".").slice(1).join('.'),
-      group_id: parseInt(this.form.value.group_id),
+      group_id: parseInt(this.groupid),
     }
   
     this.apiService.addHost(data).subscribe((data:any)=>{
-      if (data.error) {
-        this.errors = data.error;
-      }
-      if (data.host) {
-        this.hosts.push(data);
+      
+      if (data.id) {
+        this.groups.find(group => group.id === data.group_id).hosts.push(data)
         this.form.reset();
+        this.showHostFormModal = false;
+      }
+    },(data:any)=>{
+      console.log(data);
+      if (data.status) {
+        this.errors = data.error;
+      } else {
+        this.errors = [data.message];
       }
     });
+  }
   
+  submit_group() {
+    const data={
+      ...this.form.value,
+      //active:true,
+      hostname: this.form.value.fqdn.split(".")[0],
+      domain: this.form.value.fqdn.split(".").slice(1).join('.'),
+      group_id: parseInt(this.groupid),
     }
   
+    this.apiService.addHost(data).subscribe((data:any)=>{
+      
+      if (data.id) {
+        this.groups.find(group => group.id === data.group_id).hosts.push(data)
+        this.form.reset();
+        this.showHostFormModal = false;
+      }
+    },(data:any)=>{
+      console.log(data);
+      if (data.status) {
+        this.errors = data.error;
+      } else {
+        this.errors = [data.message];
+      }
+    });
+  }
+
     remove(id) {
       console.log(id);
       this.apiService.deleteHost(id).subscribe((data:any)=>{
@@ -89,9 +133,5 @@ export class ManageGroupsComponent implements OnInit {
         return item
       });
       });
-    }
-  
-    expandedChange(event): void {
-      this.panel1Expanded = event.detail;
     }
 }

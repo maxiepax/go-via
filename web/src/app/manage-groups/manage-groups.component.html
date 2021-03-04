@@ -1,33 +1,8 @@
-<h3> Create host </h3>
-
-<br />
-<form clrForm [formGroup]="form" (ngSubmit)="submit()">
-	<cds-form-group control-width="shrink" layout="horizontal">
-		<cds-input>
-			<label>FQDN</label>
-			<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
-		</cds-input>
-		<cds-input>
-			<label>IPAddress</label>
-			<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
-		</cds-input>
-		<cds-input>
-			<label>mac</label>
-			<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
-		</cds-input>
-		<cds-select  control-width="shrink">
-      		<label>Group</label>
-      		<select name="group_id" formControlName="group_id">
-      			<option *ngFor="let group of groups" [value]=group.id >{{group.name}}</option>
-	  	    </select>
-    	</cds-select>
-	</cds-form-group>
-	<button class="btn">Create</button>
-</form>
-
-
-
 <h3> Host groups </h3>
+<p>Host groups are used to organize your hosts into groups that share the same image and configuration properties. This saves you time by being able to organize all hosts that will look the same, and simply configure the group with properties.</p>
+<button class="btn btn-outline btn-sm" (click)="addGroup()">Add Group</button>
+
+
 <div *ngFor="let group of groups">
 	<h6>{{group.name}}</h6>
 
@@ -44,56 +19,85 @@
 			<clr-dg-cell>{{host.mac}}</clr-dg-cell>
 			<clr-dg-cell></clr-dg-cell>
 			<clr-dg-cell>
-				<button class="btn btn-outline btn-sm" (click)="reimage(host.id)">re-image</button>
 				<button class="btn btn-warning-outline btn-sm" (click)="remove(host.id)">remove</button>
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
+    <button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
 </div>
 
-<section cds-layout="grid cols:6 gap:lg">
-    <cds-accordion>
-      <cds-accordion-panel [expanded]="panel1Expanded" (expandedChange)="expandedChange($event)">
-        <cds-accordion-header>Item 1</cds-accordion-header>
-        <cds-accordion-content *ngIf="panel1Expanded">
-          <section>
-            <form clrForm [formGroup]="form" (ngSubmit)="submit()">
-                <cds-form-group control-width="shrink" layout="horizontal">
-                    <cds-input>
-                        <label>FQDN</label>
-                        <input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
-                    </cds-input>
-                    <cds-input>
-                        <label>IPAddress</label>
-                        <input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
-                    </cds-input>
-                    <cds-input>
-                        <label>mac</label>
-                        <input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
-                    </cds-input>
-                    <cds-select  control-width="shrink">
-                          <label>Group</label>
-                          <select name="group_id" formControlName="group_id">
-                              <option *ngFor="let group of groups" [value]=group.id >{{group.name}}</option>
-                          </select>
-                    </cds-select>
-                </cds-form-group>
-                <button class="btn">Create</button>
-            </form>
-          </section>
-        </cds-accordion-content>
-      </cds-accordion-panel>
-    </cds-accordion>
-    <cds-accordion>
-        <cds-accordion-panel [expanded]="panel1Expanded" (expandedChange)="expandedChange($event)">
-          <cds-accordion-header>Item 1</cds-accordion-header>
-          <cds-accordion-content *ngIf="panel1Expanded">
-            <section>Content 1</section>
-          </cds-accordion-content>
-        </cds-accordion-panel>
-      </cds-accordion>
-</section>
+<clr-modal [(clrModalOpen)]="showHostFormModal">
+	<h3 class="modal-title">Add Host</h3>
+	<div class="modal-body">
+		<form clrForm [formGroup]="form" (ngSubmit)="submit_host()">
+			<cds-form-group control-width="shrink" layout="horizontal">
+				<cds-input>
+					<label>FQDN</label>
+					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
+				</cds-input>
+				<cds-input>
+					<label>IPAddress</label>
+					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
+				</cds-input>
+				<cds-input>
+					<label>mac</label>
+					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
+				</cds-input>
+			</cds-form-group>
+		</form>
+		<div class="alert alert-danger" role="alert" *ngIf="errors">
+			<div class="alert-items">
+			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+				<div class="alert-icon-wrapper">
+				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+				</div>
+				<span class="alert-text">
+					{{error.value}}
+				</span>
+			  </div>
+			</div>
+		  </div>
+	</div>
+	<div class="modal-footer">
+	  <button type="button" class="btn btn-outline" (click)="showHostFormModal = false">Cancel</button>
+	  <button type="button" class="btn btn-primary" (click)="submit_host()">Add</button>
+	</div>
+  </clr-modal>
 
-
-
-<div *ngFor="let error of errors | keyvalue"> {{error.value}} </div>
+  <clr-modal [(clrModalOpen)]="showGroupFormModal">
+	<h3 class="modal-title">Add Host</h3>
+	<div class="modal-body">
+		<form clrForm [formGroup]="form" (ngSubmit)="submit_group()">
+			<cds-form-group control-width="shrink" layout="horizontal">
+				<cds-input>
+					<label>FQDN</label>
+					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
+				</cds-input>
+				<cds-input>
+					<label>IPAddress</label>
+					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
+				</cds-input>
+				<cds-input>
+					<label>mac</label>
+					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
+				</cds-input>
+			</cds-form-group>
+		</form>
+		<div class="alert alert-danger" role="alert" *ngIf="errors">
+			<div class="alert-items">
+			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+				<div class="alert-icon-wrapper">
+				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+				</div>
+				<span class="alert-text">
+					{{error.value}}
+				</span>
+			  </div>
+			</div>
+		  </div>
+	</div>
+	<div class="modal-footer">
+	  <button type="button" class="btn btn-outline" (click)="showGroupFormModal = false">Cancel</button>
+	  <button type="button" class="btn btn-primary" (click)="submit_group()">Add</button>
+	</div>
+  </clr-modal>
