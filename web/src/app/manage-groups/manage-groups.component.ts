@@ -27,52 +27,50 @@ import '@cds/core/toggle/register.js';
   styleUrls: ['./manage-groups.component.scss']
 })
 export class ManageGroupsComponent implements OnInit {
-	hosts;
-	images;
-	errors;
+  hosts;
+  images;
+  errors;
   groups;
   pools;
-	Hostform: FormGroup;
+  Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
   showHostFormModal = false;
   showGroupFormModal = false;
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
-  	this.Hostform = this.HostformBuilder.group({
-		fqdn: ['', [Validators.required]],
-		ip: ['', [Validators.required]],
-		mac: ['', [Validators.required]],
-	  group_id: ['', [Validators.required]],
-	});
+    this.Hostform = this.HostformBuilder.group({
+      fqdn: ['', [Validators.required]],
+      ip: ['', [Validators.required]],
+      mac: ['', [Validators.required]],
+      group_id: ['', [Validators.required]],
+    });
     this.Groupform = this.GroupformBuilder.group({
-		name: ['', [Validators.required]],
-		dns: ['', [Validators.required]],
-		ntp: ['', [Validators.required]],
-	  password: ['', [Validators.required]],
-    image_id: ['', [Validators.required]],
-    pool_id: ['', [Validators.required]],
-	});
+      name: ['', [Validators.required]],
+      dns: ['', [Validators.required]],
+      ntp: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      image_id: ['', [Validators.required]],
+      pool_id: ['', [Validators.required]],
+    });
   }
 
 
   ngOnInit(): void {
-    this.apiService.getGroups().subscribe((groups:any)=>{	
-      this.apiService.getHosts().subscribe((hosts:any)=>{
+    this.apiService.getGroups().subscribe((groups: any) => {
+      this.apiService.getHosts().subscribe((hosts: any) => {
         this.groups = groups.map(item => {
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
-        console.log(groups);
+        //console.log(groups);
       });
     });
-    this.apiService.getImages().subscribe((images:any)=>{
+    this.apiService.getImages().subscribe((images: any) => {
       this.images = images;
-      console.log(images)
     });
-    this.apiService.getPools().subscribe((pools:any)=>{
+    this.apiService.getPools().subscribe((pools: any) => {
       this.pools = pools;
-      console.log(pools)
     });
   }
 
@@ -87,22 +85,22 @@ export class ManageGroupsComponent implements OnInit {
 
 
   submit_host() {
-    const data={
+    const data = {
       ...this.Hostform.value,
       //active:true,
       hostname: this.Hostform.value.fqdn.split(".")[0],
       domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
     }
-  
-    this.apiService.addHost(data).subscribe((data:any)=>{
-      
+
+    this.apiService.addHost(data).subscribe((data: any) => {
+
       if (data.id) {
         this.groups.find(group => group.id === data.group_id).hosts.push(data)
         this.Hostform.reset();
         this.showHostFormModal = false;
       }
-    },(data:any)=>{
+    }, (data: any) => {
       if (data.status) {
         this.errors = data.error;
       } else {
@@ -110,52 +108,52 @@ export class ManageGroupsComponent implements OnInit {
       }
     });
   }
-  
+
   submit_group() {
-    const data={
+    const data = {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
       pool_id: parseInt(this.Groupform.value.pool_id),
 
       //active:true,
     }
-  
-    this.apiService.addGroup(data).subscribe((data:any)=>{
+
+    this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
         this.groups.push(data);
         this.Groupform.reset();
         this.showGroupFormModal = false;
       }
-    },(data:any)=>{
+    }, (data: any) => {
       if (data.status) {
         this.errors = data.error;
       } else {
         this.errors = [data.message];
       }
-      
+
     });
-  
+
   }
 
-    removeHost(id) {
-      console.log(id);
-      this.apiService.deleteHost(id).subscribe((data:any)=>{
+  removeHost(id) {
+    console.log(id);
+    this.apiService.deleteHost(id).subscribe((data: any) => {
       this.groups = this.groups.map(item => {
         item.hosts = item.hosts.filter(host => id !== host.id)
         return item
       });
-      });
-    }
+    });
+  }
 
-    removeGroup(id) {
-      //check to see if group is empty
-      var grp = this.groups.find(group => group.id === id);
-      if (grp.hosts === undefined || grp.hosts.length == 0 ) {
-        this.apiService.deleteGroup(id).subscribe((data:any)=>{
+  removeGroup(id) {
+    //check to see if group is empty
+    var grp = this.groups.find(group => group.id === id);
+    if (grp.hosts === undefined || grp.hosts.length == 0) {
+      this.apiService.deleteGroup(id).subscribe((data: any) => {
         this.groups = this.groups.filter(group => group.id !== id);
       });
-      } else {
-        this.errors = ["The group is not empty, please delete all the hosts in the group first."];
-      }
+    } else {
+      this.errors = ["The group is not empty, please delete all the hosts in the group first."];
     }
+  }
 }

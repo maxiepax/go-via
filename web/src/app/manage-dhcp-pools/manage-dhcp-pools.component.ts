@@ -10,12 +10,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   styleUrls: ['./manage-dhcp-pools.component.scss']
 })
 export class ManageDhcpPoolsComponent implements OnInit {
-	pools;
-	errors;
-	form: FormGroup;
+  pool;
+  pools;
+  errors;
+  form: FormGroup;
   showPoolFormModal = false;
+  editPoolFormModal = false;
 
-  constructor(private apiService: ApiService, private formBuilder: FormBuilder) { 
+
+  constructor(private apiService: ApiService, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
       net_address: ['', [Validators.required]],
       netmask: ['', [Validators.required]],
@@ -28,24 +31,30 @@ export class ManageDhcpPoolsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.apiService.getPools().subscribe((data:any)=>{
+    this.apiService.getPools().subscribe((data: any) => {
       this.pools = data;
     });
   }
-  
+
   addPool() {
     this.showPoolFormModal = true;
   }
 
+  editPool(id) {
+    this.editPoolFormModal = true;
+    this.pool = this.pools.find(pool => pool.id === id);
+    console.log(this.pool)
+  }
+
   submit() {
-    const data={ 
+    const data = {
       ...this.form.value,
       only_serve_reserved: true,
       lease_time: 7000,
       dns: this.form.value.dns.split(','),
     }
-  
-    this.apiService.addPool(data).subscribe((data:any)=>{
+
+    this.apiService.addPool(data).subscribe((data: any) => {
       console.log(data);
       if (data.error) {
         this.errors = data.error;
@@ -55,11 +64,16 @@ export class ManageDhcpPoolsComponent implements OnInit {
         this.form.reset();
       }
     });
-    }
-  
-    remove(id) {
-      this.apiService.deletePool(id).subscribe((data:any)=>{
+  }
+
+  remove(id) {
+    this.apiService.deletePool(id).subscribe((data: any) => {
       this.pools = this.pools.filter(item => item.id !== id);
-      });
-    }
+    });
+  }
+
+  updatePool() {
+    console.log('test');
+
+  }
 }
