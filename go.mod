@@ -10,6 +10,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/google/gopacket v1.1.19
 	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/gorm v1.9.16
