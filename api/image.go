@@ -3,9 +3,15 @@ package api
 import (
 	"errors"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -67,33 +73,75 @@ func GetImage(c *gin.Context) {
 // @Tags images
 // @Accept  json
 // @Produce  json
-// @Param item body models.ImageForm true "Add ip image"
+// @Param item body models.ImageForm true "Add image"
 // @Success 200 {object} models.Image
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /images [post]
 func CreateImage(c *gin.Context) {
-	var form models.ImageForm
 
-	if err := c.ShouldBind(&form); err != nil {
-		Error(c, http.StatusBadRequest, err) // 400
+	f, err := c.MultipartForm()
+	if err != nil {
+		Error(c, http.StatusInternalServerError, err) // 500
 		return
 	}
 
-	item := models.Image{ImageForm: form}
+	files := f.File["file[]"]
+	spew.Dump(files)
 
-	if res := db.DB.Create(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
+	for _, file := range files {
+		//filename := "test.iso"
+
+		filename := file.Filename
+		// updatera databas med information om iso namn och path
+		item := models.Image{}
+		item.ISOImage = filepath.Base(file.Filename)
+		item.Path = path.Join(".", "tftp", filename) //kommer ifrån main som argument
+		//*
+
+		os.MkdirAll(filepath.Dir(item.Path), os.ModePerm)
+
+		_, err = SaveUploadedFile(file, item.Path)
+		if err != nil {
+			Error(c, http.StatusInternalServerError, err) // 500
+			return
+		}
+
+		/*
+			mime, err := mimetype.DetectFile(item.StoragePath)
+			if err != nil {
+				Error(c, http.StatusInternalServerError, err) // 500
+				return
+			}
+			item.Type = mime.String()
+			item.Extension = mime.Extension()
+		*/
+
+		// commita till databas
+		if res := db.DB.Table("images").Create(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
 	}
 
-	// Load a new version with relations
-	if res := db.DB.First(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
+	c.JSON(http.StatusOK, files) // 200
+}
 
-	c.JSON(http.StatusOK, item) // 200
+func SaveUploadedFile(file *multipart.FileHeader, dst string) (int64, error) {
+	src, err := file.Open()
+	if err != nil {
+		return -1, err
+	}
+	defer src.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return -1, err
+	}
+	defer out.Close()
+
+	n, err := io.Copy(out, src)
+	return n, err
 }
 
 // UpdateImage Update an existing image
