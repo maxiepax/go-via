@@ -1,0 +1,28 @@
+<div class="main-container">
+  <header class="header-6">
+    <div class="branding">
+        <a href="..." class="nav-link">
+            <clr-icon shape="vm-bug"></clr-icon>
+            <span class="title">VIA 2.0</span>
+        </a>
+    </div>
+    <div class="header-actions">
+        <a href="..." class="nav-link nav-icon">
+            <clr-icon shape="cog"></clr-icon>
+        </a>
+    </div>
+</header>
+	<div class="content-container">
+		<clr-vertical-nav>
+			<a clrVerticalNavLink routerLink="./manage-dhcp" routerLinkActive="active">Manage DHCP</a>
+			<div class="nav-divider"></div>
+			<a clrVerticalNavLink routerLink="./manage-iso" routerLinkActive="active">Manage ISO</a>
+			<a clrVerticalNavLink routerLink="./manage-hosts" routerLinkActive="active">Manage Groups/Hosts</a>
+			<div class="nav-divider"></div>
+			<a clrVerticalNavLink routerLink="./help" routerLinkActive="active">Help</a>
+		</clr-vertical-nav>
+		<div class="content-area">
+			<router-outlet></router-outlet>
+		</div>
+	</div>
+</div>

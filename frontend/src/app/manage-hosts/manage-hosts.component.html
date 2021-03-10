@@ -1,0 +1,61 @@
+<h3> Create host </h3>
+
+<br />
+<form clrForm [formGroup]="form" (ngSubmit)="submit()">
+	<cds-form-group control-width="shrink" layout="horizontal">
+		<cds-input>
+			<label>FQDN</label>
+			<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
+		</cds-input>
+		<cds-input>
+			<label>IP Address</label>
+			<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip_address" name="ip_address"/>
+		</cds-input>
+		<cds-input>
+			<label>mac</label>
+			<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
+		</cds-input>
+		<cds-password layout="vertical">
+        <label>Password</label>
+        <input type="password" formControlName="password" name="password" />
+      </cds-password>
+		<cds-select  control-width="shrink">
+      		<label>Image</label>
+      		<select name="image_id" formControlName="image_id">
+      			<option *ngFor="let image of images" [value]="image.id" >{{image['iso-image']}}</option>
+	  	    </select>
+    	</cds-select>
+	</cds-form-group>
+	<button class="btn">Create</button>
+</form>
+
+
+<h3> Host groups </h3> 
+<clr-datagrid>
+
+</clr-datagrid>
+
+
+<div *ngFor="let error of errors | keyvalue"> {{error.value}} </div>
+
+<h3> Hosts </h3>
+<clr-datagrid>
+	<clr-dg-column>fqdn</clr-dg-column>
+	<clr-dg-column>ip address</clr-dg-column>
+    <clr-dg-column>mac address</clr-dg-column>
+    <clr-dg-column>progress</clr-dg-column>
+    <clr-dg-column>action</clr-dg-column>
+
+	<clr-dg-row *ngFor="let host of hosts">
+        <clr-dg-cell>{{host.hostname}}.{{host.domain}}</clr-dg-cell>
+        <clr-dg-cell>{{host.ip}}</clr-dg-cell>
+        <clr-dg-cell>{{host.mac}}</clr-dg-cell>
+        <clr-dg-cell></clr-dg-cell>
+        <clr-dg-cell>
+		<div cds-layout="horizontal gap:sm">
+			<button class="btn btn-outline btn-sm" (click)="reimage(host.id)">re-image</button>
+			<button class="btn btn-warning-outline btn-sm" (click)="remove(host.id)">remove</button>
+		</div>
+		</clr-dg-cell>
+    </clr-dg-row>
+</clr-datagrid>
