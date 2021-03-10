@@ -28,7 +28,6 @@ fileInfos?: Observable<any>;
       this.images = images;
       console.log(images)
     });
-    this.fileInfos = this.apiService.getFiles();
   }
 
   selectFile(event: any): void {
@@ -50,7 +49,7 @@ fileInfos?: Observable<any>;
               this.progress = Math.round(100 * event.loaded / event.total);
             } else if (event instanceof HttpResponse) {
               this.message = event.body.message;
-              this.fileInfos = this.apiService.getFiles();
+              this.images.push(event.body);
             }
           },
           (err: any) => {
@@ -71,8 +70,10 @@ fileInfos?: Observable<any>;
     }
   }
 
-  submit() {
-    console.log('hi');
+  remove(id) {
+    this.apiService.deleteImage(id).subscribe((data: any) => {
+      this.images = this.images.filter(item => item.id !== id);
+    });
   }
 
 }

@@ -1,10 +1,5 @@
 <h3> Images </h3>
 
-<button class="btn btn-outline btn-sm">Upload ISO</button>
-
-
-
-
 <div class="row">
     <div class="col-8">
       <label class="btn btn-default p-0">
@@ -13,8 +8,8 @@
     </div>
   
     <div class="col-4">
-      <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="upload()">
-        Upload
+      <button class="btn btn-outline btn-sm" [disabled]="!selectedFiles" (click)="upload()">
+        UPLOAD ISO
       </button>
     </div>
   </div>
@@ -34,32 +29,15 @@
   
   <div *ngIf="message" class="alert alert-secondary" role="alert">{{ message }}</div>
   
-  <div class="card mt-3">
-    <div class="card-header">List of Files</div>
-    <ul
-      class="list-group list-group-flush"
-      *ngFor="let file of fileInfos | async"
-    >
-      <li class="list-group-item">
-        <a href="{{ file.url }}">{{ file.name }}</a>
-      </li>
-    </ul>
-  </div>
-
-
-
-
 
 <clr-datagrid>
   <clr-dg-column>ISO Image</clr-dg-column>
-  <clr-dg-column>Path</clr-dg-column>
   <clr-dg-column>action</clr-dg-column>
 
   <clr-dg-row *ngFor="let image of images">
     <clr-dg-cell>{{image.iso_image}}</clr-dg-cell>
-    <clr-dg-cell>{{image.path}}</clr-dg-cell>  
     <clr-dg-cell>
-      <button class="btn btn-warning-outline btn-sm">remove</button>
+      <button class="btn btn-warning-outline btn-sm" (click)="remove(image.id)">remove</button>
     </clr-dg-cell>
   </clr-dg-row>
 </clr-datagrid>

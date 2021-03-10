@@ -118,13 +118,15 @@ func CreateImage(c *gin.Context) {
 		*/
 
 		// commita till databas
-		if res := db.DB.Table("images").Create(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
+		if result := db.DB.Table("images").Create(&item); result.Error != nil {
+			Error(c, http.StatusInternalServerError, result.Error) // 500
 			return
 		}
+		c.JSON(http.StatusOK, item) // 200
 	}
 
-	c.JSON(http.StatusOK, files) // 200
+	//spew.Dump(item)
+	//c.JSON(http.StatusOK, item) // 200
 }
 
 func SaveUploadedFile(file *multipart.FileHeader, dst string) (int64, error) {

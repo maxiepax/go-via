@@ -62,10 +62,8 @@ export class ApiService {
     return this.httpClient.request(req);
   }
 
-  getFiles(): Observable<any> {
-    return this.httpClient.get(`http://localhost:8080/v1/images`);
+  public deleteImage(id){
+    return this.httpClient.delete(`http://localhost:8080/v1/images/${id}`);
   }
-
-
 
 }
