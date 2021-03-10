@@ -251,14 +251,14 @@ func DeleteImage(c *gin.Context) {
 		return
 	}
 
-	spew.Dump(item)
+	//remove the entire directory and all files in it
 	err = os.RemoveAll(item.Path)
 	if err != nil {
 		log.Fatal(err)
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
 
-	// remove it
+	// remove record from database
 	if res := db.DB.Delete(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
