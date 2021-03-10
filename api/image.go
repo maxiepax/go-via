@@ -251,7 +251,14 @@ func DeleteImage(c *gin.Context) {
 		return
 	}
 
-	// Save it
+	spew.Dump(item)
+	err = os.RemoveAll(item.Path)
+	if err != nil {
+		log.Fatal(err)
+		Error(c, http.StatusInternalServerError, err) // 500
+	}
+
+	// remove it
 	if res := db.DB.Delete(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
