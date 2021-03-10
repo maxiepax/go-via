@@ -14,6 +14,7 @@ require (
 	github.com/google/gopacket v1.1.19
 	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/gorm v1.9.16
+	github.com/kdomanski/iso9660 v0.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/qor/admin v0.0.0-20210219061928-a49ef5557414 // indirect

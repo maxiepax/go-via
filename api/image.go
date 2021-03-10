@@ -4,16 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
+	"github.com/kdomanski/iso9660/util"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"gorm.io/gorm"
@@ -87,17 +90,14 @@ func CreateImage(c *gin.Context) {
 	}
 
 	files := f.File["file[]"]
-	spew.Dump(files)
 
 	for _, file := range files {
-		//filename := "test.iso"
 
 		filename := file.Filename
-		// updatera databas med information om iso namn och path
+
 		item := models.Image{}
 		item.ISOImage = filepath.Base(file.Filename)
-		item.Path = path.Join(".", "tftp", filename) //kommer ifrån main som argument
-		//*
+		item.Path = path.Join(".", "tftp", filename)
 
 		os.MkdirAll(filepath.Dir(item.Path), os.ModePerm)
 
@@ -106,6 +106,30 @@ func CreateImage(c *gin.Context) {
 			Error(c, http.StatusInternalServerError, err) // 500
 			return
 		}
+
+		f, err := os.Open(item.Path)
+		if err != nil {
+			log.Fatalf("failed to open file: %s", err)
+		}
+		defer f.Close()
+
+		//strip the filextension, eg. vmware.iso = vmware
+		fn := strings.TrimSuffix(file.Filename, filepath.Ext(file.Filename))
+		//merge into filepath
+		fp := path.Join(".", "tftp", fn)
+
+		if err = util.ExtractImageToDirectory(f, fp); err != nil {
+			log.Fatalf("failed to extract image: %s", err)
+		}
+
+		//remove the file
+		err = os.Remove(item.Path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		//update item.Path
+		item.Path = fp
 
 		/*
 			mime, err := mimetype.DetectFile(item.StoragePath)
@@ -117,16 +141,12 @@ func CreateImage(c *gin.Context) {
 			item.Extension = mime.Extension()
 		*/
 
-		// commita till databas
 		if result := db.DB.Table("images").Create(&item); result.Error != nil {
 			Error(c, http.StatusInternalServerError, result.Error) // 500
 			return
 		}
 		c.JSON(http.StatusOK, item) // 200
 	}
-
-	//spew.Dump(item)
-	//c.JSON(http.StatusOK, item) // 200
 }
 
 func SaveUploadedFile(file *multipart.FileHeader, dst string) (int64, error) {
