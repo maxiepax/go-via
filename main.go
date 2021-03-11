@@ -3,6 +3,7 @@
 package main
 
 import (
+	"flag"
 	"strconv"
 
 	"github.com/maxiepax/go-via/api"
@@ -13,6 +14,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/koding/multiconfig"
@@ -55,6 +57,25 @@ func main() {
 		}).Fatalf("failed to load config")
 	}
 
+	if conf.File != "" {
+		d = multiconfig.NewWithPath(conf.File)
+
+		err = d.Load(conf)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Fatalf("failed to load config")
+		}
+	}
+
+	err = d.Validate(conf)
+	if err != nil {
+		flag.Usage()
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Fatalf("failed to load config")
+	}
+
 	//connect to database
 	db.Connect(true)
 
@@ -66,6 +87,13 @@ func main() {
 
 	//db.DB.FirstOrCreate(&models.DeviceClass{}, models.DeviceClass{VendorClass: "PXEClient:Arch:00007"})
 	//db.DB.Where(DeviceClass{VendorClass: "PXEClient:Arch:00007"}).Attrs(DeviceClass{Name: "PXE-UEFI_x86"}).FirstOrCreate(models.DeviceClass)
+
+	// DHCPd
+
+	for _, v := range conf.Network.Interfaces {
+		go serve(v)
+		spew.Dump(v)
+	}
 
 	//REST API
 

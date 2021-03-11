@@ -1,5 +1,5 @@
 {
     "network": {
-        "interfaces": ["enx00051ba176ea"]
+        "interfaces": ["en0"]
     }
 }

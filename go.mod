@@ -17,6 +17,7 @@ require (
 	github.com/kdomanski/iso9660 v0.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
+	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065
 	github.com/qor/admin v0.0.0-20210219061928-a49ef5557414 // indirect
 	github.com/qor/media v0.0.0-20201118025607-96c1f2487abe
 	github.com/qor/qor v0.0.0-20200729071734-d587cffbbb93 // indirect
