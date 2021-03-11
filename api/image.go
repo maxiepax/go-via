@@ -131,6 +131,34 @@ func CreateImage(c *gin.Context) {
 		//update item.Path
 		item.Path = fp
 
+		if _, err := os.Stat(item.Path + "/efi/boot/bootx64.efi"); err == nil {
+			fmt.Printf("File exists\n")
+			// Open original file
+			original, err := os.Open(item.Path + "/efi/boot/bootx64.efi")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer original.Close()
+
+			// Create new file
+			new, err := os.Create(item.Path + "/mboot.efi")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer new.Close()
+
+			// Copy source to destination
+			_, err = io.Copy(new, original)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			fmt.Printf("File does not exist\n")
+			Error(c, http.StatusInternalServerError, err) // 500
+		}
+
+		spew.Dump(item.Path)
+
 		/*
 			mime, err := mimetype.DetectFile(item.StoragePath)
 			if err != nil {
