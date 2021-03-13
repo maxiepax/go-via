@@ -328,12 +328,16 @@ func FindPool(ip string) (*models.PoolWithAddresses, error) {
 		}
 		return nil, res.Error
 	}
+	spew.Dump(&pools)
 	var pool models.PoolWithAddresses
 	for _, v := range pools {
+		spew.Dump(v)
 		_, ipv4Net, err := net.ParseCIDR(ip + "/" + strconv.Itoa(v.Netmask))
 		if err != nil {
 			continue
 		}
+		spew.Dump(ipv4Net.String())
+		spew.Dump(v.NetAddress)
 		if ipv4Net.String() == v.NetAddress {
 			pool.Pool = v
 			break
