@@ -336,7 +336,7 @@ func FindPool(ip string) (*models.PoolWithAddresses, error) {
 		}
 		spew.Dump(ipv4Net.String())
 		spew.Dump(v.NetAddress)
-		if ipv4Net.String() == v.NetAddress {
+		if ipv4Net.String() == v.NetAddress + "/" + v.Netmask  {
 			pool.Pool = v
 			break
 		}
