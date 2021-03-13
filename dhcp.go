@@ -295,7 +295,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	} else {
 		// Remove the previous record if there is any
 		//db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reserved=0 AND expires_at <= NOW()", lease.IP)
-		db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reserved=0 AND expires <= NOW()", lease.IP)
+		db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reserved=0 AND expires <= current_timestamp()", lease.IP)
 		db.DB.Save(lease)
 	}
 
