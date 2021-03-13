@@ -334,10 +334,8 @@ func FindPool(ip string) (*models.PoolWithAddresses, error) {
 		if err != nil {
 			continue
 		}
-		spew.Dump(ipv4Net.String())
-		spew.Dump(v.NetAddress)
-		spew.Dump(fmt.Sprint(v.NetAddress,"/",strconv.Itoa(v.Netmask)))
-		if ipv4Net.String() == fmt.Sprint(v.NetAddress,"/",strconv.Itoa(v.Netmask))  {
+
+		if ipv4Net.IP.String() == v.NetAddress  {
 			pool.Pool = v
 			break
 		}
