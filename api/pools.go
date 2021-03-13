@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -207,6 +208,14 @@ func GetPoolByRelay(c *gin.Context) {
 	}
 
 	// Load the item
+	
+	item, err := FindPool(relay)
+	if err != nil {
+		Error(c, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	/*
 	var item models.Pool
 	if res := db.DB.Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", relay).First(&item); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -216,6 +225,7 @@ func GetPoolByRelay(c *gin.Context) {
 		}
 		return
 	}
+	*/
 
 	c.JSON(http.StatusOK, item) // 200
 }
@@ -308,4 +318,37 @@ func DeletePool(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{}) //204
+}
+
+func FindPool(ip string) (*models.PoolWithAddresses, error) {
+	var pools []models.Pool
+	if res := db.DB.Table("pools").Find(&pools); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("no matching pool found")
+		}
+		return nil, res.Error
+	}
+	var pool models.PoolWithAddresses
+	for _, v := range pools {
+		_, ipv4Net, err := net.ParseCIDR(ip + "/" + strconv.Itoa(v.Netmask))
+		if err != nil {
+			continue
+		}
+		if ipv4Net.String() == v.NetAddress {
+			pool.Pool = v
+			break
+		}
+	}
+
+	if pool.ID == 0 {
+		return nil, fmt.Errorf("no matching pool found")
+	}
+
+	if res := db.DB.Table("pools").Preload("Addresses").First(&pool, pool.ID); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("no matching pool found")
+		}
+		return nil, res.Error
+	}
+	return &pool, nil
 }

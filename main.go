@@ -95,6 +95,15 @@ func main() {
 		spew.Dump(v)
 	}
 
+	// TFTPd
+
+	/*
+	for _, t := range conf.Network.Interfaces {
+		go tftpd(t)
+		spew.Dump(t)
+	}
+	*/
+
 	//REST API
 
 	r := gin.New()

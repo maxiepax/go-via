@@ -9,10 +9,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	
 
 	"github.com/google/gopacket/layers"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/api"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -53,12 +55,51 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 	}
 
 	// Figure out and get the pool
+	/*
 	var pool models.PoolWithAddresses
 	if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("no matching pool found")
 		}
 		return nil, res.Error
+	}
+	*/
+
+	/*
+	var pools []models.Pool
+	if res := db.DB.Table("pools").Find(&pool); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("no matching pool found")
+		}
+		return nil, res.Error
+	}
+	var pool models.PoolWithAddresses
+	for _, v := range pools {
+		_, ipv4Net, err := net.ParseCIDR(sourceNet.String() + "/" + v.Netmask)
+		if err != nil {
+			continue
+		}
+		if ipv4Net.String() = v.NetAddress {
+			pool.Pool = v
+			break
+		}
+	}
+
+	if pool.ID = 0 {
+		return nil, fmt.Errorf("no matching pool found")
+	}
+
+	if res := db.DB.Table("pools").Preload("Addresses").First(&pool, pool.ID); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("no matching pool found")
+		}
+		return nil, res.Error
+	}
+	*/
+
+	pool, err := api.FindPool(sourceNet.String())
+	if err != nil {
+		return nil, err
 	}
 
 	// Make a list of all reserved and pool addresses
@@ -105,7 +146,7 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 
 	resp.Options = append(resp.Options, layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeOffer)}))
 
-	AddOptions(req, resp, pool, lease, ip)
+	AddOptions(req, resp, *pool, lease, ip)
 
 	return resp, nil
 }
@@ -124,6 +165,12 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	}
 
 	// Figure out and get the pool
+	pool, err := api.FindPool(sourceNet.String())
+	if err != nil {
+		return nil, err
+	}
+
+	/*
 	var pool models.PoolWithAddresses
 	if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -131,6 +178,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		}
 		return nil, res.Error
 	}
+	*/
 
 	// Make a list of all reserved and pool addresses
 	addresses := append(reservedAddresses, pool.Addresses...)
@@ -230,7 +278,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	resp.YourClientIP = requestedIP
 
 	resp.Options = append(resp.Options, layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeAck)}))
-	AddOptions(req, resp, pool, lease, ip)
+	AddOptions(req, resp, *pool, lease, ip)
 
 	lease.IP = requestedIP.String()
 	lease.PoolID = models.NullInt32{sql.NullInt32{int32(pool.ID), true}}
@@ -283,6 +331,12 @@ func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		spew.Dump(opt82)
 	}*/
 
+	pool, err := api.FindPool(sourceNet.String())
+	if err != nil {
+		return nil, err
+	}
+
+	/*
 	var pool models.PoolWithAddresses
 	if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -290,6 +344,7 @@ func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		}
 		return nil, res.Error
 	}
+	*/
 
 	var requestedIP net.IP
 	for _, v := range req.Options {
