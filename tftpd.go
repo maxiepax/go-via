@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/pin/tftp"
+	"github.com/sirupsen/logrus"
 	"io"
 	"os"
 	"time"
@@ -47,4 +48,5 @@ func TFTPd() {
 		fmt.Fprintf(os.Stdout, "server: %v\n", err)
 		os.Exit(1)
 	}
+	logrus.WithFields(logrus.Fields{}).Infof("Starting tftp server")
 }
