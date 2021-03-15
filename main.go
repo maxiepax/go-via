@@ -104,12 +104,10 @@ func main() {
 
 	// TFTPd
 
-	/*
 	for _, t := range conf.Network.Interfaces {
 		go tftpd(t)
 		spew.Dump(t)
 	}
-	*/
 
 	//REST API
 
