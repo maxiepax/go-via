@@ -77,7 +77,14 @@ func main() {
 	}
 
 	//connect to database
-	db.Connect(true)
+	//db.Connect(true)
+	if conf.Debug {
+		db.Connect(true)
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		db.Connect(false)
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	//migrate all models
 	err = db.DB.AutoMigrate(&models.Pool{}, &models.Address{}, &models.Option{}, &models.DeviceClass{}, &models.Group{}, &models.Image{})
