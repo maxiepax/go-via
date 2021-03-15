@@ -40,6 +40,7 @@ func writeHandler(filename string, wt io.WriterTo) error {
 }
 
 func TFTPd() {
+	logrus.WithFields(logrus.Fields{}).Infof("Starting tftp server")
 	// use nil in place of handler to disable read or write operations
 	s := tftp.NewServer(readHandler, nil)
 	s.SetTimeout(5 * time.Second)  // optional
