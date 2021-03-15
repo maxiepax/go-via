@@ -105,7 +105,7 @@ func main() {
 	// TFTPd
 
 	for _, t := range conf.Network.Interfaces {
-		go tftpd(t)
+		go TFTPd(t)
 		spew.Dump(t)
 	}
 
