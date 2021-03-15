@@ -14,7 +14,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/davecgh/go-spew/spew"
+	//"github.com/davecgh/go-spew/spew"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/koding/multiconfig"
@@ -99,15 +99,11 @@ func main() {
 
 	for _, v := range conf.Network.Interfaces {
 		go serve(v)
-		spew.Dump(v)
 	}
 
 	// TFTPd
 
-	for _, t := range conf.Network.Interfaces {
-		go TFTPd()
-		spew.Dump(t)
-	}
+	go TFTPd()
 
 	//REST API
 
