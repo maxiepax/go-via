@@ -407,7 +407,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 	//if res := db.DB.Where("((ISNULL(pool_id) AND ISNULL(pool_id) AND ISNULL(address_id)) OR pool_id = ? OR (address_id > 0 AND address_id = ?)) AND (ISNULL(device_class_id) OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 	//if res := db.DB.Where("((pool_id IS NULL) AND IFNULL(pool_id, NULL) AND IFNULL(address_id, NULL)) OR pool_id = ? OR (address_id > 0 AND address_id = ?)) AND (IFNULL(device_class_id, NULL) OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 
-	if res := db.DB.Where("(pool_id = 0 AND device_class_id = 0 AND address_id = 0) OR pool_id = ? OR (address_id > 0 AND address_id = ?)) AND (device_class_id = 0 OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+	if res := db.DB.Where("((pool_id = 0 AND device_class_id = 0 AND address_id = 0) OR pool_id = ? OR address_id = ?) AND (device_class_id = 0 OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 
 		return res.Error
 	}
