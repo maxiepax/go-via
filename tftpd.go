@@ -14,12 +14,13 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
 
 	//"github.com/davecgh/go-spew/spew"
-	gotftp "github.com/maxiepax/go-via/tftpd"
+	"github.com/vmware/gotftp"
 )
 
 type Handler struct {
@@ -32,8 +33,7 @@ func (h Handler) ReadFile(c gotftp.Conn, filename string) (gotftp.ReadCloser, er
 }
 
 func (h Handler) WriteFile(c gotftp.Conn, filename string) (gotftp.WriteCloser, error) {
-	log.Printf("Request from %s to write %s", c.RemoteAddr(), filename)
-	return os.OpenFile(path.Join(h.Path, filename), os.O_WRONLY, 0644)
+	return nil, fmt.Errorf("not allowed")
 }
 
 func TFTPd() {
