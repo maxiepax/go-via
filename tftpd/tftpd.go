@@ -18,7 +18,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/vmware/gotftp"
+	//"github.com/davecgh/go-spew/spew"
+	gotftp "github.com/maxiepax/go-via/tftpd"
 )
 
 type Handler struct {
@@ -40,6 +41,7 @@ func TFTPd() {
 	if err != nil {
 		panic(err)
 	}
+	pwd = pwd + "/tftp"
 
 	h := Handler{Path: pwd}
 	err = gotftp.ListenAndServe(h)

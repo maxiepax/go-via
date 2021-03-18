@@ -23,10 +23,12 @@ require (
 	github.com/qor/media v0.0.0-20201118025607-96c1f2487abe
 	github.com/qor/qor v0.0.0-20200729071734-d587cffbbb93 // indirect
 	github.com/sirupsen/logrus v1.7.0
+	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/vmware/gotftp v0.0.0-20200204141237-25af2913ed8b
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.12
