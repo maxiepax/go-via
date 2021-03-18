@@ -1,53 +1,47 @@
+/*
+Copyright (c) 2015 VMware, Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package main
 
 import (
-	"fmt"
-	"github.com/pin/tftp"
-	"github.com/sirupsen/logrus"
-	"io"
+	"log"
 	"os"
-	"time"
+	"path"
+
+	"github.com/vmware/gotftp"
 )
 
-func readHandler(filename string, rf io.ReaderFrom) error {
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
-	}
-	n, err := rf.ReadFrom(file)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
-	}
-	fmt.Printf("%d bytes sent\n", n)
-	return nil
+type Handler struct {
+	Path string
 }
 
-func writeHandler(filename string, wt io.WriterTo) error {
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
-	}
-	n, err := wt.WriteTo(file)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
-	}
-	fmt.Printf("%d bytes received\n", n)
-	return nil
+func (h Handler) ReadFile(c gotftp.Conn, filename string) (gotftp.ReadCloser, error) {
+	log.Printf("Request from %s to read %s", c.RemoteAddr(), filename)
+	return os.OpenFile(path.Join(h.Path, filename), os.O_RDONLY, 0)
+}
+
+func (h Handler) WriteFile(c gotftp.Conn, filename string) (gotftp.WriteCloser, error) {
+	log.Printf("Request from %s to write %s", c.RemoteAddr(), filename)
+	return os.OpenFile(path.Join(h.Path, filename), os.O_WRONLY, 0644)
 }
 
 func TFTPd() {
-	logrus.WithFields(logrus.Fields{}).Infof("Starting tftp server")
-	// use nil in place of handler to disable read or write operations
-	s := tftp.NewServer(readHandler, nil)
-	s.SetTimeout(5 * time.Second)  // optional
-	err := s.ListenAndServe(":69") // blocks until s.Shutdown() is called
+	pwd, err := os.Getwd()
 	if err != nil {
-		fmt.Fprintf(os.Stdout, "server: %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
-	logrus.WithFields(logrus.Fields{}).Infof("Starting tftp server")
+
+	h := Handler{Path: pwd}
+	err = gotftp.ListenAndServe(h)
+	panic(err)
 }
