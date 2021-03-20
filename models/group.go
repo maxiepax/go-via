@@ -2,15 +2,19 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/datatypes"
 )
 
 type GroupForm struct {
-	PoolID   int    `json:"pool_id" gorm:"type:BIGINT"`
-	Name     string `json:"name" gorm:"type:varchar(255)"`
-	DNS      string `json:"dns" gorm:"type:varchar(255)"`
-	NTP      string `json:"ntp" gorm:"type:varchar(255)"`
-	Password string `json:"password" gorm:"type:varchar(255)"`
-	ImageID  int    `json:"image_id" gorm:"type:INT"`
+	PoolID   int            `json:"pool_id" gorm:"type:BIGINT"`
+	Name     string         `json:"name" gorm:"type:varchar(255)"`
+	DNS      string         `json:"dns" gorm:"type:varchar(255)"`
+	NTP      string         `json:"ntp" gorm:"type:varchar(255)"`
+	Password string         `json:"password" gorm:"type:varchar(255)"`
+	ImageID  int            `json:"image_id" gorm:"type:INT"`
+	Ks       string         `json:"ks" gorm:"type:text"`
+	Options  datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
 type Group struct {

@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -157,7 +158,35 @@ func CreateImage(c *gin.Context) {
 			Error(c, http.StatusInternalServerError, err) // 500
 		}
 
-		spew.Dump(item.Path)
+		//update the prefix=
+
+		// read file into []byte
+		bc, err := ioutil.ReadFile(item.Path + "/BOOT.CFG")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert []byte into string
+		sc := string(bc)
+
+		// regexp to be matched to
+		rx := "prefix="
+
+		// replace prefix with prefix=foldername
+		re := regexp.MustCompile(rx)
+		s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
+		fmt.Println(s)
+
+		// strip the leading / from all the modules
+		rx = "/"
+		re = regexp.MustCompile(rx)
+		s = re.ReplaceAllLiteralString(sc, "")
+		fmt.Println(s)
+
+		// save string back to file
+		err = WriteToFile(item.Path+"/BOOT.CFG", s)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		/*
 			mime, err := mimetype.DetectFile(item.StoragePath)
@@ -293,4 +322,18 @@ func DeleteImage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{}) //204
+}
+
+func WriteToFile(filename string, data string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.WriteString(file, data)
+	if err != nil {
+		return err
+	}
+	return file.Sync()
 }

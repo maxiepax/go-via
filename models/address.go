@@ -18,7 +18,8 @@ type AddressForm struct {
 type Address struct {
 	ID int `json:"id" gorm:"primary_key"`
 
-	Pool Pool `json:"pool" gorm:"foreignkey:PoolID"`
+	Pool  Pool  `json:"pool" gorm:"foreignkey:PoolID"`
+	Group Group `json:"group" gorm:"foreignkey:PoolID"`
 
 	AddressForm
 

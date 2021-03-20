@@ -14,7 +14,8 @@ var DB *gorm.DB
 func Connect(debug bool) {
 
 	c := &gorm.Config{
-		SkipDefaultTransaction: true,
+		SkipDefaultTransaction:                   true,
+		DisableForeignKeyConstraintWhenMigrating: true,
 	}
 
 	if debug {

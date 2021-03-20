@@ -180,6 +180,8 @@ func main() {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	r.GET("ks.cfg", api.Ks)
+
 	listen := ":" + strconv.Itoa(conf.Port)
 	logrus.WithFields(logrus.Fields{
 		"address": listen,
