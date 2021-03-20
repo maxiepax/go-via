@@ -132,17 +132,17 @@ func CreateImage(c *gin.Context) {
 		//update item.Path
 		item.Path = fp
 
-		if _, err := os.Stat(item.Path + "/efi/boot/bootx64.efi"); err == nil {
+		if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
 			fmt.Printf("File exists\n")
 			// Open original file
-			original, err := os.Open(item.Path + "/efi/boot/bootx64.efi")
+			original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
 			if err != nil {
 				log.Fatal(err)
 			}
 			defer original.Close()
 
 			// Create new file
-			new, err := os.Create(item.Path + "/mboot.efi")
+			new, err := os.Create(item.Path + "/MBOOT.EFI")
 			if err != nil {
 				log.Fatal(err)
 			}
