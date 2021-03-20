@@ -400,7 +400,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 	var deviceClass models.DeviceClass
 	for _, v := range req.Options {
 		if v.Type == 60 { // Vendor class
-			db.DB.Where("? LIKE concat('%',vendor_class,'%')", string(v.Data)).First(&deviceClass)
+			db.DB.Where("? LIKE '%' || vendor_class || '%'", string(v.Data)).First(&deviceClass)
 		}
 	}
 
