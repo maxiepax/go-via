@@ -57,6 +57,9 @@ func TFTPd() {
 func readHandler(filename string, rf io.ReaderFrom) error {
 	//chroot := "tftp" + filename
 
+	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
+	spew.Dump(raddr)
+
 	var item models.Address
 	db.DB.Preload(clause.Associations).First(&item)
 	spew.Dump(item)
