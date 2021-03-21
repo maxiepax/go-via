@@ -62,6 +62,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return err
 	}
+	fmt.Printf("%s sent\n", chroot)
 	fmt.Printf("%d bytes sent\n", n)
 	return nil
 }
