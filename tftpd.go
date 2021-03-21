@@ -14,8 +14,10 @@ limitations under the License.
 package main
 
 import (
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	//"github.com/davecgh/go-spew/spew"
 	//"github.com/vmware/gotftp"
@@ -49,5 +51,15 @@ func TFTPd() {
 }*/
 
 func TFTPd() {
-	log.Panic(tftp.ListenAndServe(":69", tftp.ReadonlyFileServer(http.Dir("tftp"))))
+	log.Panic(tftp.ListenAndServe(":69", tftp.ReadonlyFileServer(http.Dir(pwd+"/tftp"))))
+	fmt.println(pwd + "/tftp")
+	tftp.HandleFunc("test", func(w io.WriteCloser, req *tftp.Request) error {
+		log.Println("incoming read operation for test:", req)
+
+		f, _ := os.Open("tftp/test")
+		io.Copy(w, f)
+		f.Close() // don't forget close the writer
+
+		return nil
+	}, nil)
 }
