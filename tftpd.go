@@ -52,6 +52,7 @@ func TFTPd() {
 
 func TFTPd() {
 	log.Panic(tftp.ListenAndServe(":69", tftp.ReadonlyFileServer(http.Dir(pwd+"/tftp"))))
+	pwd, err := os.Getwd()
 	fmt.println(pwd + "/tftp")
 	tftp.HandleFunc("test", func(w io.WriteCloser, req *tftp.Request) error {
 		log.Println("incoming read operation for test:", req)
