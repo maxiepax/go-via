@@ -51,8 +51,13 @@ func TFTPd() {
 }*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
-	chroot := "tftp" + filename
-	file, err := os.Open(chroot)
+	//chroot := "tftp" + filename
+
+	if filename == "mboot.efi" {
+		fmt.Println("mboot.efi requested!")
+	}
+
+	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return err
@@ -62,7 +67,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return err
 	}
-	fmt.Printf("%s sent\n", chroot)
+	fmt.Printf("%s sent\n", filename)
 	fmt.Printf("%d bytes sent\n", n)
 	return nil
 }
