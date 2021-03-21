@@ -58,8 +58,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	//chroot := "tftp" + filename
 
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
-	laddr := rf.(tftp.RequestPacketInfo).LocalIP()
-	log.Println("RRQ from", raddr.String(), "To ", laddr.String())
+	log.Println("RRQ from", raddr.String())
 	log.Println("")
 
 	var item models.Address
