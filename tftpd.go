@@ -51,7 +51,7 @@ func TFTPd() {
 }*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
-	chroot := "tftp/" + filename
+	chroot := "tftp" + filename
 	file, err := os.Open(chroot)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
