@@ -65,10 +65,15 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	ip, _, _ := net.SplitHostPort(raddr.String())
 	fmt.Println(ip)
 
-	//get the object that correlates with the ip, looking for the image path to use
-	var item models.Address
-	db.DB.Preload(clause.Associations).First(&item, "ip = ?", ip)
-	spew.Dump(item)
+	//get the object that correlates with the ip
+	var address models.Address
+	db.DB.Preload(clause.Associations).First(&address, "ip = ?", ip)
+	spew.Dump(address)
+
+	//get the image info that correlates with the pool the ip is in
+	var image models.Image
+	db.DB.First(&image, "image = ?", address.Group.ImageID)
+	spew.Dump(image)
 
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
