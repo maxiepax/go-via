@@ -72,7 +72,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 	//get the image info that correlates with the pool the ip is in
 	var image models.Image
-	db.DB.First(&image, "image = ?", address.Group.ImageID)
+	db.DB.First(&image, "id = ?", address.Group.ImageID)
 	spew.Dump(image)
 
 	if filename == "mboot.efi" {
