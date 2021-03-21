@@ -25,6 +25,7 @@ type Group struct {
 	Pool    *Pool     `json:"pool,omitempty" gorm:"foreignkey:PoolID"`
 	Option  []Option  `json:"option,omitempty" gorm:"foreignkey:PoolID"`
 	Address []Address `json:"option,omitempty" gorm:"foreignkey:GroupID"`
+	Image   *Image    `json:"pool,omitempty" gorm:"foreignkey:ImageID"`
 
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
