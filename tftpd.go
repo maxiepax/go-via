@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
+	"net"
 	"os"
 	"time"
 
@@ -58,8 +58,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	//chroot := "tftp" + filename
 
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
-	log.Println("RRQ from", raddr.String())
-	log.Println("")
+	fmt.Println(raddr.String())
+	ip, _, _ := net.SplitHostPort(raddr.String())
+	fmt.Println(ip)
 
 	var item models.Address
 	db.DB.Preload(clause.Associations).First(&item)
