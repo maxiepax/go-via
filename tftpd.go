@@ -14,14 +14,14 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"io"
-	"log"
-	"net/http"
 	"os"
+	"time"
 
 	//"github.com/davecgh/go-spew/spew"
 	//"github.com/vmware/gotftp"
-	"github.com/zwh8800/tftp"
+	"github.com/pin/tftp"
 )
 
 /*
@@ -50,17 +50,27 @@ func TFTPd() {
 	panic(err)
 }*/
 
+func readHandler(filename string, rf io.ReaderFrom) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return err
+	}
+	n, err := rf.ReadFrom(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return err
+	}
+	fmt.Printf("%d bytes sent\n", n)
+	return nil
+}
+
 func TFTPd() {
-	log.Panic(tftp.ListenAndServe(":69", tftp.ReadonlyFileServer(http.Dir(pwd+"/tftp"))))
-	pwd, err := os.Getwd()
-	fmt.println(pwd + "/tftp")
-	tftp.HandleFunc("test", func(w io.WriteCloser, req *tftp.Request) error {
-		log.Println("incoming read operation for test:", req)
-
-		f, _ := os.Open("tftp/test")
-		io.Copy(w, f)
-		f.Close() // don't forget close the writer
-
-		return nil
-	}, nil)
+	s := tftp.NewServer(readHandler, nil)
+	s.SetTimeout(5 * time.Second)  // optional
+	err := s.ListenAndServe(":69") // blocks until s.Shutdown() is called
+	if err != nil {
+		fmt.Fprintf(os.Stdout, "server: %v\n", err)
+		os.Exit(1)
+	}
 }
