@@ -75,9 +75,17 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	db.DB.First(&image, "id = ?", address.Group.ImageID)
 	spew.Dump(image)
 
+	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
 		filename = image.Path + "/MBOOT.EFI"
+		spew.Dump(filename)
+	}
+
+	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
+	if filename == "boot.cfg" {
+		fmt.Println("boot.cfg requested!")
+		filename = image.Path + "/BOOT.CFG"
 		spew.Dump(filename)
 	}
 
