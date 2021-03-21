@@ -20,6 +20,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"gorm.io/gorm/clause"
@@ -57,14 +58,17 @@ func TFTPd() {
 func readHandler(filename string, rf io.ReaderFrom) error {
 	//chroot := "tftp" + filename
 
+	// get the requesting ip-address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
 	fmt.Println(raddr.String())
+	//strip the port
 	ip, _, _ := net.SplitHostPort(raddr.String())
 	fmt.Println(ip)
 
+	//get the object that correlates with the ip, looking for the image path to use
 	var item models.Address
-	db.DB.Preload(clause.Associations).First(&item)
-	//spew.Dump(item)
+	db.DB.Preload(clause.Associations).First(&item, "ip = ?", ip)
+	spew.Dump(item)
 
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
