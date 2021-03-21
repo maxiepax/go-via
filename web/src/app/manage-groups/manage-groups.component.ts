@@ -87,10 +87,11 @@ export class ManageGroupsComponent implements OnInit {
   submit_host() {
     const data = {
       ...this.Hostform.value,
-      //active:true,
       hostname: this.Hostform.value.fqdn.split(".")[0],
       domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
+      reserved: true,
+
     }
 
     this.apiService.addHost(data).subscribe((data: any) => {
@@ -114,8 +115,6 @@ export class ManageGroupsComponent implements OnInit {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
       pool_id: parseInt(this.Groupform.value.pool_id),
-
-      //active:true,
     }
 
     this.apiService.addGroup(data).subscribe((data: any) => {
