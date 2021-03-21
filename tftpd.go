@@ -77,7 +77,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
-		filename = image.Path + "mboot.efi"
+		filename = image.Path + "/mboot.efi"
 		spew.Dump(filename)
 	}
 
