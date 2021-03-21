@@ -14,15 +14,15 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
-	"path"
+	"net/http"
 
 	//"github.com/davecgh/go-spew/spew"
-	"github.com/vmware/gotftp"
+	//"github.com/vmware/gotftp"
+	"github.com/zwh8800/tftp"
 )
 
+/*
 type Handler struct {
 	Path string
 }
@@ -46,4 +46,8 @@ func TFTPd() {
 	h := Handler{Path: pwd}
 	err = gotftp.ListenAndServe(h)
 	panic(err)
+}*/
+
+func TFTPd() {
+	log.Panic(tftp.ListenAndServe(":69", tftp.ReadonlyFileServer(http.Dir("tftp"))))
 }

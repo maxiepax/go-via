@@ -297,6 +297,8 @@ github.com/vmware/gotftp v0.0.0-20200204141237-25af2913ed8b/go.mod h1:FCQwPFoHe7
 github.com/yosssi/gohtml v0.0.0-20200519115854-476f5b4b8047/go.mod h1:+ccdNT0xMY1dtc5XBxumbYfOUhmduiGudqaDgD2rVRE=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
+github.com/zwh8800/tftp v0.0.0-20160922062711-68d9246b9931 h1:etuqstsxJupmgQ+GqrFRrSzduCa2RLXqo2pdfg6AKig=
+github.com/zwh8800/tftp v0.0.0-20160922062711-68d9246b9931/go.mod h1:nbCfmrvxI5laHrnQDGqjq9NIEh3XQ3dHWt9t6+UcBqo=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.6.0/go.mod h1:sABNBOSYdrvTF6hTgEIbc7YasKWGhgEQZyfxyTvoXHQ=

@@ -28,6 +28,7 @@ require (
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/vmware/gotftp v0.0.0-20200204141237-25af2913ed8b
+	github.com/zwh8800/tftp v0.0.0-20160922062711-68d9246b9931
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0
