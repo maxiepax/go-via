@@ -19,7 +19,11 @@ import (
 	"os"
 	"time"
 
-	//"github.com/davecgh/go-spew/spew"
+	"github.com/maxiepax/go-via/db"
+	"github.com/maxiepax/go-via/models"
+	"gorm.io/gorm/clause"
+
+	"github.com/davecgh/go-spew/spew"
 	//"github.com/vmware/gotftp"
 	"github.com/pin/tftp"
 )
@@ -52,6 +56,10 @@ func TFTPd() {
 
 func readHandler(filename string, rf io.ReaderFrom) error {
 	//chroot := "tftp" + filename
+
+	var item models.Address
+	db.DB.Preload(clause.Associations).First(&item)
+	spew.Dump(item)
 
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
