@@ -56,24 +56,22 @@ func TFTPd() {
 }*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
-	//chroot := "tftp" + filename
+	spew.dump(filename)
 
 	// get the requesting ip-address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
-	fmt.Println(raddr.String())
 	//strip the port
 	ip, _, _ := net.SplitHostPort(raddr.String())
-	fmt.Println(ip)
 
 	//get the object that correlates with the ip
 	var address models.Address
 	db.DB.Preload(clause.Associations).First(&address, "ip = ?", ip)
-	spew.Dump(address)
+	//spew.Dump(address)
 
 	//get the image info that correlates with the pool the ip is in
 	var image models.Image
 	db.DB.First(&image, "id = ?", address.Group.ImageID)
-	spew.Dump(image)
+	//spew.Dump(image)
 
 	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
