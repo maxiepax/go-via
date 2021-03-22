@@ -133,7 +133,7 @@ func CreateImage(c *gin.Context) {
 		item.Path = fp
 
 		if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
-			fmt.Printf("File exists\n")
+			fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
 			// Open original file
 			original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
 			if err != nil {
@@ -154,7 +154,7 @@ func CreateImage(c *gin.Context) {
 				log.Fatal(err)
 			}
 		} else {
-			fmt.Printf("File does not exist\n")
+			fmt.Printf("Could not find BOOTX64.EFI\n")
 			Error(c, http.StatusInternalServerError, err) // 500
 		}
 
