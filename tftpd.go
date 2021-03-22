@@ -20,6 +20,7 @@ import (
 	"os"
 	"time"
 	"strings"
+	"path"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
@@ -81,9 +82,10 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
-		upper := strings.ToUpper(string(filename))
-		spew.Dump(upper)
-		filename = "tftp/" + upper
+		dir, file = path.Split(filename)
+		upperfile = strings.toUpper(string(file))
+		filename = "tftp/" + dir + file
+		spew.Dump(filename)
 	}
 
 	//chroot the rest
