@@ -86,7 +86,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Println("file %s", file)
 		fmt.Println("file %s", dir)
 		upperfile := strings.ToUpper(string(file))
-		filename = "tftp/" + dir + file
+		filename = "tftp/" + dir + upperfile
 		spew.Dump(filename)
 	}
 
