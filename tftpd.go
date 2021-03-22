@@ -85,7 +85,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
-		upper := filename.ToUpper()
+		upper := strings.ToUpper(filename)
 		fmt.Println(upper)
 		filename = "tftp/" + upper
 	}
