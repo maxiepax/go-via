@@ -2,11 +2,13 @@ package api
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -15,11 +17,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
+	"github.com/koding/multiconfig"
+	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -215,6 +221,44 @@ func CreateImage(c *gin.Context) {
 		re = regexp.MustCompile(rx)
 		o := re.FindString(sc)
 		fmt.Printf("found string %s", o)
+
+		// find out the ip of the interface specified
+		d := multiconfig.New()
+
+		conf := new(config.Config)
+
+		err = d.Load(conf)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Fatalf("failed to load config")
+		}
+
+		if conf.File != "" {
+			d = multiconfig.NewWithPath(conf.File)
+
+			err = d.Load(conf)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"err": err,
+				}).Fatalf("failed to load config")
+			}
+		}
+
+		err = d.Validate(conf)
+		if err != nil {
+			flag.Usage()
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Fatalf("failed to load config")
+		}
+
+		iface, err := net.InterfaceByName(conf.Network.Interfaces[0])
+		if err != nil {
+			fmt.Println("Unable to find interface")
+			os.Exit(-1)
+		}
+		spew.Dump(iface)
 		s = re.ReplaceAllLiteralString(sc, o+" ks://")
 		fmt.Println(s)
 
