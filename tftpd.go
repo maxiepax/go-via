@@ -18,9 +18,8 @@ import (
 	"io"
 	"net"
 	"os"
-	"time"
-	"strings"
 	"path"
+	"time"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
@@ -77,13 +76,13 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Println("mboot.efi requested!")
 		filename = image.Path + "/MBOOT.EFI"
 	} else if filename == "/boot.cfg" {
-	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
+		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		fmt.Println("boot.cfg requested!")
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
-		dir, file = path.Split(filename)
-		upperfile = strings.toUpper(string(file))
+		dir, file := path.Split(filename)
+		upperfile := strings.toUpper(string(file))
 		filename = "tftp/" + dir + file
 		spew.Dump(filename)
 	}
