@@ -57,7 +57,6 @@ func TFTPd() {
 }*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
-	//spew.Dump(filename)
 
 	// get the requesting ip-address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
@@ -67,12 +66,10 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	//get the object that correlates with the ip
 	var address models.Address
 	db.DB.Preload(clause.Associations).First(&address, "ip = ?", ip)
-	//spew.Dump(address)
 
 	//get the image info that correlates with the pool the ip is in
 	var image models.Image
 	db.DB.First(&image, "id = ?", address.Group.ImageID)
-	//spew.Dump(image)
 
 	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
@@ -80,14 +77,13 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		filename = image.Path + "/MBOOT.EFI"
 	} else if filename == "/boot.cfg" {
 	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
-	
 		fmt.Println("boot.cfg requested!")
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
+		fmt.Println(strings.ToUpper("abc"))
 		upper := strings.ToUpper(filename)
 		fmt.Println("%s should be uppercase", upper)
-		fmt.Println(strings.ToUpper("abc"))
 		filename = "tftp/" + upper
 	}
 
