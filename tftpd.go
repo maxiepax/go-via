@@ -77,7 +77,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	if filename == "mboot.efi" {
 		fmt.Println("mboot.efi requested!")
 		filename = image.Path + "/MBOOT.EFI"
-		spew.Dump(filename)
+		//spew.Dump(filename)
 	}
 
 	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
