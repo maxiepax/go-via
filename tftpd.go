@@ -82,7 +82,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	} else {
 		fmt.Println("Any other file!")
 		upper := strings.ToUpper(string(filename))
-		fmt.Println("%s should be uppercase", upper)
+		spew.Dump(upper)
 		filename = "tftp/" + upper
 	}
 
