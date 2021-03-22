@@ -19,6 +19,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -82,7 +83,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	} else {
 		fmt.Println("Any other file!")
 		dir, file := path.Split(filename)
-		upperfile := strings.toUpper(string(file))
+		upperfile := strings.ToUpper(string(file))
 		filename = "tftp/" + dir + file
 		spew.Dump(filename)
 	}
