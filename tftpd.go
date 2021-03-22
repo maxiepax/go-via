@@ -80,7 +80,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		//spew.Dump(filename)
 	} else {
 		spew.Dump(filename)
-
 	}
 
 	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
