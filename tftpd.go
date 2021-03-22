@@ -19,6 +19,7 @@ import (
 	"net"
 	"os"
 	"time"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
