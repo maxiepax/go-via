@@ -81,7 +81,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	}
 
 	//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
-	if filename == "boot.cfg" {
+	if filename == "/boot.cfg" {
 		fmt.Println("boot.cfg requested!")
 		filename = image.Path + "/BOOT.CFG"
 		spew.Dump(filename)
