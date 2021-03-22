@@ -182,21 +182,7 @@ func CreateImage(c *gin.Context) {
 		s = re.ReplaceAllLiteralString(sc, "")
 		fmt.Println(s)
 
-		// save string back to file
-		err = WriteToFile(item.Path+"/BOOT.CFG", s)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		//update the kernelopt=
-
-		// read file into []byte
-		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
-		if err != nil {
-			log.Fatal(err)
-		}
-		// convert []byte into string
-		sc = string(bc)
 
 		// regexp to be matched to
 		rx = "kernelopt=.*"
