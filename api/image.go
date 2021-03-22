@@ -17,7 +17,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -220,7 +219,6 @@ func CreateImage(c *gin.Context) {
 		rx = "kernelopt=.*"
 		re = regexp.MustCompile(rx)
 		o := re.FindString(sc)
-		fmt.Printf("found string %s", o)
 
 		// find out the ip of the interface specified
 		d := multiconfig.New()
@@ -254,10 +252,8 @@ func CreateImage(c *gin.Context) {
 		}
 
 		addr, _ := GetInterfaceIpv4Addr(conf.Network.Interfaces[0])
-		spew.Dump(addr)
 
-		s = re.ReplaceAllLiteralString(sc, o+" ks://")
-		fmt.Println(s)
+		s = re.ReplaceAllLiteralString(sc, o+" ks://"+addr+"/ks.cfg")
 
 		// save string back to file
 		err = WriteToFile(item.Path+"/BOOT.CFG", s)
