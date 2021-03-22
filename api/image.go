@@ -204,8 +204,8 @@ func CreateImage(c *gin.Context) {
 		// replace prefix with prefix=foldername
 		re = regexp.MustCompile(rx)
 		o := re.FindString(sc)
-		fmt.Println("found string %s", o)
-		s = re.ReplaceAllLiteralString(sc, fn+" ks://")
+		fmt.Printf("found string %s", o)
+		s = re.ReplaceAllLiteralString(sc, o+" ks://")
 		fmt.Println(s)
 
 		// save string back to file
