@@ -177,7 +177,6 @@ func CreateImage(c *gin.Context) {
 		rx := "prefix="
 		re := regexp.MustCompile(rx)
 		s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
-		fmt.Println(s)
 
 		// save string back to file
 		err = WriteToFile(item.Path+"/BOOT.CFG", s)
@@ -197,7 +196,6 @@ func CreateImage(c *gin.Context) {
 		rx = "/"
 		re = regexp.MustCompile(rx)
 		s = re.ReplaceAllLiteralString(sc, "")
-		fmt.Println(s)
 
 		// save string back to file
 		err = WriteToFile(item.Path+"/BOOT.CFG", s)
@@ -253,7 +251,7 @@ func CreateImage(c *gin.Context) {
 
 		addr, _ := GetInterfaceIpv4Addr(conf.Network.Interfaces[0])
 
-		s = re.ReplaceAllLiteralString(sc, o+" ks://"+addr+"/ks.cfg")
+		s = re.ReplaceAllLiteralString(sc, o+" ks=http://"+addr+":8080/ks.cfg")
 
 		// save string back to file
 		err = WriteToFile(item.Path+"/BOOT.CFG", s)

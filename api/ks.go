@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -25,9 +24,6 @@ vmaccepteula
 rootpw {{ .Group.Password }}
 {{ end }}
 
-{{ if ne .Group.Options.Format_ssd "" }}
-# format ssd
-{{ end }}
 
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
@@ -51,7 +47,6 @@ func Ks(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, item) // 200
-	spew.Dump(item)
 
 	// check if default ks has been overridden.
 	ks := defaultks
