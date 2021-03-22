@@ -81,7 +81,8 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
-		fmt.Println(strings.ToUpper("abc"))
+		test := strings.ToUpper("abc")
+		fmt.Println(test)
 		upper := strings.ToUpper(filename)
 		fmt.Println("%s should be uppercase", upper)
 		filename = "tftp/" + upper
