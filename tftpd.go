@@ -56,7 +56,7 @@ func TFTPd() {
 }*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
-	spew.dump(filename)
+	spew.Dump(filename)
 
 	// get the requesting ip-address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
