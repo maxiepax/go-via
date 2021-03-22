@@ -168,13 +168,25 @@ func CreateImage(c *gin.Context) {
 		// convert []byte into string
 		sc := string(bc)
 
-		// regexp to be matched to
-		rx := "prefix="
-
 		// replace prefix with prefix=foldername
+		rx := "prefix="
 		re := regexp.MustCompile(rx)
 		s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
 		fmt.Println(s)
+
+		// save string back to file
+		err = WriteToFile(item.Path+"/BOOT.CFG", s)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// read file into []byte
+		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert []byte into string
+		sc = string(bc)
 
 		// strip the leading / from all the modules
 		rx = "/"
@@ -182,12 +194,24 @@ func CreateImage(c *gin.Context) {
 		s = re.ReplaceAllLiteralString(sc, "")
 		fmt.Println(s)
 
+		// save string back to file
+		err = WriteToFile(item.Path+"/BOOT.CFG", s)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		//update the kernelopt=
 
-		// regexp to be matched to
-		rx = "kernelopt=.*"
+		// read file into []byte
+		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert []byte into string
+		sc = string(bc)
 
 		// replace prefix with prefix=foldername
+		rx = "kernelopt=.*"
 		re = regexp.MustCompile(rx)
 		o := re.FindString(sc)
 		fmt.Printf("found string %s", o)
