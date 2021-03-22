@@ -258,7 +258,7 @@ func CreateImage(c *gin.Context) {
 			fmt.Println("Unable to find interface")
 			os.Exit(-1)
 		}
-		spew.Dump(iface)
+		spew.Dump(iface.Addrs())
 		s = re.ReplaceAllLiteralString(sc, o+" ks://")
 		fmt.Println(s)
 
