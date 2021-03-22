@@ -82,11 +82,15 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		filename = image.Path + "/BOOT.CFG"
 	} else {
 		fmt.Println("Any other file!")
-		dir, file := path.Split(filename)
-		fmt.Println("file %s", file)
-		fmt.Println("file %s", dir)
-		upperfile := strings.ToUpper(string(file))
-		filename = "tftp/" + dir + upperfile
+		if _, err := os.Stat("tftp/" + filename); err == nil {
+			fmt.Println("trying to serve file with lowercase")
+			filename = "tftp/" + filename
+		} else {
+			fmt.Println("trying to serve file with UPPERCASE")
+			dir, file := path.Split(filename)
+			upperfile := strings.ToUpper(string(file))
+			filename = "tftp/" + dir + upperfile
+		}
 		spew.Dump(filename)
 	}
 
