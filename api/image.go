@@ -188,6 +188,32 @@ func CreateImage(c *gin.Context) {
 			log.Fatal(err)
 		}
 
+		//update the kernelopt=
+
+		// read file into []byte
+		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert []byte into string
+		sc = string(bc)
+
+		// regexp to be matched to
+		rx = "kernelopt=.*"
+
+		// replace prefix with prefix=foldername
+		re = regexp.MustCompile(rx)
+		o := re.FindString(sc)
+		fmt.Println("found string %s", o)
+		s = re.ReplaceAllLiteralString(sc, fn+" ks://")
+		fmt.Println(s)
+
+		// save string back to file
+		err = WriteToFile(item.Path+"/BOOT.CFG", s)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		/*
 			mime, err := mimetype.DetectFile(item.StoragePath)
 			if err != nil {
