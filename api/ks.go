@@ -46,7 +46,7 @@ func Ks(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
-	//c.JSON(http.StatusOK, item) // 200
+	c.JSON(http.StatusOK, item) // 200
 
 	// check if default ks has been overridden.
 	ks := defaultks
