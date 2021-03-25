@@ -90,8 +90,6 @@ export class ManageGroupsComponent implements OnInit {
       hostname: this.Hostform.value.fqdn.split(".")[0],
       domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
-      reserved: true,
-
     }
 
     this.apiService.addHost(data).subscribe((data: any) => {
@@ -143,6 +141,21 @@ export class ManageGroupsComponent implements OnInit {
       });
     });
   }
+
+  reImageHost(id) {
+    console.log(id);
+
+    this.apiService.patchHost(id).subscribe((data: any) => {
+      console.log("PUT Request is successful ", data);
+      
+    },
+    error  => {
+
+      console.log("Error", error);
+      
+    });
+  }
+  
 
   removeGroup(id) {
     //check to see if group is empty

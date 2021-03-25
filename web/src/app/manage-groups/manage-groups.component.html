@@ -32,6 +32,7 @@
 			<clr-dg-cell></clr-dg-cell>
 			<clr-dg-cell>
 				<button class="btn btn-warning-outline btn-sm" (click)="removeHost(host.id)">remove</button>
+				<button class="btn btn-warning-outline btn-sm" (click)="reImageHost(host.id)">re-image</button>
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
@@ -57,7 +58,7 @@
 					<label>mac</label>
 					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
 				</cds-input>
-			</cds-form-group>
+			</cds-form-group>	
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">

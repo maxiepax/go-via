@@ -17,6 +17,14 @@ export class ApiService {
   public addHost(data){
   	return this.httpClient.post('http://' + window.location.hostname + ':8080/v1/addresses', data);
   }  
+
+  public patchHost(id){
+  	return this.httpClient.patch('http://' + window.location.hostname + `:8080/v1/addresses/${id}`,
+    {
+      "reserved": true
+    });
+  } 
+
   public deleteHost(id){
     return this.httpClient.delete('http://' + window.location.hostname + `:8080/v1/addresses/${id}`);
   }
