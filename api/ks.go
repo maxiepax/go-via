@@ -54,7 +54,7 @@ func Ks(c *gin.Context) {
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
-	//c.JSON(http.StatusOK, item) // 200
+	c.JSON(http.StatusOK, item) // 200
 
 	// check if default ks has been overridden.
 	ks := defaultks
