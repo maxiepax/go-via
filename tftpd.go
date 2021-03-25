@@ -25,6 +25,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 
 	//"github.com/vmware/gotftp"
@@ -74,19 +75,20 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
-		fmt.Println("mboot.efi requested!")
+		logrus.WithFields(logrus.Fields{
+			ip: "requesting mboot.efi",
+		}).Info("tftpd")
 		filename = image.Path + "/MBOOT.EFI"
 	} else if filename == "/boot.cfg" {
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
-		fmt.Println("boot.cfg requested!")
+		logrus.WithFields(logrus.Fields{
+			ip: "requesting boot.cfg",
+		}).Info("tftpd")
 		filename = image.Path + "/BOOT.CFG"
 	} else {
-		fmt.Println("Any other file!")
 		if _, err := os.Stat("tftp/" + filename); err == nil {
-			fmt.Println("trying to serve file with lowercase")
 			filename = "tftp/" + filename
 		} else {
-			fmt.Println("trying to serve file with UPPERCASE")
 			dir, file := path.Split(filename)
 			upperfile := strings.ToUpper(string(file))
 			filename = "tftp/" + dir + upperfile
@@ -106,8 +108,12 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return err
 	}
-	fmt.Printf("%s sent\n", filename)
-	fmt.Printf("%d bytes sent\n", n)
+	logrus.WithFields(logrus.Fields{
+		"file":  filename,
+		"bytes": n,
+	}).Info("tftpd")
+	//fmt.Printf("%s sent\n", filename)
+	//fmt.Printf("%d bytes sent\n", n)
 	return nil
 }
 

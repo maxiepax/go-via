@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -48,14 +47,12 @@ func Ks(c *gin.Context) {
 		return
 	}
 
-	spew.Dump(&item)
-
 	if reserved := db.DB.Model(&item).Where("ip = ?", host).Update("reserved", false); reserved.Error != nil {
 		Error(c, http.StatusInternalServerError, reserved.Error) // 500
 		return
 	}
 
-	spew.Dump(&item)
+	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 	c.JSON(http.StatusOK, item) // 200
 
@@ -75,4 +72,6 @@ func Ks(c *gin.Context) {
 		logrus.Error(err)
 		return
 	}
+
+	logrus.Info("Served ks.cfg file")
 }
