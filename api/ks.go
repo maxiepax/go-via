@@ -46,6 +46,12 @@ func Ks(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
+
+	if reserved := db.DB.Model(&item).Where("ip = ?").Update("reserved", false); reserved.Error != nil {
+		Error(c, http.StatusInternalServerError, reserved.Error) // 500
+		return
+	}
+
 	c.JSON(http.StatusOK, item) // 200
 
 	// check if default ks has been overridden.
