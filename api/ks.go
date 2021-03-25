@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net"
 	"net/http"
 	"text/template"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
-	"gorm.io/gorm/clause"
 )
 
 var defaultks = `
@@ -41,16 +41,16 @@ stampFile.write( time.asctime() )
 
 func Ks(c *gin.Context) {
 	var item models.Address
-	//host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
-	//if res := db.DB.Where("ip = ?", host).First(&item); res.Error != nil {
-	if res := db.DB.Preload(clause.Associations).First(&item); res.Error != nil {
+	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+	if res := db.DB.Where("ip = ?", host).First(&item); res.Error != nil {
+		//if res := db.DB.Preload(clause.Associations).First(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
 
 	spew.Dump(&item)
 
-	if reserved := db.DB.Model(&item).Where("ip = ?").Update("reserved", false); reserved.Error != nil {
+	if reserved := db.DB.Model(&item).Where("ip = ?", host).Update("reserved", false); reserved.Error != nil {
 		Error(c, http.StatusInternalServerError, reserved.Error) // 500
 		return
 	}
