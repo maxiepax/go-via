@@ -22,7 +22,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -93,7 +92,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			upperfile := strings.ToUpper(string(file))
 			filename = "tftp/" + dir + upperfile
 		}
-		spew.Dump(filename)
 	}
 
 	//chroot the rest
