@@ -27,7 +27,7 @@ rootpw {{ .model.Group.Password }}{{ end }}
 install --firstdisk --overwritevmfs
 
 # Set the network to static on the first network adapter
-network --bootproto=static --ip={{ .model.IP }} --gateway={{ .model.Pool.Gateway }} --netmask=255.255.255.0 --nameserver={{ .model.Group.DNS }} --hostname={{ .model.Hostname }} --device=vmnic0
+network --bootproto=static --ip={{ .model.IP }} --gateway={{ .model.Pool.Gateway }} --netmask={{ .netmask }} --nameserver={{ .model.Group.DNS }} --hostname={{ .model.Hostname }} --device=vmnic0
 
 %firstboot --interpreter=busybox
 
@@ -78,12 +78,13 @@ func Ks(c *gin.Context) {
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 	ntp := strings.Split(item.Group.NTP, ",")
-	netmask := net.CIDRMask(24, 32)
-	fmt.Println(ipv4MaskString(netmask))
+	netmask := net.CIDRMask(item.pool.netmask, 32)
+	netmask = ipv4MaskString(netmask)
 
 	data := map[string]interface{}{
-		"model": item,
-		"ntp":   ntp,
+		"model":   item,
+		"ntp":     ntp,
+		"netmask": netmask,
 	}
 
 	c.JSON(http.StatusOK, item) // 200
