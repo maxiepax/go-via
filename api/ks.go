@@ -46,7 +46,8 @@ restrict default nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
 driftfile /etc/ntp.drift
-{{ range .ntp }}server {{ . }}{{ end }}
+{{ range .ntp }}
+server {{ . }}{{ end }}
 __NTP_CONFIG__
  
 #enable ntpd
