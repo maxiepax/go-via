@@ -15,18 +15,12 @@ import (
 )
 
 var defaultks = `
-#
-# Sample scripted installation file
-#
-
 # Accept the VMware End User License Agreement
 vmaccepteula
 
 {{ if ne .model.Group.Password "" }}
 # Set the root password for the DCUI and Tech Support Mode
-rootpw {{ .model.Group.Password }}
-{{ end }}
-
+rootpw {{ .model.Group.Password }}{{ end }}
 
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
@@ -48,13 +42,14 @@ esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
 
 # NTP Configuration (thanks to http://www.virtuallyghetto.com)
 cat > /etc/ntp.conf << __NTP_CONFIG__
-restrict default kod nomodify notrap noquerynopeer
+restrict default nomodify notrap nopeer noquery
 restrict 127.0.0.1
-{{ range .ntp }}
-server {{ . }}
-{{ end }}
+restrict -6 ::1
+driftfile /etc/ntp.drift
+{{ range .ntp }}server {{ . }}{{ end }}
 __NTP_CONFIG__
  
+#enable ntpd
 /sbin/chkconfig ntpd on
 
 # A sample post-install script
