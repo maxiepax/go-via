@@ -10,6 +10,8 @@ import (
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
+	"strings"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var defaultks = `
