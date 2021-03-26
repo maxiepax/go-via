@@ -50,9 +50,9 @@ esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
 cat > /etc/ntp.conf << __NTP_CONFIG__
 restrict default kod nomodify notrap noquerynopeer
 restrict 127.0.0.1
-{{ range }}
-server 0.fr.pool.ntp.org
-server 1.fr.pool.ntp.org
+{{ range .ntp }}
+server {{ . }}
+{{ end }}
 __NTP_CONFIG__
  
 /sbin/chkconfig ntpd on
@@ -84,7 +84,7 @@ func Ks(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"model": item,
-		"other": ntp,
+		"ntp":   ntp,
 	}
 
 	c.JSON(http.StatusOK, item) // 200
