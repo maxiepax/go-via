@@ -35,10 +35,8 @@ network --bootproto=static --ip={{ .IP }} --gateway={{ .Pool.Gateway }} --netmas
 %firstboot --interpreter=busybox
 
 sleep 20
-esxcli network vswitch standard uplink add --uplink-name vmnic1 --vswitch-name vSwitch0
-esxcli network ip dns search add --domain=mydomain.com
+esxcli network ip dns search add --domain={{ .Domain }}
 esxcli network ip dns server add --server=192.168.1.1
-esxcli system maintenanceMode set -e true
 
 # enable & start remote ESXi Shell  (SSH)
 vim-cmd hostsvc/enable_ssh
@@ -78,6 +76,9 @@ func Ks(c *gin.Context) {
 	}
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
+
+	ntp[] := strings.Split(ntp, ",")
+	spew.Dump(ntp)
 
 	c.JSON(http.StatusOK, item) // 200
 
