@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"text/template"
 
+	"strings"
+
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
-	"strings"
-	"github.com/davecgh/go-spew/spew"
 )
 
 var defaultks = `
@@ -79,7 +80,7 @@ func Ks(c *gin.Context) {
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
-	[]ntp := strings.Split(ntp, ",")
+	ntp := strings.Split(ntp, ",")
 	spew.Dump(ntp)
 
 	c.JSON(http.StatusOK, item) // 200
