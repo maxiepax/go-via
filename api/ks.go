@@ -80,8 +80,7 @@ func Ks(c *gin.Context) {
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
-	ntp := *&item.Group.NTP
-	ntp = strings.Split(ntp, ",")
+	ntp := strings.Split(item.Group.NTP, ",")
 	spew.Dump(ntp)
 
 	c.JSON(http.StatusOK, item) // 200
