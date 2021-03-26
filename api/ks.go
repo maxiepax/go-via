@@ -30,7 +30,7 @@ rootpw {{ .Group.Password }}
 install --firstdisk --overwritevmfs
 
 # Set the network to static on the first network adapter
-network --bootproto=static --ip={{ .IP }} --gateway={{ .Pool.Gateway }} --netmask=255.255.255.0 --nameserver={{ .Pool.Dns }} --hostname={{ .Hostname }} --device=vmnic0
+network --bootproto=static --ip={{ .IP }} --gateway={{ .Pool.Gateway }} --netmask=255.255.255.0 --nameserver={{ .Pool.DNS }} --hostname={{ .Hostname }} --device=vmnic0
 
 %firstboot --interpreter=busybox
 
