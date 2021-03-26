@@ -78,8 +78,9 @@ func Ks(c *gin.Context) {
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 	ntp := strings.Split(item.Group.NTP, ",")
-	netmask := net.CIDRMask(item.Pool.Netmask, 32)
-	netmask = ipv4MaskString(netmask)
+
+	nm := net.CIDRMask(item.Pool.Netmask, 32)
+	netmask := ipv4MaskString(nm)
 
 	data := map[string]interface{}{
 		"model":   item,
