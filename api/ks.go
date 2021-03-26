@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"text/template"
@@ -77,6 +78,8 @@ func Ks(c *gin.Context) {
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 	ntp := strings.Split(item.Group.NTP, ",")
+	netmask := net.CIDRMask(24, 32)
+	fmt.Println(ipv4MaskString(netmask))
 
 	data := map[string]interface{}{
 		"model": item,
@@ -103,4 +106,12 @@ func Ks(c *gin.Context) {
 	}
 
 	logrus.Info("Served ks.cfg file")
+}
+
+func ipv4MaskString(m []byte) string {
+	if len(m) != 4 {
+		panic("ipv4Mask: len must be 4 bytes")
+	}
+
+	return fmt.Sprintf("%d.%d.%d.%d", m[0], m[1], m[2], m[3])
 }
