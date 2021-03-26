@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net"
 	"net/http"
 	"text/template"
 
@@ -28,8 +29,32 @@ rootpw {{ .Group.Password }}
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
 
-# Set the network to DHCP on the first network adapter
-network --bootproto=dhcp --device=vmnic0
+# Set the network to static on the first network adapter
+network --bootproto=static --ip={{ .Ip }} --gateway={{ .Pool.Gateway }} --netmask=255.255.255.0 --nameserver={{ .Pool.Dns }} --hostname={{ .Hostname }} --device=vmnic0
+
+%firstboot --interpreter=busybox
+
+sleep 20
+esxcli network vswitch standard uplink add --uplink-name vmnic1 --vswitch-name vSwitch0
+esxcli network ip dns search add --domain=mydomain.com
+esxcli network ip dns server add --server=192.168.1.1
+esxcli system maintenanceMode set -e true
+
+# enable & start remote ESXi Shell  (SSH)
+vim-cmd hostsvc/enable_ssh
+vim-cmd hostsvc/start_ssh
+#Suppress shell warning
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+
+# NTP Configuration (thanks to http://www.virtuallyghetto.com)
+cat > /etc/ntp.conf << __NTP_CONFIG__
+restrict default kod nomodify notrap noquerynopeer
+restrict 127.0.0.1
+server 0.fr.pool.ntp.org
+server 1.fr.pool.ntp.org
+__NTP_CONFIG__
+ 
+/sbin/chkconfig ntpd on
 
 # A sample post-install script
 %post --interpreter=python --ignorefailure=true
@@ -40,9 +65,9 @@ stampFile.write( time.asctime() )
 
 func Ks(c *gin.Context) {
 	var item models.Address
-	//host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
 	//if res := db.DB.Where("ip = ?", host).First(&item); res.Error != nil {
-	if res := db.DB.Preload(clause.Associations).First(&item); res.Error != nil {
+	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
