@@ -19,20 +19,20 @@ var defaultks = `
 # Accept the VMware End User License Agreement
 vmaccepteula
 
-{{ if ne .model.Group.Password "" }}
+{{ if ne .password "" }}
 # Set the root password for the DCUI and Tech Support Mode
-rootpw {{ .model.Group.Password }}{{ end }}
+rootpw {{ .password }}{{ end }}
 
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
 
 # Set the network to static on the first network adapter
-network --bootproto=static --ip={{ .model.IP }} --gateway={{ .model.Pool.Gateway }} --netmask={{ .netmask }} --nameserver={{ .model.Group.DNS }} --hostname={{ .model.Hostname }} --device=vmnic0
+network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
 
 %firstboot --interpreter=busybox
 
 sleep 20
-esxcli network ip dns search add --domain={{ .model.Domain }}
+esxcli network ip dns search add --domain={{ .domain }}
 esxcli network ip dns server add --server=192.168.1.1
 
 # enable & start remote ESXi Shell  (SSH)
@@ -77,15 +77,23 @@ func Ks(c *gin.Context) {
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
+	//split NTP from string to list.
 	ntp := strings.Split(item.Group.NTP, ",")
 
+	//convert netmask from bit to long format.
 	nm := net.CIDRMask(item.Pool.Netmask, 32)
 	netmask := ipv4MaskString(nm)
 
+	//cleanup data to allow easier custom templating
 	data := map[string]interface{}{
-		"model":   item,
-		"ntp":     ntp,
-		"netmask": netmask,
+		"password": item.Group.Password,
+		"ip":       item.IP,
+		"gateway":  item.Pool.Gateway,
+		"dns":      item.Group.DNS,
+		"hostname": item.Hostname,
+		"domain":   item.Domain,
+		"ntp":      ntp,
+		"netmask":  netmask,
 	}
 
 	c.JSON(http.StatusOK, item) // 200
