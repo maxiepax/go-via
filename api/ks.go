@@ -33,7 +33,6 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 
 sleep 20
 esxcli network ip dns search add --domain={{ .domain }}
-esxcli network ip dns server add --server=192.168.1.1
 
 # enable & start remote ESXi Shell  (SSH)
 vim-cmd hostsvc/enable_ssh
@@ -60,6 +59,8 @@ import time
 stampFile = open('/finished.stamp', mode='w')
 stampFile.write( time.asctime() )
 `
+
+//esxcli network ip dns server add --server=192.168.1.1
 
 func Ks(c *gin.Context) {
 	var item models.Address
