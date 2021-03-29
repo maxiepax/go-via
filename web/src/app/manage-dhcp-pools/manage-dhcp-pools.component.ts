@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 
 @Component({
   selector: 'app-manage-dhcp-pools',
@@ -17,8 +21,10 @@ export class ManageDhcpPoolsComponent implements OnInit {
   showPoolFormModal = false;
   editPoolFormModal = false;
 
-
-  constructor(private apiService: ApiService, private formBuilder: FormBuilder) {
+  constructor(
+    private apiService: ApiService,
+    private formBuilder: FormBuilder
+  ) {
     this.form = this.formBuilder.group({
       net_address: ['', [Validators.required]],
       netmask: ['', [Validators.required]],
@@ -26,7 +32,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       start_address: ['', [Validators.required]],
       end_address: ['', [Validators.required]],
       gateway: ['', [Validators.required]],
-      dns: ['', [Validators.required]],
+      dns: ['', [Validators.required]]
     });
   }
 
@@ -43,7 +49,10 @@ export class ManageDhcpPoolsComponent implements OnInit {
   editPool(id) {
     this.editPoolFormModal = true;
     this.pool = this.pools.find(pool => pool.id === id);
-    console.log(this.pool)
+    this.form.patchValue({
+      ...this.pool,
+      dns: (this.pool.dns || []).join(', ')
+    });
   }
 
   submit() {
@@ -51,16 +60,16 @@ export class ManageDhcpPoolsComponent implements OnInit {
       ...this.form.value,
       only_serve_reserved: true,
       lease_time: 7000,
-      dns: this.form.value.dns.split(','),
-    }
+      dns: this.form.value.dns.split(',').map(a => a.trim())
+    };
 
-    this.apiService.addPool(data).subscribe((data: any) => {
-      console.log(data);
-      if (data.error) {
-        this.errors = data.error;
+    this.apiService.addPool(data).subscribe((resp: any) => {
+      console.log(resp);
+      if (resp.error) {
+        this.errors = resp.error;
       }
-      if (data) {
-        this.pools.push(data);
+      if (resp) {
+        this.pools.push(resp);
         this.form.reset();
       }
     });
@@ -74,6 +83,23 @@ export class ManageDhcpPoolsComponent implements OnInit {
 
   updatePool() {
     console.log('test');
+    const data = {
+      ...this.form.value,
+      only_serve_reserved: true,
+      lease_time: 7000,
+      dns: this.form.value.dns.split(',').map(a => a.trim())
+    };
 
+    this.apiService.updatePool(this.pool.id, data).subscribe((resp: any) => {
+      console.log(resp);
+      if (resp.error) {
+        this.errors = resp.error;
+      }
+      if (resp) {
+        this.pools = this.pools.filter(item => item.id !== resp.id);
+        this.pools.push(resp);
+        this.editPoolFormModal = false;
+      }
+    });
   }
 }

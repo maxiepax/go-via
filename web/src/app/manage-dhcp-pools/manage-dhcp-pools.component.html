@@ -1,24 +1,26 @@
-<h3> Pools </h3>
-<p>Please configure an ip-scope that the VIA service will offer bare metal provisioning to</p>
+<h3>Pools</h3>
+<p>
+  Please configure an ip-scope that the VIA service will offer bare metal
+  provisioning to
+</p>
 <button class="btn btn-outline btn-sm" (click)="addPool()">Add Pool</button>
 
 <div class="alert alert-danger" role="alert" *ngIf="errors">
   <div class="alert-items">
-    <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+    <div class="alert-item static" *ngFor="let error of (errors | keyvalue)">
       <div class="alert-icon-wrapper">
         <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
       </div>
       <span class="alert-text">
-        {{error.value}}
+        {{ error.value }}
       </span>
     </div>
   </div>
 </div>
 
+<div *ngFor="let error of (errors | keyvalue)">{{ error.value }}</div>
 
-<div *ngFor="let error of errors | keyvalue"> {{error.value}} </div>
-
-<h3> DHCP Scopes </h3>
+<h3>DHCP Scopes</h3>
 <clr-datagrid>
   <clr-dg-column>Network</clr-dg-column>
   <clr-dg-column>Netmask</clr-dg-column>
@@ -28,14 +30,18 @@
   <clr-dg-column>action</clr-dg-column>
 
   <clr-dg-row *ngFor="let pool of pools">
-    <clr-dg-cell>{{pool.net_address}}</clr-dg-cell>
-    <clr-dg-cell>{{pool.netmask}}</clr-dg-cell>
-    <clr-dg-cell>{{pool.name}}</clr-dg-cell>
-    <clr-dg-cell>{{pool.start_address}}</clr-dg-cell>
-    <clr-dg-cell>{{pool.end_address}}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.net_address }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.netmask }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.name }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.start_address }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.end_address }}</clr-dg-cell>
     <clr-dg-cell>
-      <button class="btn btn-primary btn-sm" (click)="editPool(pool.id)">edit scope</button>
-      <button class="btn btn-warning-outline btn-sm" (click)="remove(pool.id)">remove</button>
+      <button class="btn btn-primary btn-sm" (click)="editPool(pool.id)">
+        edit scope
+      </button>
+      <button class="btn btn-warning-outline btn-sm" (click)="remove(pool.id)">
+        remove
+      </button>
     </clr-dg-cell>
   </clr-dg-row>
 </clr-datagrid>
@@ -49,7 +55,11 @@
           <label>Network/Mask</label>
           <cds-input style="max-width:84px">
             <label>Network</label>
-            <input placeholder="192.168.0.0" type="url" formControlName="net_address" />
+            <input
+              placeholder="192.168.0.0"
+              type="url"
+              formControlName="net_address"
+            />
           </cds-input>
           <cds-input style="max-width:18px">
             <label></label>
@@ -62,47 +72,83 @@
         </cds-input-group>
         <cds-input>
           <label>Network name</label>
-          <input placeholder="eg. mgmt network" type="text" formControlName="name" name="name" />
+          <input
+            placeholder="eg. mgmt network"
+            type="text"
+            formControlName="name"
+            name="name"
+          />
         </cds-input>
         <cds-input>
           <label>IP pool start</label>
-          <input placeholder="eg. 172.16.13.10" type="text" formControlName="start_address" name="start_address" />
+          <input
+            placeholder="eg. 172.16.13.10"
+            type="text"
+            formControlName="start_address"
+            name="start_address"
+          />
         </cds-input>
         <cds-input>
           <label>IP pool end</label>
-          <input placeholder="eg. 172.16.13.110" type="text" formControlName="end_address" name="end_address" />
+          <input
+            placeholder="eg. 172.16.13.110"
+            type="text"
+            formControlName="end_address"
+            name="end_address"
+          />
         </cds-input>
         <cds-input>
           <label>Gateway</label>
-          <input placeholder="eg. 172.16.13.1" type="text" formControlName="gateway" name="gateway" />
+          <input
+            placeholder="eg. 172.16.13.1"
+            type="text"
+            formControlName="gateway"
+            name="gateway"
+          />
         </cds-input>
         <cds-input>
           <label>DNS servers</label>
-          <input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns" />
+          <input
+            placeholder="eg. 172.16.0.2,172.16.0.3"
+            type="text"
+            formControlName="dns"
+            name="dns"
+          />
         </cds-input>
       </cds-form-group>
     </form>
     <div class="alert alert-danger" role="alert" *ngIf="errors">
       <div class="alert-items">
-        <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+        <div
+          class="alert-item static"
+          *ngFor="let error of (errors | keyvalue)"
+        >
           <div class="alert-icon-wrapper">
             <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
           </div>
           <span class="alert-text">
-            {{error.value}}
+            {{ error.value }}
           </span>
         </div>
       </div>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline" (click)="showPoolFormModal = false">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="submit()">Add</button>
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="showPoolFormModal = false"
+    >
+      Cancel
+    </button>
+    <button type="button" class="btn btn-primary" (click)="submit()">
+      Add
+    </button>
   </div>
 </clr-modal>
 
 <clr-modal [(clrModalOpen)]="editPoolFormModal">
-  <h3 class="modal-title">Add Pool</h3>
+  <h3 class="modal-title">Update Pool</h3>
   <div class="modal-body">
     <form [formGroup]="form" cds-layout="compact" (ngSubmit)="submit()">
       <cds-form-group control-width="shrink">
@@ -110,7 +156,7 @@
           <label>Network/Mask</label>
           <cds-input style="max-width:84px">
             <label>Network</label>
-            <input type="url" formControlName="net_address">
+            <input type="url" formControlName="net_address" />
           </cds-input>
           <cds-input style="max-width:18px">
             <label></label>
@@ -123,42 +169,77 @@
         </cds-input-group>
         <cds-input>
           <label>Network name</label>
-          <input placeholder="eg. mgmt network" type="text" formControlName="name" name="name" />
+          <input
+            placeholder="eg. mgmt network"
+            type="text"
+            formControlName="name"
+            name="name"
+          />
         </cds-input>
         <cds-input>
           <label>IP pool start</label>
-          <input placeholder="eg. 172.16.13.10" type="text" formControlName="start_address" name="start_address" />
+          <input
+            placeholder="eg. 172.16.13.10"
+            type="text"
+            formControlName="start_address"
+            name="start_address"
+          />
         </cds-input>
         <cds-input>
           <label>IP pool end</label>
-          <input placeholder="eg. 172.16.13.110" type="text" formControlName="end_address" name="end_address" />
+          <input
+            placeholder="eg. 172.16.13.110"
+            type="text"
+            formControlName="end_address"
+            name="end_address"
+          />
         </cds-input>
         <cds-input>
           <label>Gateway</label>
-          <input placeholder="eg. 172.16.13.1" type="text" formControlName="gateway" name="gateway" />
+          <input
+            placeholder="eg. 172.16.13.1"
+            type="text"
+            formControlName="gateway"
+            name="gateway"
+          />
         </cds-input>
         <cds-input>
           <label>DNS servers</label>
-          <input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns" />
+          <input
+            placeholder="eg. 172.16.0.2,172.16.0.3"
+            type="text"
+            formControlName="dns"
+            name="dns"
+          />
         </cds-input>
-        <button class="btn">Create</button>
       </cds-form-group>
     </form>
     <div class="alert alert-danger" role="alert" *ngIf="errors">
       <div class="alert-items">
-        <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+        <div
+          class="alert-item static"
+          *ngFor="let error of (errors | keyvalue)"
+        >
           <div class="alert-icon-wrapper">
             <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
           </div>
           <span class="alert-text">
-            {{error.value}}
+            {{ error.value }}
           </span>
         </div>
       </div>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline" (click)="editPoolFormModal = false">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="updatePool()">Add</button>
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="editPoolFormModal = false"
+    >
+      Cancel
+    </button>
+    <button type="button" class="btn btn-primary" (click)="updatePool()">
+      Update
+    </button>
   </div>
 </clr-modal>
