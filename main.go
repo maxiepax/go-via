@@ -1,5 +1,5 @@
 //go:generate bash -c "go get github.com/swaggo/swag/cmd/swag && swag init"
-//go:generate bash -c "cd web && rm -rf ./web/dist && npm install && npm run build && cd .. && statik -src ./web/dist -f"
+//go:generate bash -c "cd web && rm -rf ./web/dist && npm install && npm run build && cd .. && go get github.com/rakyll/statik && statik -src ./web/dist -f"
 
 package main
 
