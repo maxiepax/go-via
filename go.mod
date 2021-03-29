@@ -9,30 +9,23 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
-	github.com/gofrs/uuid v4.0.0+incompatible
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/google/gopacket v1.1.19
 	github.com/imdario/mergo v0.3.11
-	github.com/jinzhu/gorm v1.9.16
 	github.com/kdomanski/iso9660 v0.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
+	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065
-	github.com/pin/tftp v2.1.0+incompatible
-	github.com/qor/admin v0.0.0-20210219061928-a49ef5557414 // indirect
-	github.com/qor/media v0.0.0-20201118025607-96c1f2487abe
-	github.com/qor/qor v0.0.0-20200729071734-d587cffbbb93 // indirect
+	github.com/pin/tftp v0.0.0-20210325153949-b0a0cac76b6a
 	github.com/rakyll/statik v0.1.7
 	github.com/sirupsen/logrus v1.7.0
-	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
-	github.com/vmware/gotftp v0.0.0-20200204141237-25af2913ed8b
-	github.com/zwh8800/tftp v0.0.0-20160922062711-68d9246b9931
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.12
-	honnef.co/go/tools v0.1.1
 )
