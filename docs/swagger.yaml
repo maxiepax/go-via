@@ -13,10 +13,16 @@ definitions:
         type: string
       deleted_at:
         type: string
+      domain:
+        type: string
       expires_at:
         type: string
       first_seen:
         type: string
+      group:
+        $ref: '#/definitions/models.Group'
+      group_id:
+        type: integer
       hostname:
         type: string
       id:
@@ -45,6 +51,10 @@ definitions:
     type: object
   models.AddressForm:
     properties:
+      domain:
+        type: string
+      group_id:
+        type: integer
       hostname:
         type: string
       ip:
@@ -91,13 +101,25 @@ definitions:
       id:
         type: integer
       image_id:
+        type: integer
+      ks:
         type: string
       name:
         type: string
       ntp:
         type: string
+      option:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+      options:
+        type: object
       password:
         type: string
+      pool:
+        $ref: '#/definitions/models.Pool'
+      pool_id:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -106,12 +128,40 @@ definitions:
       dns:
         type: string
       image_id:
+        type: integer
+      ks:
         type: string
       name:
         type: string
       ntp:
         type: string
+      options:
+        type: object
       password:
+        type: string
+      pool_id:
+        type: integer
+    type: object
+  models.Image:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      iso_image:
+        type: string
+      path:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ImageForm:
+    properties:
+      iso_image:
+        type: string
+      path:
         type: string
     type: object
   models.Option:
@@ -172,6 +222,10 @@ definitions:
         type: string
       deleted_at:
         type: string
+      dns:
+        items:
+          type: string
+        type: array
       end_address:
         type: string
       gateway:
@@ -206,6 +260,10 @@ definitions:
     properties:
       authorized_vlan:
         type: integer
+      dns:
+        items:
+          type: string
+        type: array
       end_address:
         type: string
       gateway:
@@ -297,8 +355,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: ""
+        "204": {}
         "404":
           description: Not Found
           schema:
@@ -472,8 +529,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: ""
+        "204": {}
         "404":
           description: Not Found
           schema:
@@ -647,8 +703,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: ""
+        "204": {}
         "404":
           description: Not Found
           schema:
@@ -728,6 +783,147 @@ paths:
       summary: Update an existing group
       tags:
       - groups
+  /images:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Image'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get all images
+      tags:
+      - images
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add image
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Create a new image
+      tags:
+      - images
+  /images/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204": {}
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Remove an existing image
+      tags:
+      - images
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Get an existing image
+      tags:
+      - images
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update an image
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIError'
+      summary: Update an existing image
+      tags:
+      - images
   /options:
     get:
       consumes:
@@ -789,8 +985,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: ""
+        "204": {}
         "404":
           description: Not Found
           schema:
@@ -964,8 +1159,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: ""
+        "204": {}
         "404":
           description: Not Found
           schema:

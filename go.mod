@@ -3,7 +3,6 @@ module github.com/maxiepax/go-via
 go 1.15
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/camelcase v1.0.0 // indirect
@@ -22,6 +21,7 @@ require (
 	github.com/qor/admin v0.0.0-20210219061928-a49ef5557414 // indirect
 	github.com/qor/media v0.0.0-20201118025607-96c1f2487abe
 	github.com/qor/qor v0.0.0-20200729071734-d587cffbbb93 // indirect
+	github.com/rakyll/statik v0.1.7
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14

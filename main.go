@@ -1,15 +1,18 @@
 //go:generate bash -c "go get github.com/swaggo/swag/cmd/swag && swag init"
+//go:generate bash -c "cd web && rm -rf ./web/dist && npm install && npm run build && cd .. && statik -src ./web/dist -f"
 
 package main
 
 import (
 	"flag"
+	"net/http"
 	"strconv"
 
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/rakyll/statik/fs"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,6 +24,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/maxiepax/go-via/docs"
+	_ "github.com/maxiepax/go-via/statik"
 )
 
 var (
@@ -109,6 +113,21 @@ func main() {
 	r := gin.New()
 	r.Use(cors.Default())
 
+	statikFS, err := fs.New()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	r.NoRoute(func(c *gin.Context) {
+		c.Request.URL.Path = "/web/" // force us to always return index.html and not the requested page to be compatible with HTML5 routing
+		http.FileServer(statikFS).ServeHTTP(c.Writer, c.Request)
+	})
+	ui := r.Group("/")
+	{
+		ui.GET("/web/*all", gin.WrapH(http.FileServer(statikFS)))
+
+		ui.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
 	v1 := r.Group("/v1")
 	{
 		//v1.GET("log", logServer.Handle)
@@ -149,14 +168,14 @@ func main() {
 			options.DELETE(":id", api.DeleteOption)
 		}
 
-		device_class := v1.Group("/device_classes")
+		deviceClass := v1.Group("/device_classes")
 		{
-			device_class.GET("", api.ListDeviceClasses)
-			device_class.GET(":id", api.GetDeviceClass)
-			device_class.POST("/search", api.SearchDeviceClass)
-			device_class.POST("", api.CreateDeviceClass)
-			device_class.PATCH(":id", api.UpdateDeviceClass)
-			device_class.DELETE(":id", api.DeleteDeviceClass)
+			deviceClass.GET("", api.ListDeviceClasses)
+			deviceClass.GET(":id", api.GetDeviceClass)
+			deviceClass.POST("/search", api.SearchDeviceClass)
+			deviceClass.POST("", api.CreateDeviceClass)
+			deviceClass.PATCH(":id", api.UpdateDeviceClass)
+			deviceClass.DELETE(":id", api.DeleteDeviceClass)
 		}
 
 		groups := v1.Group("/groups")
@@ -172,13 +191,11 @@ func main() {
 		{
 			images.GET("", api.ListImages)
 			images.GET(":id", api.GetImage)
-			images.POST("", api.CreateImage)
+			images.POST("", api.CreateImage(conf))
 			images.PATCH(":id", api.UpdateImage)
 			images.DELETE(":id", api.DeleteImage)
 		}
 	}
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("ks.cfg", api.Ks)
 

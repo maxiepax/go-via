@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,11 +19,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
-	"github.com/koding/multiconfig"
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -87,193 +84,165 @@ func GetImage(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /images [post]
-func CreateImage(c *gin.Context) {
+func CreateImage(conf *config.Config) func(c *gin.Context) {
+	return func(c *gin.Context) {
 
-	f, err := c.MultipartForm()
-	if err != nil {
-		Error(c, http.StatusInternalServerError, err) // 500
-		return
-	}
-
-	files := f.File["file[]"]
-
-	for _, file := range files {
-
-		filename := file.Filename
-
-		item := models.Image{}
-		item.ISOImage = filepath.Base(file.Filename)
-		item.Path = path.Join(".", "tftp", filename)
-
-		os.MkdirAll(filepath.Dir(item.Path), os.ModePerm)
-
-		_, err = SaveUploadedFile(file, item.Path)
+		f, err := c.MultipartForm()
 		if err != nil {
 			Error(c, http.StatusInternalServerError, err) // 500
 			return
 		}
 
-		f, err := os.Open(item.Path)
-		if err != nil {
-			log.Fatalf("failed to open file: %s", err)
-		}
-		defer f.Close()
+		files := f.File["file[]"]
 
-		//strip the filextension, eg. vmware.iso = vmware
-		fn := strings.TrimSuffix(file.Filename, filepath.Ext(file.Filename))
-		//merge into filepath
-		fp := path.Join(".", "tftp", fn)
+		for _, file := range files {
 
-		if err = util.ExtractImageToDirectory(f, fp); err != nil {
-			log.Fatalf("failed to extract image: %s", err)
-		}
+			filename := file.Filename
 
-		//remove the file
-		err = os.Remove(item.Path)
-		if err != nil {
-			log.Fatal(err)
-		}
+			item := models.Image{}
+			item.ISOImage = filepath.Base(file.Filename)
+			item.Path = path.Join(".", "tftp", filename)
 
-		//update item.Path
-		item.Path = fp
+			os.MkdirAll(filepath.Dir(item.Path), os.ModePerm)
 
-		if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
-			fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
-			// Open original file
-			original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer original.Close()
-
-			// Create new file
-			new, err := os.Create(item.Path + "/MBOOT.EFI")
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer new.Close()
-
-			// Copy source to destination
-			_, err = io.Copy(new, original)
-			if err != nil {
-				log.Fatal(err)
-			}
-		} else {
-			fmt.Printf("Could not find BOOTX64.EFI\n")
-			Error(c, http.StatusInternalServerError, err) // 500
-		}
-
-		//update the prefix=
-
-		// read file into []byte
-		bc, err := ioutil.ReadFile(item.Path + "/BOOT.CFG")
-		if err != nil {
-			log.Fatal(err)
-		}
-		// convert []byte into string
-		sc := string(bc)
-
-		// replace prefix with prefix=foldername
-		rx := "prefix="
-		re := regexp.MustCompile(rx)
-		s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
-
-		// save string back to file
-		err = WriteToFile(item.Path+"/BOOT.CFG", s)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// read file into []byte
-		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
-		if err != nil {
-			log.Fatal(err)
-		}
-		// convert []byte into string
-		sc = string(bc)
-
-		// strip the leading / from all the modules
-		rx = "/"
-		re = regexp.MustCompile(rx)
-		s = re.ReplaceAllLiteralString(sc, "")
-
-		// save string back to file
-		err = WriteToFile(item.Path+"/BOOT.CFG", s)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		//update the kernelopt=
-
-		// read file into []byte
-		bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
-		if err != nil {
-			log.Fatal(err)
-		}
-		// convert []byte into string
-		sc = string(bc)
-
-		// replace prefix with prefix=foldername
-		rx = "kernelopt=.*"
-		re = regexp.MustCompile(rx)
-		o := re.FindString(sc)
-
-		// find out the ip of the interface specified
-		d := multiconfig.New()
-
-		conf := new(config.Config)
-
-		err = d.Load(conf)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"err": err,
-			}).Fatalf("failed to load config")
-		}
-
-		if conf.File != "" {
-			d = multiconfig.NewWithPath(conf.File)
-
-			err = d.Load(conf)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"err": err,
-				}).Fatalf("failed to load config")
-			}
-		}
-
-		err = d.Validate(conf)
-		if err != nil {
-			flag.Usage()
-			logrus.WithFields(logrus.Fields{
-				"err": err,
-			}).Fatalf("failed to load config")
-		}
-
-		addr, _ := GetInterfaceIpv4Addr(conf.Network.Interfaces[0])
-
-		s = re.ReplaceAllLiteralString(sc, o+" ks=http://"+addr+":8080/ks.cfg")
-
-		// save string back to file
-		err = WriteToFile(item.Path+"/BOOT.CFG", s)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		/*
-			mime, err := mimetype.DetectFile(item.StoragePath)
+			_, err = SaveUploadedFile(file, item.Path)
 			if err != nil {
 				Error(c, http.StatusInternalServerError, err) // 500
 				return
 			}
-			item.Type = mime.String()
-			item.Extension = mime.Extension()
-		*/
 
-		if result := db.DB.Table("images").Create(&item); result.Error != nil {
-			Error(c, http.StatusInternalServerError, result.Error) // 500
-			return
+			f, err := os.Open(item.Path)
+			if err != nil {
+				log.Fatalf("failed to open file: %s", err)
+			}
+			defer f.Close()
+
+			//strip the filextension, eg. vmware.iso = vmware
+			fn := strings.TrimSuffix(file.Filename, filepath.Ext(file.Filename))
+			//merge into filepath
+			fp := path.Join(".", "tftp", fn)
+
+			if err = util.ExtractImageToDirectory(f, fp); err != nil {
+				log.Fatalf("failed to extract image: %s", err)
+			}
+
+			//remove the file
+			err = os.Remove(item.Path)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			//update item.Path
+			item.Path = fp
+
+			if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
+				fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
+				// Open original file
+				original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer original.Close()
+
+				// Create new file
+				new, err := os.Create(item.Path + "/MBOOT.EFI")
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer new.Close()
+
+				// Copy source to destination
+				_, err = io.Copy(new, original)
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				fmt.Printf("Could not find BOOTX64.EFI\n")
+				Error(c, http.StatusInternalServerError, err) // 500
+			}
+
+			//update the prefix=
+
+			// read file into []byte
+			bc, err := ioutil.ReadFile(item.Path + "/BOOT.CFG")
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert []byte into string
+			sc := string(bc)
+
+			// replace prefix with prefix=foldername
+			rx := "prefix="
+			re := regexp.MustCompile(rx)
+			s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
+
+			// save string back to file
+			err = WriteToFile(item.Path+"/BOOT.CFG", s)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// read file into []byte
+			bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert []byte into string
+			sc = string(bc)
+
+			// strip the leading / from all the modules
+			rx = "/"
+			re = regexp.MustCompile(rx)
+			s = re.ReplaceAllLiteralString(sc, "")
+
+			// save string back to file
+			err = WriteToFile(item.Path+"/BOOT.CFG", s)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			//update the kernelopt=
+
+			// read file into []byte
+			bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert []byte into string
+			sc = string(bc)
+
+			// replace prefix with prefix=foldername
+			rx = "kernelopt=.*"
+			re = regexp.MustCompile(rx)
+			o := re.FindString(sc)
+
+			// find out the ip of the interface specified
+			addr, _ := GetInterfaceIpv4Addr(conf.Network.Interfaces[0])
+
+			s = re.ReplaceAllLiteralString(sc, o+" ks=http://"+addr+":8080/ks.cfg")
+
+			// save string back to file
+			err = WriteToFile(item.Path+"/BOOT.CFG", s)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			/*
+				mime, err := mimetype.DetectFile(item.StoragePath)
+				if err != nil {
+					Error(c, http.StatusInternalServerError, err) // 500
+					return
+				}
+				item.Type = mime.String()
+				item.Extension = mime.Extension()
+			*/
+
+			if result := db.DB.Table("images").Create(&item); result.Error != nil {
+				Error(c, http.StatusInternalServerError, result.Error) // 500
+				return
+			}
+			c.JSON(http.StatusOK, item) // 200
 		}
-		c.JSON(http.StatusOK, item) // 200
 	}
 }
 

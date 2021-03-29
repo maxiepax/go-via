@@ -14,11 +14,15 @@ limitations under the License.
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -61,6 +65,8 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 	// get the requesting ip-address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
+	laddr := rf.(tftp.RequestPacketInfo).LocalIP()
+
 	//strip the port
 	ip, _, _ := net.SplitHostPort(raddr.String())
 
@@ -83,7 +89,33 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
 		}).Info("tftpd")
-		filename = image.Path + "/BOOT.CFG"
+		//filename = image.Path + "/BOOT.CFG"
+
+		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// replace prefix with prefix=foldername
+		re := regexp.MustCompile("kernelopt=.*")
+		o := re.Find(bc)
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
+
+		// Make a buffer to read from
+		buff := bytes.NewBuffer(bc)
+
+		// Send the data from the buffer to the client
+		n, err := rf.ReadFrom(buff)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return err
+		}
+		logrus.WithFields(logrus.Fields{
+			"file":  filename,
+			"bytes": n,
+		}).Info("tftpd")
+
+		return nil
 	} else {
 		if _, err := os.Stat("tftp/" + filename); err == nil {
 			filename = "tftp/" + filename
