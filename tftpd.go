@@ -82,7 +82,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		// replace prefix with prefix=foldername
 		re := regexp.MustCompile("prefix=")
 		o := re.Find(bc)
-		bc = re.ReplaceAllLiteral(bc, append(o, []byte(image.Path)...))
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte("test")...))
 
 		spew.Dump(bc)
 
