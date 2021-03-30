@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net"
@@ -12,7 +11,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -134,100 +132,6 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 
 			//update item.Path
 			item.Path = fp
-
-			/*
-				if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
-					fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
-					// Open original file
-					original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer original.Close()
-
-					// Create new file
-					new, err := os.Create(item.Path + "/MBOOT.EFI")
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer new.Close()
-
-					// Copy source to destination
-					_, err = io.Copy(new, original)
-					if err != nil {
-						log.Fatal(err)
-					}
-				} else {
-					fmt.Printf("Could not find BOOTX64.EFI\n")
-					Error(c, http.StatusInternalServerError, err) // 500
-				}
-			*/
-
-			//update the prefix=
-
-			// read file into []byte
-			bc, err := ioutil.ReadFile(item.Path + "/BOOT.CFG")
-			if err != nil {
-				log.Fatal(err)
-			}
-			// convert []byte into string
-			sc := string(bc)
-
-			// replace prefix with prefix=foldername
-			rx := "prefix="
-			re := regexp.MustCompile(rx)
-			s := re.ReplaceAllLiteralString(sc, "prefix="+fn)
-
-			// save string back to file
-			err = WriteToFile(item.Path+"/BOOT.CFG", s)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// read file into []byte
-			bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
-			if err != nil {
-				log.Fatal(err)
-			}
-			// convert []byte into string
-			sc = string(bc)
-
-			// strip the leading / from all the modules
-			rx = "/"
-			re = regexp.MustCompile(rx)
-			s = re.ReplaceAllLiteralString(sc, "")
-
-			// save string back to file
-			err = WriteToFile(item.Path+"/BOOT.CFG", s)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			//update the kernelopt=
-
-			// read file into []byte
-			bc, err = ioutil.ReadFile(item.Path + "/BOOT.CFG")
-			if err != nil {
-				log.Fatal(err)
-			}
-			// convert []byte into string
-			sc = string(bc)
-
-			// replace prefix with prefix=foldername
-			rx = "kernelopt=.*"
-			re = regexp.MustCompile(rx)
-			o := re.FindString(sc)
-
-			// find out the ip of the interface specified
-			addr, _ := GetInterfaceIpv4Addr(conf.Network.Interfaces[0])
-
-			s = re.ReplaceAllLiteralString(sc, o+" ks=http://"+addr+":8080/ks.cfg")
-
-			// save string back to file
-			err = WriteToFile(item.Path+"/BOOT.CFG", s)
-			if err != nil {
-				log.Fatal(err)
-			}
 
 			/*
 				mime, err := mimetype.DetectFile(item.StoragePath)

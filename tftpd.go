@@ -59,7 +59,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		"filename":  filename,
 		"imageid":   image.ID,
 		"addressid": address.ID,
-	}).Info("tftpd")
+	}).Debug("tftpd")
 
 	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
@@ -77,7 +77,8 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
 		if err != nil {
-			log.Fatal(err)
+			log.Warn(err)
+			return err
 		}
 
 		// add kickstart path to kernelopt
@@ -98,8 +99,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
-
-		fmt.Print(buff)
 
 		// Send the data from the buffer to the client
 		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
@@ -124,7 +123,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	}
 
 	//chroot the rest
-
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
