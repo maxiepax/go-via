@@ -80,8 +80,8 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
 
 		// replace prefix with prefix=foldername
-		re := regexp.MustCompile("prefix=")
-		o := re.Find(bc)
+		re = regexp.MustCompile("prefix=")
+		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte("test")...))
 
 		spew.Dump(bc)
