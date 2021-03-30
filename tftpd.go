@@ -27,6 +27,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -71,6 +72,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		if err != nil {
 			log.Fatal(err)
 		}
+		spew.Dump(bc)
 
 		// replace prefix with prefix=foldername
 		re := regexp.MustCompile("kernelopt=.*")
@@ -90,7 +92,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			"file":  filename,
 			"bytes": n,
 		}).Info("tftpd")
-
+		spew.Dump()
 		return nil
 	} else {
 		if _, err := os.Stat("tftp/" + filename); err == nil {
