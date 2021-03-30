@@ -78,9 +78,10 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
 
 		// replace prefix with prefix=foldername
+		split := strings.Split(image.Path, "/")
 		re = regexp.MustCompile("prefix=")
 		o = re.Find(bc)
-		bc = re.ReplaceAllLiteral(bc, append(o, []byte(image.Path)...))
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
 
 		// strip slashes from paths in file
 		re = regexp.MustCompile("/")
