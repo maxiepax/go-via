@@ -27,7 +27,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -72,7 +71,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		if err != nil {
 			log.Fatal(err)
 		}
-		spew.Dump(bc)
 
 		// add kickstart path to kernelopt
 		re := regexp.MustCompile("kernelopt=.*")
@@ -89,13 +87,10 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte("")...))
 
-		spew.Dump(bc)
-
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
 
-		fmt.Println("buffer")
-		spew.Dump(buff)
+		fmt.Print(buff)
 
 		// Send the data from the buffer to the client
 		n, err := rf.ReadFrom(buff)
