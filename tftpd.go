@@ -79,8 +79,13 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		o := re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
 
+		spew.Dump(bc)
+
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
+
+		fmt.Println("buffer")
+		spew.Dump(buff)
 
 		// Send the data from the buffer to the client
 		n, err := rf.ReadFrom(buff)
@@ -92,7 +97,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			"file":  filename,
 			"bytes": n,
 		}).Info("tftpd")
-		spew.Dump()
 		return nil
 	} else {
 		if _, err := os.Stat("tftp/" + filename); err == nil {
