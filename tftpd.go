@@ -102,6 +102,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		fmt.Print(buff)
 
 		// Send the data from the buffer to the client
+		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
 		n, err := rf.ReadFrom(buff)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
