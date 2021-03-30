@@ -27,7 +27,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -36,32 +35,6 @@ import (
 	//"github.com/vmware/gotftp"
 	"github.com/pin/tftp"
 )
-
-/*
-type Handler struct {
-	Path string
-}
-
-func (h Handler) ReadFile(c gotftp.Conn, filename string) (gotftp.ReadCloser, error) {
-	log.Printf("Request from %s to read %s", c.RemoteAddr(), filename)
-	return os.OpenFile(path.Join(h.Path, filename), os.O_RDONLY, 0)
-}
-
-func (h Handler) WriteFile(c gotftp.Conn, filename string) (gotftp.WriteCloser, error) {
-	return nil, fmt.Errorf("not allowed")
-}
-
-func TFTPd() {
-	pwd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	pwd = pwd + "/tftp"
-
-	h := Handler{Path: pwd}
-	err = gotftp.ListenAndServe(h)
-	panic(err)
-}*/
 
 func readHandler(filename string, rf io.ReaderFrom) error {
 
@@ -85,10 +58,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
-		//filename = image.Path + "/EFI/BOOT/BOOTX64.EFI"
 		filename, _ = mbootPath(image.Path)
-		spew.Dump(filename)
 	} else if filename == "/boot.cfg" {
+		fmt.Println("requesting boot")
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
