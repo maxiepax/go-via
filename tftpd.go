@@ -53,6 +53,14 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	var image models.Image
 	db.DB.First(&image, "id = ?", address.Group.ImageID)
 
+	logrus.WithFields(logrus.Fields{
+		"raddr":     raddr,
+		"laddr":     laddr,
+		"filename":  filename,
+		"imageid":   image.ID,
+		"addressid": address.ID,
+	}).Info("tftpd")
+
 	//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
 	if filename == "mboot.efi" {
 		logrus.WithFields(logrus.Fields{
