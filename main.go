@@ -12,6 +12,7 @@ import (
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/websockets"
 	"github.com/rakyll/statik/fs"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -40,6 +41,9 @@ var (
 // @BasePath /v1
 
 func main() {
+
+	logServer := websockets.NewLogServer()
+	logrus.AddHook(logServer.Hook)
 
 	//setup logging
 	logrus.WithFields(logrus.Fields{
@@ -195,6 +199,8 @@ func main() {
 			images.PATCH(":id", api.UpdateImage)
 			images.DELETE(":id", api.DeleteImage)
 		}
+
+		v1.GET("log", logServer.Handle)
 	}
 
 	r.GET("ks.cfg", api.Ks)

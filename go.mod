@@ -28,4 +28,5 @@ require (
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.12
+	nhooyr.io/websocket v1.8.6
 )

@@ -20,6 +20,7 @@ import (
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -147,6 +148,11 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				Error(c, http.StatusInternalServerError, result.Error) // 500
 				return
 			}
+			logrus.WithFields(logrus.Fields{
+				"id":    item.ID,
+				"image": item.ISOImage,
+				"path":  item.Path,
+			}).Info("image")
 			c.JSON(http.StatusOK, item) // 200
 		}
 	}
