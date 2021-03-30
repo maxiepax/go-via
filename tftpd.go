@@ -180,7 +180,7 @@ func mbootPath(imagePath string) (string, error) {
 
 	for _, v := range paths {
 		if _, err := os.Stat(imagePath + v); err == nil {
-			return v + imagePath, nil
+			return imagePath + v, nil
 		}
 	}
 	//couldn't find the file
