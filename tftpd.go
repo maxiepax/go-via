@@ -25,7 +25,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -63,7 +65,7 @@ func TFTPd() {
 
 func readHandler(filename string, rf io.ReaderFrom) error {
 
-	// get the requesting ip-address
+	// get the requesting ip-address and our source address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
 	laddr := rf.(tftp.RequestPacketInfo).LocalIP()
 
@@ -83,7 +85,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
-		filename = image.Path + "/MBOOT.EFI"
+		//filename = image.Path + "/EFI/BOOT/BOOTX64.EFI"
+		filename, _ = mbootPath(image.Path)
+		spew.Dump(filename)
 	} else if filename == "/boot.cfg" {
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		logrus.WithFields(logrus.Fields{
@@ -155,4 +159,37 @@ func TFTPd() {
 		fmt.Fprintf(os.Stdout, "server: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+/*
+func modifyBootCfg(path string) bool {
+	//determine if the boot.cfg file is stored as lowercase or uppercase
+	if _, err := os.Stat(path); err == nil {
+		filename := "tftp/" + filename
+	} else {
+		dir, file := path.Split(filename)
+		upperfile := strings.ToUpper(string(file))
+		filename := "tftp/" + dir + upperfile
+	}
+}
+*/
+
+func mbootPath(imagePath string) (string, error) {
+	//check these paths if the file exists.
+	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
+
+	for _, v := range paths {
+		if _, err := os.Stat(imagePath + v); err == nil {
+			return v + imagePath, nil
+		}
+	}
+	//couldn't find the file
+	return "", fmt.Errorf("could not locate a mboot.efi")
+
+}
+
+func checkUpperLower(myfile string) bool {
+	rune := []rune(myfile)
+	res := unicode.IsLower(rune[0])
+	return res
 }

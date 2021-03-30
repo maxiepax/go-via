@@ -135,31 +135,33 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 			//update item.Path
 			item.Path = fp
 
-			if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
-				fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
-				// Open original file
-				original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
-				if err != nil {
-					log.Fatal(err)
-				}
-				defer original.Close()
+			/*
+				if _, err := os.Stat(item.Path + "/EFI/BOOT/BOOTX64.EFI"); err == nil {
+					fmt.Printf("Found BOOTX64.EFI moving to MBOOT.EFI\n")
+					// Open original file
+					original, err := os.Open(item.Path + "/EFI/BOOT/BOOTX64.EFI")
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer original.Close()
 
-				// Create new file
-				new, err := os.Create(item.Path + "/MBOOT.EFI")
-				if err != nil {
-					log.Fatal(err)
-				}
-				defer new.Close()
+					// Create new file
+					new, err := os.Create(item.Path + "/MBOOT.EFI")
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer new.Close()
 
-				// Copy source to destination
-				_, err = io.Copy(new, original)
-				if err != nil {
-					log.Fatal(err)
+					// Copy source to destination
+					_, err = io.Copy(new, original)
+					if err != nil {
+						log.Fatal(err)
+					}
+				} else {
+					fmt.Printf("Could not find BOOTX64.EFI\n")
+					Error(c, http.StatusInternalServerError, err) // 500
 				}
-			} else {
-				fmt.Printf("Could not find BOOTX64.EFI\n")
-				Error(c, http.StatusInternalServerError, err) // 500
-			}
+			*/
 
 			//update the prefix=
 
