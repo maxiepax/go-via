@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"os"
 	"path"
@@ -77,7 +76,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
 		if err != nil {
-			log.Warn(err)
+			logrus.Warn(err)
 			return err
 		}
 
