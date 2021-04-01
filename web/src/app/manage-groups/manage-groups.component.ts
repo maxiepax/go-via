@@ -80,6 +80,42 @@ export class ManageGroupsComponent implements OnInit {
     this.addGroupFormModal = true;
   }
 
+  submit_group() {
+    const data = {
+      ...this.Groupform.value,
+      image_id: parseInt(this.Groupform.value.image_id),
+      pool_id: parseInt(this.Groupform.value.pool_id),
+    }
+
+    this.apiService.addGroup(data).subscribe((data: any) => {
+      if (data.id) {
+        this.groups.push(data);
+        this.Groupform.reset();
+        this.addGroupFormModal = false;
+      }
+    }, (data: any) => {
+      if (data.status) {
+        this.errors = data.error;
+      } else {
+        this.errors = [data.message];
+      }
+
+    });
+
+  }
+
+  removeGroup(id) {
+    //check to see if group is empty
+    var grp = this.groups.find(group => group.id === id);
+    if (grp.hosts === undefined || grp.hosts.length == 0) {
+      this.apiService.deleteGroup(id).subscribe((data: any) => {
+        this.groups = this.groups.filter(group => group.id !== id);
+      });
+    } else {
+      this.errors = ["The group is not empty, please delete all the hosts in the group first."];
+    }
+  }
+
   editGroup(id) {
     this.editGroupFormModal = true;
     this.group = this.groups.find(group => group.id === id);
@@ -90,7 +126,6 @@ export class ManageGroupsComponent implements OnInit {
 
   updateGroup() {
     console.log('test');
-
     const data = {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
@@ -103,7 +138,7 @@ export class ManageGroupsComponent implements OnInit {
         this.errors = resp.error;
       }
       if (resp) {
-        this.groups = this.groups.filter(item => item.id !== resp.id);
+        //this.groups = this.groups.filter(item => item.id !== resp.id);
         this.groups.push(resp);
         this.editGroupFormModal = false;
       }
@@ -140,30 +175,6 @@ export class ManageGroupsComponent implements OnInit {
     });
   }
 
-  submit_group() {
-    const data = {
-      ...this.Groupform.value,
-      image_id: parseInt(this.Groupform.value.image_id),
-      pool_id: parseInt(this.Groupform.value.pool_id),
-    }
-
-    this.apiService.addGroup(data).subscribe((data: any) => {
-      if (data.id) {
-        this.groups.push(data);
-        this.Groupform.reset();
-        this.addGroupFormModal = false;
-      }
-    }, (data: any) => {
-      if (data.status) {
-        this.errors = data.error;
-      } else {
-        this.errors = [data.message];
-      }
-
-    });
-
-  }
-
   removeHost(id) {
     console.log(id);
     this.apiService.deleteHost(id).subscribe((data: any) => {
@@ -186,18 +197,5 @@ export class ManageGroupsComponent implements OnInit {
       console.log("Error", error);
       
     });
-  }
-  
-
-  removeGroup(id) {
-    //check to see if group is empty
-    var grp = this.groups.find(group => group.id === id);
-    if (grp.hosts === undefined || grp.hosts.length == 0) {
-      this.apiService.deleteGroup(id).subscribe((data: any) => {
-        this.groups = this.groups.filter(group => group.id !== id);
-      });
-    } else {
-      this.errors = ["The group is not empty, please delete all the hosts in the group first."];
-    }
   }
 }
