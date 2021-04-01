@@ -4,20 +4,20 @@
   <div class="col-8">
     <form class="clr-form clr-form-horizontal">
       <div class="clr-form-control">
-        <label for="example1" class="clr-control-label">MD5/SHA1/SHA256</label>
+        <label for="hash" class="clr-control-label">SHA256</label>
         <div class="clr-control-container">
           <div class="clr-input-wrapper">
             <input
               type="text"
-              id="example1"
-              placeholder="Checksum"
+              id="hash"
+              placeholder="Optional Checksum"
               class="clr-input"
             />
           </div>
         </div>
       </div>
       <div class="clr-form-control">
-        <label for="example2" class="clr-control-label">vSphere iso</label>
+        <label for="iso" class="clr-control-label">vSphere iso</label>
         <div class="clr-control-container">
           <div class="clr-input-wrapper">
             <input type="file" (change)="selectFile($event)" accept=".iso" />

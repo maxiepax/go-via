@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -113,6 +114,8 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 			if item.Hash == "" {
 				fmt.Println("no hash")
 			}
+
+			spew.Dump(item)
 
 			f, err := os.Open(item.Path)
 			if err != nil {
