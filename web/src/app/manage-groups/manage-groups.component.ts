@@ -90,6 +90,11 @@ export class ManageGroupsComponent implements OnInit {
 
   updateGroup() {
     console.log('test');
+
+    const data = {
+      ...this.form.value,
+    };
+
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
       if (resp.error) {
