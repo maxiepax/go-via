@@ -37,11 +37,11 @@
 		</clr-dg-row>
 	</clr-datagrid>
     <button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
-	<button class="btn btn-outline btn-sm">Edit Group</button>
+	<button class="btn btn-outline btn-sm" (click)="editGroup(group.id)">Edit Group</button>
     <button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
 </div>
 
-<clr-modal [(clrModalOpen)]="showHostFormModal">
+<clr-modal [(clrModalOpen)]="addHostFormModal">
 	<h3 class="modal-title">Add Host</h3>
 	<div class="modal-body">
 		<form clrForm [formGroup]="Hostform" (ngSubmit)="submit_host()">
@@ -74,12 +74,12 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-	  <button type="button" class="btn btn-outline" (click)="showHostFormModal = false">Cancel</button>
+	  <button type="button" class="btn btn-outline" (click)="addHostFormModal = false">Cancel</button>
 	  <button type="button" class="btn btn-primary" (click)="submit_host()">Add</button>
 	</div>
   </clr-modal>
 
-  <clr-modal [(clrModalOpen)]="showGroupFormModal">
+  <clr-modal [(clrModalOpen)]="addGroupFormModal">
 	<h3 class="modal-title">Add Group</h3>
 	<div class="modal-body">
 		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
@@ -128,7 +128,61 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-	  <button type="button" class="btn btn-outline" (click)="showGroupFormModal = false">Cancel</button>
+	  <button type="button" class="btn btn-outline" (click)="addGroupFormModal = false">Cancel</button>
 	  <button type="button" class="btn btn-primary" (click)="submit_group()">Add</button>
+	</div>
+  </clr-modal>
+
+  <clr-modal [(clrModalOpen)]="editGroupFormModal">
+	<h3 class="modal-title">Add Group</h3>
+	<div class="modal-body">
+		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
+			<cds-form-group control-width="shrink" layout="horizontal">
+				<cds-input>
+					<label>Group name</label>
+					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name"/>
+				</cds-input>
+				<cds-input>
+					<label>DNS</label>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns"/>
+				</cds-input>
+				<cds-input>
+					<label>NTP</label>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp"/>
+				</cds-input>
+				<cds-input>
+					<label>Password</label>
+					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password"/>
+				</cds-input>
+				<cds-select  control-width="shrink">
+					<label>Pool</label>
+					<select name="pool_id" formControlName="pool_id">
+						<option *ngFor="let pool of pools" [value]=pool.id >{{pool.name}}</option>
+					</select>
+			  </cds-select>
+				<cds-select  control-width="shrink">
+					<label>Image</label>
+					<select name="image_id" formControlName="image_id">
+						<option *ngFor="let image of images" [value]=image.id >{{image.iso_image}}</option>
+					</select>
+			  </cds-select>
+			</cds-form-group>
+		</form>
+		<div class="alert alert-danger" role="alert" *ngIf="errors">
+			<div class="alert-items">
+			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+				<div class="alert-icon-wrapper">
+				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+				</div>
+				<span class="alert-text">
+					{{error.value}}
+				</span>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+	  <button type="button" class="btn btn-outline" (click)="editGroupFormModal = false">Cancel</button>
+	  <button type="button" class="btn btn-primary" (click)="updateGroup()">Update</button>
 	</div>
   </clr-modal>

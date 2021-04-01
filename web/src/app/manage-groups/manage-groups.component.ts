@@ -35,8 +35,9 @@ export class ManageGroupsComponent implements OnInit {
   Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
-  showHostFormModal = false;
-  showGroupFormModal = false;
+  addHostFormModal = false;
+  addGroupFormModal = false;
+  editGroupFormModal = false;
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
@@ -75,11 +76,34 @@ export class ManageGroupsComponent implements OnInit {
   }
 
   addGroup() {
-    this.showGroupFormModal = true;
+    this.addGroupFormModal = true;
+  }
+
+  editGroup(id) {
+    this.editGroupFormModal = true;
+    this.group = this.groups.find(group => group.id === id);
+    this.form.patchValue({
+      ...this.group,
+    });
+  }
+
+  updateGroup() {
+    console.log('test');
+    this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
+      console.log(resp);
+      if (resp.error) {
+        this.errors = resp.error;
+      }
+      if (resp) {
+        this.groups = this.groups.filter(item => item.id !== resp.id);
+        this.groups.push(resp);
+        this.editGroupFormModal = false;
+      }
+    });
   }
 
   addHostToGroup(id) {
-    this.showHostFormModal = true;
+    this.addHostFormModal = true;
     this.groupid = id;
   }
 
@@ -97,7 +121,7 @@ export class ManageGroupsComponent implements OnInit {
       if (data.id) {
         this.groups.find(group => group.id === data.group_id).hosts.push(data)
         this.Hostform.reset();
-        this.showHostFormModal = false;
+        this.addHostFormModal = false;
       }
     }, (data: any) => {
       if (data.status) {
@@ -119,7 +143,7 @@ export class ManageGroupsComponent implements OnInit {
       if (data.id) {
         this.groups.push(data);
         this.Groupform.reset();
-        this.showGroupFormModal = false;
+        this.addGroupFormModal = false;
       }
     }, (data: any) => {
       if (data.status) {
