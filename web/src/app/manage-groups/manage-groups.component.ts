@@ -92,7 +92,7 @@ export class ManageGroupsComponent implements OnInit {
     console.log('test');
 
     const data = {
-      ...this.form.value,
+      ...this.Groupform.value,
     };
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
