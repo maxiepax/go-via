@@ -93,6 +93,8 @@ export class ManageGroupsComponent implements OnInit {
 
     const data = {
       ...this.Groupform.value,
+      image_id: parseInt(this.Groupform.value.image_id),
+      pool_id: parseInt(this.Groupform.value.pool_id),
     };
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
