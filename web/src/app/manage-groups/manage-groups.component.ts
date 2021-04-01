@@ -138,8 +138,6 @@ export class ManageGroupsComponent implements OnInit {
         this.errors = resp.error;
       }
       if (resp) {
-        //this.groups = this.groups.filter(item => item.id !== resp.id);
-        this.groups.push(resp);
         this.editGroupFormModal = false;
       }
     });
