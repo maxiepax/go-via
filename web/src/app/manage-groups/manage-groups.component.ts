@@ -31,6 +31,7 @@ export class ManageGroupsComponent implements OnInit {
   images;
   errors;
   groups;
+  group;
   pools;
   Hostform: FormGroup;
   Groupform: FormGroup;
