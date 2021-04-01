@@ -30,11 +30,11 @@
   <clr-dg-column>action</clr-dg-column>
 
   <clr-dg-row *ngFor="let pool of pools">
-    <clr-dg-cell>{{ pool.net_address }}</clr-dg-cell>
-    <clr-dg-cell>{{ pool.netmask }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.net_address }}/{{ pool.netmask }}</clr-dg-cell>
     <clr-dg-cell>{{ pool.name }}</clr-dg-cell>
     <clr-dg-cell>{{ pool.start_address }}</clr-dg-cell>
     <clr-dg-cell>{{ pool.end_address }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.gateway }}</clr-dg-cell>
     <clr-dg-cell>
       <button class="btn btn-primary btn-sm" (click)="editPool(pool.id)">
         edit scope
