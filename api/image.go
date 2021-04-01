@@ -110,6 +110,10 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				return
 			}
 
+			if item.Hash == "" {
+				fmt.Println("no hash")
+			}
+
 			f, err := os.Open(item.Path)
 			if err != nil {
 				log.Fatalf("failed to open file: %s", err)
