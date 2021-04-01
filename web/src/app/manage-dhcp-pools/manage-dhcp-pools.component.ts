@@ -32,7 +32,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       start_address: ['', [Validators.required]],
       end_address: ['', [Validators.required]],
       gateway: ['', [Validators.required]],
-      dns: ['', [Validators.required]]
+      //dns: ['', [Validators.required]]
     });
   }
 
@@ -52,7 +52,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
     this.pool = this.pools.find(pool => pool.id === id);
     this.form.patchValue({
       ...this.pool,
-      dns: (this.pool.dns || []).join(', ')
+      //dns: (this.pool.dns || []).join(', ')
     });
   }
 
@@ -61,7 +61,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       ...this.form.value,
       only_serve_reserved: true,
       lease_time: 7000,
-      dns: this.form.value.dns.split(',').map(a => a.trim())
+      //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
 
     this.apiService.addPool(data).subscribe((resp: any) => {
@@ -88,7 +88,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       ...this.form.value,
       only_serve_reserved: true,
       lease_time: 7000,
-      dns: this.form.value.dns.split(',').map(a => a.trim())
+      //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
 
     this.apiService.updatePool(this.pool.id, data).subscribe((resp: any) => {

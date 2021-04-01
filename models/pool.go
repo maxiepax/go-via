@@ -12,14 +12,14 @@ import (
 )
 
 type PoolForm struct {
-	Name              string   `json:"name" gorm:"type:varchar(255);not null" binding:"required" `
-	StartAddress      string   `json:"start_address" gorm:"type:varchar(15);not null" binding:"required" `
-	EndAddress        string   `json:"end_address" gorm:"type:varchar(15);not null" binding:"required" `
-	Netmask           int      `json:"netmask" gorm:"type:integer;not null" binding:"required" `
-	LeaseTime         int      `json:"lease_time" gorm:"type:bigint" binding:"required" `
-	Gateway           string   `json:"gateway" gorm:"type:varchar(15)" binding:"required" `
-	OnlyServeReserved bool     `json:"only_serve_reserved" gorm:"type:boolean"`
-	DNS               []string `json:"dns" gorm:"-" "type:varchar(255)`
+	Name              string `json:"name" gorm:"type:varchar(255);not null" binding:"required" `
+	StartAddress      string `json:"start_address" gorm:"type:varchar(15);not null" binding:"required" `
+	EndAddress        string `json:"end_address" gorm:"type:varchar(15);not null" binding:"required" `
+	Netmask           int    `json:"netmask" gorm:"type:integer;not null" binding:"required" `
+	LeaseTime         int    `json:"lease_time" gorm:"type:bigint" binding:"required" `
+	Gateway           string `json:"gateway" gorm:"type:varchar(15)" binding:"required" `
+	OnlyServeReserved bool   `json:"only_serve_reserved" gorm:"type:boolean"`
+	//DNS               []string `json:"dns" gorm:"-" "type:varchar(255)`
 
 	AuthorizedVlan int    `json:"authorized_vlan" gorm:"type:bigint"`
 	ManagedRef     string `json:"managed_reference"`
