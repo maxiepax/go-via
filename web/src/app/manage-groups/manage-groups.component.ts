@@ -83,7 +83,7 @@ export class ManageGroupsComponent implements OnInit {
   editGroup(id) {
     this.editGroupFormModal = true;
     this.group = this.groups.find(group => group.id === id);
-    this.form.patchValue({
+    this.Groupform.patchValue({
       ...this.group,
     });
   }
