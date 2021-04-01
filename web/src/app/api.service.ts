@@ -75,6 +75,13 @@ export class ApiService {
     );
   }
 
+  public updateGroup(id, data) {
+    return this.httpClient.patch(
+      `http://${window.location.hostname}:8080/v1/groups/${id}`,
+      data
+    );
+  }
+
   public deleteGroup(id) {
     return this.httpClient.delete(
       'http://' + window.location.hostname + `:8080/v1/groups/${id}`
