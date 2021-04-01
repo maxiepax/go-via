@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -128,20 +127,21 @@ func CreatePool(c *gin.Context) {
 		return
 	}
 
-	for i, value := range item.DNS {
-		var opt models.Option
-		opt.PoolID = item.ID
-		opt.OpCode = 6
-		opt.Data = value
-		opt.Priority = i + 1
+	/*
+		for i, value := range item.DNS {
+			var opt models.Option
+			opt.PoolID = item.ID
+			opt.OpCode = 6
+			opt.Data = value
+			opt.Priority = i + 1
 
-		if res := db.DB.Create(&opt); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
+			if res := db.DB.Create(&opt); res.Error != nil {
+				Error(c, http.StatusInternalServerError, res.Error) // 500
+				return
+			}
+			spew.Dump(opt.ID)
 		}
-		spew.Dump(opt.ID)
-	}
-
+	*/
 	c.JSON(http.StatusOK, item) // 200
 }
 
@@ -208,7 +208,7 @@ func GetPoolByRelay(c *gin.Context) {
 	}
 
 	// Load the item
-	
+
 	item, err := FindPool(relay)
 	if err != nil {
 		Error(c, http.StatusNotFound, fmt.Errorf("not found"))
@@ -216,15 +216,15 @@ func GetPoolByRelay(c *gin.Context) {
 	}
 
 	/*
-	var item models.Pool
-	if res := db.DB.Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", relay).First(&item); res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
-		} else {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
+		var item models.Pool
+		if res := db.DB.Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", relay).First(&item); res.Error != nil {
+			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+				Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+			} else {
+				Error(c, http.StatusInternalServerError, res.Error) // 500
+			}
+			return
 		}
-		return
-	}
 	*/
 
 	c.JSON(http.StatusOK, item) // 200
@@ -335,7 +335,7 @@ func FindPool(ip string) (*models.PoolWithAddresses, error) {
 			continue
 		}
 
-		if ipv4Net.IP.String() == v.NetAddress  {
+		if ipv4Net.IP.String() == v.NetAddress {
 			pool.Pool = v
 			break
 		}
