@@ -39,6 +39,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
   ngOnInit(): void {
     this.apiService.getPools().subscribe((data: any) => {
       this.pools = data;
+      console.log(this.pools);
     });
   }
 
