@@ -85,8 +85,11 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		o := re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
 
+		fmt.Println("split")
+		spew.Dump(image.Path)
 		// replace prefix with prefix=foldername
 		split := strings.Split(image.Path, "/")
+		spew.Dump(split)
 		re = regexp.MustCompile("prefix=")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
