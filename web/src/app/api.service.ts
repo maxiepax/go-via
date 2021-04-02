@@ -94,10 +94,11 @@ export class ApiService {
     );
   }
 
-  public addImage(file: File): Observable<HttpEvent<any>> {
+  public addImage(file: File, hash: string): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
 
     formData.append('file[]', file);
+    formData.append('hash', hash);
 
     const req = new HttpRequest(
       'POST',
