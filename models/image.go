@@ -7,7 +7,7 @@ import (
 type ImageForm struct {
 	ISOImage string `json:"iso_image" gorm:"type:varchar(255)"`
 	Path     string `json:"path" gorm:"type:varchar(255)"`
-	Hash     string `json:"hash" gorm:-"`
+	Hash     string `json:"hash" gorm:"-"`
 }
 
 type Image struct {
