@@ -84,20 +84,18 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		re := regexp.MustCompile("kernelopt=.*")
 		o := re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
-		spew.Dump(bc)
 
 		// replace prefix with prefix=foldername
 		split := strings.Split(image.Path, "/")
 		re = regexp.MustCompile("prefix=")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
-		spew.Dump(bc)
 
 		// strip slashes from paths in file
 		re = regexp.MustCompile("/")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte("")...))
-		spew.Dump(bc)
+		fmt.Println(bc)
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
