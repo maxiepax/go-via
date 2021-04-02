@@ -114,6 +114,8 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				return
 			}
 
+			spew.Dump(item)
+
 			if item.Hash == "" {
 				logrus.WithFields(logrus.Fields{
 					"Hash": item.Hash,
