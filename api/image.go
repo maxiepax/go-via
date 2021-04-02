@@ -113,6 +113,8 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 
 			if item.Hash == "" {
 				fmt.Println("no hash")
+			} else {
+				fmt.Println(item.Hash)
 			}
 
 			spew.Dump(item)
