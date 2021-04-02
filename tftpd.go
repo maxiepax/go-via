@@ -98,7 +98,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
-		spew.dump(buff)
+		spew.Dump(buff)
 		// Send the data from the buffer to the client
 		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
 		n, err := rf.ReadFrom(buff)
