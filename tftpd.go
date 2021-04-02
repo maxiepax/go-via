@@ -93,8 +93,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		// strip slashes from paths in file
 		re = regexp.MustCompile("/")
-		o = re.Find(bc)
-		bc = re.ReplaceAllLiteral(bc, append(o, []byte("")...))
+		bc = re.ReplaceAllLiteral(bc, []byte(""))
 		spew.Dump(bc)
 
 		// Make a buffer to read from
