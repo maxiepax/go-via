@@ -116,7 +116,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 
 			spew.Dump(item)
 
-			if item.Hash == "undefined" {
+			if item.Hash == "" {
 				logrus.WithFields(logrus.Fields{
 					"Hash": item.Hash,
 				}).Warning("Image uploaded with no hash, please consider using a hash to avoid image corruption")

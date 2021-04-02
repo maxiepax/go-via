@@ -98,7 +98,7 @@ export class ApiService {
     const formData: FormData = new FormData();
 
     formData.append('file[]', file);
-    formData.append('hash', hash);
+    formData.append('hash', hash || "");
 
     const req = new HttpRequest(
       'POST',
