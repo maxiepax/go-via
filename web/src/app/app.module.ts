@@ -15,6 +15,7 @@ import { ManageGroupsComponent } from './manage-groups/manage-groups.component';
 import { ManageImagesComponent } from './manage-images/manage-images.component';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +31,8 @@ import { ManageImagesComponent } from './manage-images/manage-images.component';
     CdsModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
