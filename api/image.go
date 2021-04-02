@@ -1,6 +1,7 @@
 package api
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -113,10 +114,34 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 			}
 
 			if item.Hash == "" {
-				fmt.Println("no hash")
+				logrus.WithFields(logrus.Fields{
+					"Hash": item.Hash,
+				}).Warning("Image uploaded with no hash, please consider using a hash to avoid image corruption")
 			} else {
-				fmt.Println("found hash")
-				fmt.Println(item.Hash)
+				logrus.WithFields(logrus.Fields{
+					"Hash": item.Hash,
+				}).Warning("Image uploaded with hash, comparing hash!")
+
+				f, err := os.Open(item.Path)
+				if err != nil {
+					logrus.Warning(err)
+				}
+				defer f.Close()
+
+				h := sha256.New()
+				if _, err := io.Copy(h, f); err != nil {
+					log.Fatal(err)
+				}
+
+				spew.Dump(h.Sum())
+
+				if h.Sum() != item.Hash {
+					err := fmt.Errorf("Hash was invalid")
+					Error(c, http.StatusBadRequest, err) // 400
+					os.Remove(item.Path)
+					return
+				}
+
 			}
 
 			spew.Dump(item)
