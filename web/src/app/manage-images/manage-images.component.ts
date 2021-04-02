@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
+
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -38,13 +38,13 @@ fileInfos?: Observable<any>;
 
   upload(): void {
     this.progress = 0;
-  
+  console.log(this.hash)
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
   
       if (file) {
         this.currentFile = file;
-  
+
         this.apiService.addImage(this.currentFile, this.hash).subscribe(
           (event: any) => {
             if (event.type === HttpEventType.UploadProgress) {
