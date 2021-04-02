@@ -102,6 +102,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 			item := models.Image{}
 			item.ISOImage = filepath.Base(file.Filename)
 			item.Path = path.Join(".", "tftp", filename)
+			item.Hash = c.PostForm("hash")
 
 			os.MkdirAll(filepath.Dir(item.Path), os.ModePerm)
 
