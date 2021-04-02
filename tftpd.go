@@ -68,7 +68,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		}).Info("tftpd")
 		filename, _ = mbootPath(image.Path)
 	} else if strings.ToLower(filename) == "/boot.cfg" {
-		fmt.Println("requesting boot")
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
@@ -99,7 +98,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
-
+		spew.dump(buff)
 		// Send the data from the buffer to the client
 		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
 		n, err := rf.ReadFrom(buff)
