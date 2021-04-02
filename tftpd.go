@@ -84,24 +84,23 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		re := regexp.MustCompile("kernelopt=.*")
 		o := re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
+		spew.Dump(bc)
 
-		fmt.Println("split")
-		spew.Dump(image.Path)
 		// replace prefix with prefix=foldername
 		split := strings.Split(image.Path, "/")
-		spew.Dump(split)
 		re = regexp.MustCompile("prefix=")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
+		spew.Dump(bc)
 
 		// strip slashes from paths in file
 		re = regexp.MustCompile("/")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte("")...))
+		spew.Dump(bc)
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
-		spew.Dump(buff)
 		// Send the data from the buffer to the client
 		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
 		n, err := rf.ReadFrom(buff)
