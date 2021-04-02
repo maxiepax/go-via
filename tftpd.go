@@ -26,7 +26,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -80,8 +79,12 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			return err
 		}
 
+		// strip slashes from paths in file
+		re := regexp.MustCompile("/")
+		bc = re.ReplaceAllLiteral(bc, []byte(""))
+
 		// add kickstart path to kernelopt
-		re := regexp.MustCompile("kernelopt=.*")
+		re = regexp.MustCompile("kernelopt=.*")
 		o := re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=http://"+laddr.String()+":8080/ks.cfg")...))
 
@@ -90,11 +93,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		re = regexp.MustCompile("prefix=")
 		o = re.Find(bc)
 		bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
-
-		// strip slashes from paths in file
-		re = regexp.MustCompile("/")
-		bc = re.ReplaceAllLiteral(bc, []byte(""))
-		spew.Dump(bc)
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
@@ -111,7 +109,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		}).Info("tftpd")
 		return nil
 	} else {
-		spew.Dump(filename)
 		if _, err := os.Stat("tftp/" + filename); err == nil {
 			filename = "tftp/" + filename
 		} else {
