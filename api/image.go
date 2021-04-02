@@ -135,7 +135,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 
 				spew.Dump(h.Sum(nil))
 
-				if h.Sum(nil) != item.Hash {
+				if string(h.Sum(nil)) != item.Hash {
 					err := fmt.Errorf("Hash was invalid")
 					Error(c, http.StatusBadRequest, err) // 400
 					os.Remove(item.Path)
