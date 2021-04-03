@@ -17,7 +17,7 @@ changelog:
     - '^docs:'
     - '^test:'
 goarch:
-      - amd64
+  - amd64
 dockers:
  - binaries:
     - go-via
