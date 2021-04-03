@@ -1,1 +1,18 @@
 <p>help works!</p>
+
+<h1> Howto use VIA </h1>
+
+<h3> Create a pool </h3>
+First, create a pool of ips. Hosts will be able to request these ips via DHCP when you allow them to be re-imaged. If a host is not set to be re-imaged, the DHCP server will refuse to hand out addresses.
+
+<h3> Upload a ESXi ISO Image </h3>
+Second step is to upload an ESXi ISO. No other operating systems are currently supported since a lot of background crunching is done to ensure that files are in the right place,and that the boot.cfg and ks.cfg files look correct. Custom ISOs however with custom drivers etc shouldn't be a problem as long as they look similar to official builds.
+
+<h3> Create a group </h3>
+The group you create will have all the common configuration parameters for your hosts. e.g. ntp, dns, initial deployment password, ks config etc.
+When you've created a group, start adding hosts to it.
+If you want to change something in the future, it's now very easy to just change this on the group level, instead of having to modify every single host.
+
+<h3> Start imaging </h3>
+To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to perform a fully unattended deployment.
+When the host has been fully imaged, the DHCP server will set the host object to not be imaged again, this ensures that you dont accidentally re-image your hosts, or get stuck in an image loop.
