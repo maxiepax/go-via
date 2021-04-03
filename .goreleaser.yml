@@ -6,7 +6,6 @@ before:
 builds:
 - env:
   - CGO_ENABLED=1
-  - CC=aarch64-linux-gnu-gcc
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -17,6 +16,8 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+goarch:
+      - amd64
 dockers:
  - binaries:
     - go-via
