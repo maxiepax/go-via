@@ -41,3 +41,23 @@ To delete a group, first remove all the hosts in the group.
 
 <h3> Deleting hosts </h3>
 To remove a host, simply click remove next to the host and it will be removed.
+
+<h1> Other </h1>
+
+<h3> Starting over </h3> 
+To start over, simply remove the sqlite-database.db file, when you start the application it will detect if the database is present, if it's not it will create it.
+
+<h3> configuration file </h3>
+You can select what interface to listen to in the configuration file.
+e.g
+{
+    "network": {
+        "interfaces": ["en0"]
+    }
+}
+
+<h3> custom kickstart file </h3>
+this is being worked on, you will be able to override kickstart at the levels of: Group -> Host
+
+<h3> HTTP-REST </h3>
+Everything is called via HTTP-REST, for documentation go to /swagger
