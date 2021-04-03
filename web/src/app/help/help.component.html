@@ -1,5 +1,7 @@
 <h1> Howto use VIA </h1>
 
+<h2> Creating </h2>
+
 <h3> Create a pool </h3>
 First, create a pool of ips. Hosts will be able to request these ips via DHCP when you allow them to be re-imaged. If a host is not set to be re-imaged, the DHCP server will refuse to hand out addresses.
 
@@ -14,3 +16,28 @@ If you want to change something in the future, it's now very easy to just change
 <h3> Start imaging </h3>
 To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to perform a fully unattended deployment.
 When the host has been fully imaged, the DHCP server will set the host object to not be imaged again, this ensures that you dont accidentally re-image your hosts, or get stuck in an image loop.
+
+<h2> Editing </h2>
+
+<h3> Edit a pool </h3>
+To edit a pool, simply click Edit Scope next to the scope you wish to edit.
+
+<h3> Edit a Group </h3>
+To edit a group, click Edit Group below the group.
+
+<h3> Editing a host </h3>
+Editing a host doesn't make sense, just delete it and re-create it.
+
+<h2> Deleting </h2>
+
+<h3> Deleting pools </h3>
+To delete a pool, ensure that no groups or hosts are using the pool first
+
+<h3> Deleting Images </h3>
+To delete an image, edit each group and select another image first, when no groups are using the image you can remove the image.
+
+<h3> Deleting Groups </h3>
+To delete a group, first remove all the hosts in the group.
+
+<h3> Deleting hosts </h3>
+To remove a host, simply click remove next to the host and it will be removed.
