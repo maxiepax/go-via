@@ -4,9 +4,8 @@ before:
     - go get -u github.com/swaggo/swag/cmd/swag
     - go generate ./...
 builds:
-
   - env:
-    - CGO_ENABLED=1
+  - CGO_ENABLED=1
   checksum:
     name_template: 'checksums.txt'
   snapshot:
