@@ -6,7 +6,7 @@ before:
 builds:
   - env: [CGO_ENABLED=1]
     goarch:
-      - amd64
+    - amd64
   checksum:
     name_template: 'checksums.txt'
   snapshot:
