@@ -4,6 +4,8 @@ before:
     - go get -u github.com/swaggo/swag/cmd/swag
     - go generate ./...
 builds:
+goarch:
+  - amd64
 - env:
   - CGO_ENABLED=1
 checksum:
@@ -16,8 +18,7 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-goarch:
-  - amd64
+
 dockers:
  - binaries:
     - go-via
