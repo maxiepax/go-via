@@ -4,20 +4,24 @@ before:
     - go get -u github.com/swaggo/swag/cmd/swag
     - go generate ./...
 builds:
-  - env: [CGO_ENABLED=1]
-    goarch:
+- env:
+    - CGO_ENABLED=0
+  goos:
+    - linux
+    - darwin
+  goarch:
+    - 386
     - amd64
-  checksum:
-    name_template: 'checksums.txt'
-  snapshot:
-    name_template: "{{ .Tag }}-next"
-  changelog:
-    sort: asc
-    filters:
-      exclude:
-      - '^docs:'
-      - '^test:'
-
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
 dockers:
  - binaries:
     - go-via
