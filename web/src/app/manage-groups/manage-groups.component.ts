@@ -160,7 +160,8 @@ export class ManageGroupsComponent implements OnInit {
     this.apiService.addHost(data).subscribe((data: any) => {
 
       if (data.id) {
-        this.groups.find(group => group.id === data.group_id).hosts.push(data)
+        const g = this.groups.find(group => group.id === data.group_id)
+        g.hosts = [...(g.hosts || []) ,data]
         this.Hostform.reset();
         this.addHostFormModal = false;
       }
