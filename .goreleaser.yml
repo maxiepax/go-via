@@ -21,7 +21,7 @@ changelog:
     - '^docs:'
     - '^test:'
 dockers:
- - binaries:
+ - ids:
     - go-via
    image_templates:
     - "docker.io/maxiepax/go-via:latest"
