@@ -147,6 +147,8 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 
 	AddOptions(req, resp, *pool, lease, ip)
 
+	//req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAddresses, lease *models.Address, ip net.IP
+
 	return resp, nil
 }
 
@@ -447,6 +449,8 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 		byte(layers.DHCPOptT2),
 		byte(layers.DHCPOptLeaseTime),
 		byte(layers.DHCPOptServerID),
+		byte(66),
+		byte(67),
 	}
 	for _, v := range defaultOptions {
 		if _, ok := requestedOptions[v]; !ok {
@@ -481,6 +485,10 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 		// Try to generate the missing option
 		code := layers.DHCPOpt(opCode)
 		switch code {
+		case 66:
+			resp.Options = append(resp.Options, layers.NewDHCPOption(code, ip.To4()))
+		case 67:
+			resp.Options = append(resp.Options, layers.NewDHCPOption(code, []byte("mboot.efi")))
 		case layers.DHCPOptSubnetMask:
 			resp.Options = append(resp.Options, layers.NewDHCPOption(code, net.CIDRMask(pool.Netmask, 32)))
 		case layers.DHCPOptClasslessStaticRoute:
