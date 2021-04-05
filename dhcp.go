@@ -124,7 +124,7 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 
 	// Dont answer pools with "only serve requested" flag set
 	if pool.OnlyServeReserved && (lease == nil || !lease.Reserved) {
-		return nil, fmt.Errorf("ignored because mac address is missing from reserved addresses")
+		return nil, fmt.Errorf("ignored because mac address is not flagged for re-imaging")
 	}
 
 	if leaseIP == nil {
