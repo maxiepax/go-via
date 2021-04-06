@@ -26,6 +26,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -111,10 +112,14 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 	} else {
 		if _, err := os.Stat("tftp/" + filename); err == nil {
 			filename = "tftp/" + filename
+			fmt.Println("found file with lowercase")
+			spew.Dump(filename)
 		} else {
 			dir, file := path.Split(filename)
 			upperfile := strings.ToUpper(string(file))
 			filename = "tftp/" + dir + upperfile
+			fmt.Println("found file with uppercase")
+			spew.Dump(filename)
 		}
 	}
 
