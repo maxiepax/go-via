@@ -104,6 +104,8 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			return err
 		}
+
+		spew.Dump(buff)
 		logrus.WithFields(logrus.Fields{
 			"file":  filename,
 			"bytes": n,
