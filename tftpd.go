@@ -67,12 +67,11 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
 		filename, _ = mbootPath(image.Path)
-	} else if strings.ToLower(filename) == "/boot.cfg" {
+	} else if strings.ToLower(filename) == "boot.cfg" {
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
 		}).Info("tftpd")
-		//filename = image.Path + "/BOOT.CFG"
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
 		if err != nil {
@@ -169,6 +168,20 @@ func modifyBootCfg(path string) bool {
 */
 
 func mbootPath(imagePath string) (string, error) {
+	//check these paths if the file exists.
+	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
+
+	for _, v := range paths {
+		if _, err := os.Stat(imagePath + v); err == nil {
+			return imagePath + v, nil
+		}
+	}
+	//couldn't find the file
+	return "", fmt.Errorf("could not locate a mboot.efi")
+
+}
+
+func bootCfg(boot string) (string, error) {
 	//check these paths if the file exists.
 	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
 

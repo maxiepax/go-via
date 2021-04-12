@@ -10,6 +10,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -155,6 +156,15 @@ func CreateAddress(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, item) // 200
+
+	logrus.WithFields(logrus.Fields{
+		"Hostname": item.Hostname,
+		"Domain":   item.Domain,
+		"IP":       item.IP,
+		"MAC":      item.Mac,
+		"Pool ID":  item.PoolID,
+		"Group ID": item.GroupID,
+	}).Debug("host")
 }
 
 // UpdateAddress Update an existing address

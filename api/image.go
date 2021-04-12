@@ -16,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -114,8 +113,6 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				return
 			}
 
-			spew.Dump(item)
-
 			if item.Hash == "" {
 				logrus.WithFields(logrus.Fields{
 					"Hash": item.Hash,
@@ -136,8 +133,6 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 					log.Fatal(err)
 				}
 
-				spew.Dump(h.Sum(nil))
-
 				if hex.EncodeToString(h.Sum(nil)) != item.Hash {
 					err := fmt.Errorf("Hash was invalid")
 					Error(c, http.StatusBadRequest, err) // 400
@@ -146,8 +141,6 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				}
 
 			}
-
-			spew.Dump(item)
 
 			f, err := os.Open(item.Path)
 			if err != nil {

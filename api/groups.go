@@ -10,6 +10,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -94,6 +95,14 @@ func CreateGroup(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, item) // 200
+
+	logrus.WithFields(logrus.Fields{
+		"Name":     item.Name,
+		"DNS":      item.DNS,
+		"NTP":      item.NTP,
+		"Image ID": item.ImageID,
+		"Pool ID":  item.PoolID,
+	}).Debug("group")
 }
 
 // UpdateGroup Update an existing group
