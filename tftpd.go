@@ -24,7 +24,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
@@ -68,7 +67,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		}).Info("tftpd")
 		filename, _ = mbootPath(image.Path)
 	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
-		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
+		//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
 		}).Info("tftpd")
@@ -104,13 +103,13 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			return err
 		}
 
-		spew.Dump(buff)
 		logrus.WithFields(logrus.Fields{
 			"file":  filename,
 			"bytes": n,
 		}).Info("tftpd")
 		return nil
 	} else {
+		//chroot the rest
 		if _, err := os.Stat("tftp/" + filename); err == nil {
 			filename = "tftp/" + filename
 			fmt.Println("found file with lowercase")
@@ -124,7 +123,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		}
 	}
 
-	//chroot the rest
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -154,19 +152,6 @@ func TFTPd() {
 	}
 }
 
-/*
-func modifyBootCfg(path string) bool {
-	//determine if the boot.cfg file is stored as lowercase or uppercase
-	if _, err := os.Stat(path); err == nil {
-		filename := "tftp/" + filename
-	} else {
-		dir, file := path.Split(filename)
-		upperfile := strings.ToUpper(string(file))
-		filename := "tftp/" + dir + upperfile
-	}
-}
-*/
-
 func mbootPath(imagePath string) (string, error) {
 	//check these paths if the file exists.
 	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
@@ -179,10 +164,4 @@ func mbootPath(imagePath string) (string, error) {
 	//couldn't find the file
 	return "", fmt.Errorf("could not locate a mboot.efi")
 
-}
-
-func checkUpperLower(myfile string) bool {
-	rune := []rune(myfile)
-	res := unicode.IsLower(rune[0])
-	return res
 }
