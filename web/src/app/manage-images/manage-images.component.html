@@ -40,6 +40,11 @@
   </div>
 </div>
 
+<div class="progress-static labeled">
+  <div class="progress-meter" data-value="{{ progress }}"" data-displayval="{{ progress }}"></div>
+  <span>{{ progress }}</span>
+</div>
+
 <div *ngIf="currentFile" class="progress my-3">
   <div
     class="progress-bar progress-bar-info progress-bar-striped"
