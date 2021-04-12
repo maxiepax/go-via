@@ -51,7 +51,7 @@ Workaround: It does initiate the host to be re-imaged, if you open the developer
 Todo
 -----
 
-- [] Fix progress bar when re-imaging hosts
+- [x] Fix progress bar when re-imaging hosts
 - [] Fix re-image button so that it shows disabled once re-image has been initiated
 - [] Fix log interface in UI so that logs can be viewed live
 - [] Add on/off options to parts of default ks.cfg
