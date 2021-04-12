@@ -56,6 +56,8 @@ __NTP_CONFIG__
 #enable ntpd
 /sbin/chkconfig ntpd on
 
+reboot
+
 # A sample post-install script
 #%post --interpreter=python --ignorefailure=true
 #import time
