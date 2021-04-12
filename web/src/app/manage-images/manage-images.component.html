@@ -40,9 +40,8 @@
   </div>
 </div>
 
-<div class="progress-static labeled">
-  <div class="progress-meter" data-value="{{ progress }}" data-displayval="{{ progress }}"></div>
-  <span>{{ progress }}</span>
+<div class="progress top">
+  <progress value="{{ progress }}" max="100"></progress>
 </div>
 
 <div *ngIf="currentFile" class="progress my-3">
