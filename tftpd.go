@@ -67,7 +67,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
 		filename, _ = mbootPath(image.Path)
-	} else if strings.ToLower(filename) == "boot.cfg" {
+	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
 		//if the filename is boot.cfg, we serve the boot cfg that belongs to that build.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
