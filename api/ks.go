@@ -23,8 +23,11 @@ vmaccepteula
 # Set the root password for the DCUI and Tech Support Mode
 rootpw {{ .password }}{{ end }}
 
+# Remove ALL partitions
+clearpart --alldrives
+
 # Install on the first local disk available on machine
-install --firstdisk --overwritevmfs --alldrives
+install --firstdisk --overwritevmfs
 
 # Set the network to static on the first network adapter
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
