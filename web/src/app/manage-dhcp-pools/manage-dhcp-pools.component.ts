@@ -74,6 +74,8 @@ export class ManageDhcpPoolsComponent implements OnInit {
         this.form.reset();
       }
     });
+
+    this.showPoolFormModal = false;
   }
 
   remove(id) {
