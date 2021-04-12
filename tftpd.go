@@ -181,20 +181,6 @@ func mbootPath(imagePath string) (string, error) {
 
 }
 
-func bootCfg(boot string) (string, error) {
-	//check these paths if the file exists.
-	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
-
-	for _, v := range paths {
-		if _, err := os.Stat(imagePath + v); err == nil {
-			return imagePath + v, nil
-		}
-	}
-	//couldn't find the file
-	return "", fmt.Errorf("could not locate a mboot.efi")
-
-}
-
 func checkUpperLower(myfile string) bool {
 	rune := []rune(myfile)
 	res := unicode.IsLower(rune[0])
