@@ -24,12 +24,12 @@ vmaccepteula
 rootpw {{ .password }}{{ end }}
 
 # Install on the first local disk available on machine
-install --firstdisk --overwritevmfs
+install --firstdisk --overwritevmfs --alldrives
 
 # Set the network to static on the first network adapter
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
 
-%firstboot --interpreter=busybox
+%post --interpreter=busybox
 
 sleep 20
 esxcli network ip dns search add --domain={{ .domain }}
@@ -54,11 +54,11 @@ __NTP_CONFIG__
 /sbin/chkconfig ntpd on
 
 # A sample post-install script
-%post --interpreter=python --ignorefailure=true
-import time
-stampFile = open('/finished.stamp', mode='w')
-stampFile.write( time.asctime() )
-`
+#%post --interpreter=python --ignorefailure=true
+#import time
+#stampFile = open('/finished.stamp', mode='w')
+#stampFile.write( time.asctime() )
+#`
 
 //esxcli network ip dns server add --server=192.168.1.1
 
