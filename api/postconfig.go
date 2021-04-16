@@ -17,6 +17,7 @@ import (
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/find"
 	"github.com/vmware/govmomi/govc/host/esxcli"
+	"github.com/vmware/govmomi/vim25/types"
 	"gorm.io/gorm/clause"
 )
 
@@ -102,14 +103,57 @@ func ProvisioningWorker(item models.Address) {
 			log.Fatal(err)
 		}
 		logrus.WithFields(logrus.Fields{
-			"ntpd": "enabled",
+			"ntpd": "Service enabled",
+		}).Info(item.IP)
+
+		s, err := host.ConfigManager().ServiceSystem(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
+		if err != nil {
+			log.Fatal(err)
+		}
+		logrus.WithFields(logrus.Fields{
+			"ntpd": "Startup Policy -> Start and stop with host",
+		}).Info(item.IP)
+
+		err = s.Start(ctx, "ntpd")
+		if err != nil {
+			log.Fatal(err)
+		}
+		logrus.WithFields(logrus.Fields{
+			"ntpd": "Service started",
+		}).Info(item.IP)
+	}
+
+	if options.SSH {
+		s, err := host.ConfigManager().ServiceSystem(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
+		if err != nil {
+			log.Fatal(err)
+		}
+		logrus.WithFields(logrus.Fields{
+			"ssh": "Startup Policy -> Start and stop with host",
+		}).Info(item.IP)
+
+		err = s.Start(ctx, "TSM-SSH")
+		if err != nil {
+			log.Fatal(err)
+		}
+		logrus.WithFields(logrus.Fields{
+			"ssh": "Service started",
 		}).Info(item.IP)
 	}
 
 	if options.SuppressShellWarning {
 		//Suppress any warnings that ESXi Console or SSH are enabled
 		cmd := strings.Fields("system settings advanced set -o /UserVars/SuppressShellWarning -i 1")
-		spew.Dump(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
 			log.Fatal(err)

@@ -34,5 +34,6 @@ type Group struct {
 type GroupOptions struct {
 	Domain               bool `json:"domain"`
 	NTP                  bool `json:"ntp"`
+	SSH                  bool `json:"ssh"`
 	SuppressShellWarning bool `json:"suppressshellwarning"`
 }
