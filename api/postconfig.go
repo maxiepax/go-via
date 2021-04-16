@@ -3,11 +3,13 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
@@ -56,20 +58,43 @@ func ProvisioningWorker(item models.Address) {
 		User:   url.UserPassword("root", "VMware1!"), //todo
 	}
 
+	// check if the API is available, the builtin connection timeout is 30 seconds, retrying 120 times means we wait 60 minutes before finally giving up.
+	err := retry(120, 1*time.Second, func() (err error) {
+		test_ctx := context.Background()
+		_, err = govmomi.NewClient(test_ctx, url, true)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": "still running",
+			}).Info(item.IP)
+		}
+		return
+	})
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info(item.IP)
+	}
+
 	ctx := context.Background()
 	c, err := govmomi.NewClient(ctx, url, true)
 	if err != nil {
-		log.Fatal(err)
+		logrus.WithFields(logrus.Fields{
+			"Postconfig": err,
+		}).Info(item.IP)
 	}
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
 	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
 	if err != nil {
-		log.Fatal(err)
+		logrus.WithFields(logrus.Fields{
+			"Postconfig": err,
+		}).Info(item.IP)
 	}
 	e, err := esxcli.NewExecutor(c.Client, host)
 	if err != nil {
-		log.Fatal(err)
+		logrus.WithFields(logrus.Fields{
+			"Postconfig": err,
+		}).Info(item.IP)
 	}
 
 	if options.Domain {
@@ -77,7 +102,9 @@ func ProvisioningWorker(item models.Address) {
 		cmd = append(cmd, item.Domain)
 		_, err := e.Run(cmd)
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"domain": item.Domain,
@@ -92,7 +119,9 @@ func ProvisioningWorker(item models.Address) {
 		}
 		_, err := e.Run(cmd)
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ntpd": item.Group.NTP,
@@ -100,7 +129,9 @@ func ProvisioningWorker(item models.Address) {
 		//enable ntpd
 		_, err = e.Run(strings.Fields("system ntp set --enabled true"))
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ntpd": "Service enabled",
@@ -108,12 +139,16 @@ func ProvisioningWorker(item models.Address) {
 
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 
 		err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ntpd": "Startup Policy -> Start and stop with host",
@@ -121,7 +156,9 @@ func ProvisioningWorker(item models.Address) {
 
 		err = s.Start(ctx, "ntpd")
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ntpd": "Service started",
@@ -131,12 +168,16 @@ func ProvisioningWorker(item models.Address) {
 	if options.SSH {
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 
 		err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ssh": "Startup Policy -> Start and stop with host",
@@ -144,7 +185,9 @@ func ProvisioningWorker(item models.Address) {
 
 		err = s.Start(ctx, "TSM-SSH")
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ssh": "Service started",
@@ -156,10 +199,30 @@ func ProvisioningWorker(item models.Address) {
 		cmd := strings.Fields("system settings advanced set -o /UserVars/SuppressShellWarning -i 1")
 		_, err := e.Run(cmd)
 		if err != nil {
-			log.Fatal(err)
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
 			"ssh": "suppressing shell warnings",
 		}).Info(item.IP)
 	}
+}
+
+func retry(attempts int, sleep time.Duration, f func() error) (err error) {
+	for i := 0; ; i++ {
+		err = f()
+		if err == nil {
+			return
+		}
+
+		if i >= (attempts - 1) {
+			break
+		}
+
+		time.Sleep(sleep)
+
+		log.Println("retrying after error:", err)
+	}
+	return fmt.Errorf("after %d attempts, last error: %s", attempts, err)
 }
