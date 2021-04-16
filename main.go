@@ -101,8 +101,6 @@ func main() {
 
 	var vc models.DeviceClass
 
-	//db.DB.FirstOrCreate(&models.DeviceClass{}, models.DeviceClass{VendorClass: "PXEClient:Arch:00007"})
-	//db.DB.Where(DeviceClass{VendorClass: "PXEClient:Arch:00007"}).Attrs(DeviceClass{Name: "PXE-UEFI_x86"}).FirstOrCreate(models.DeviceClass)
 	if res := db.DB.FirstOrCreate(&vc, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_x86", VendorClass: "PXEClient:Arch:00007"}}); res.Error != nil {
 		logrus.Warning(res.Error)
 	}
@@ -209,6 +207,8 @@ func main() {
 	}
 
 	r.GET("ks.cfg", api.Ks)
+
+	r.GET("postconfig", api.PostConfig)
 
 	listen := ":" + strconv.Itoa(conf.Port)
 	logrus.WithFields(logrus.Fields{

@@ -30,3 +30,9 @@ type Group struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
+
+type GroupOptions struct {
+	Domain               bool `json:"domain"`
+	NTP                  bool `json:"ntp"`
+	SuppressShellWarning bool `json:"suppressshellwarning"`
+}

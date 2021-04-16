@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -34,38 +32,12 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 
 %post --interpreter=busybox
 
-sleep 20
-esxcli network ip dns search add --domain={{ .domain }}
+wget http://ip/
 
-# enable & start remote ESXi Shell  (SSH)
-vim-cmd hostsvc/enable_ssh
-vim-cmd hostsvc/start_ssh
-#Suppress shell warning
-esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
-
-# NTP Configuration (thanks to http://www.virtuallyghetto.com)
-cat > /etc/ntp.conf << __NTP_CONFIG__
-restrict default nomodify notrap nopeer noquery
-restrict 127.0.0.1
-restrict -6 ::1
-driftfile /etc/ntp.drift
-{{ range .ntp }}
-server {{ . }}{{ end }}
-__NTP_CONFIG__
- 
-#enable ntpd
-/sbin/chkconfig ntpd on
+%end
 
 reboot
-
-# A sample post-install script
-#%post --interpreter=python --ignorefailure=true
-#import time
-#stampFile = open('/finished.stamp', mode='w')
-#stampFile.write( time.asctime() )
-#`
-
-//esxcli network ip dns server add --server=192.168.1.1
+`
 
 func Ks(c *gin.Context) {
 	var item models.Address
@@ -83,9 +55,6 @@ func Ks(c *gin.Context) {
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
-	//split NTP from string to list.
-	ntp := strings.Split(item.Group.NTP, ",")
-
 	//convert netmask from bit to long format.
 	nm := net.CIDRMask(item.Pool.Netmask, 32)
 	netmask := ipv4MaskString(nm)
@@ -97,8 +66,6 @@ func Ks(c *gin.Context) {
 		"gateway":  item.Pool.Gateway,
 		"dns":      item.Group.DNS,
 		"hostname": item.Hostname,
-		"domain":   item.Domain,
-		"ntp":      ntp,
 		"netmask":  netmask,
 	}
 

@@ -14,6 +14,7 @@ require (
 	github.com/imdario/mergo v0.3.11
 	github.com/kdomanski/iso9660 v0.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065
@@ -23,6 +24,7 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
+	github.com/vmware/govmomi v0.24.1 // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0
