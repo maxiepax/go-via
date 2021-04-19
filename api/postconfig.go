@@ -8,10 +8,10 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -45,7 +45,6 @@ func ProvisioningWorker(item models.Address) {
 	//create empty model and load it with the json content from database
 	options := models.GroupOptions{}
 	json.Unmarshal(item.Group.Options, &options)
-	spew.Dump(options)
 	logrus.WithFields(logrus.Fields{
 		"Started worker for ": item.Hostname,
 	}).Debug("host")
@@ -67,6 +66,11 @@ func ProvisioningWorker(item models.Address) {
 				"Postconfig": "still running",
 				"error":      err,
 			}).Info(item.IP)
+			match, _ := regexp.MatchString("refused", err.Error())
+			if match {
+				fmt.Println("getting connection refused, sleeping for 10s.")
+				time.Sleep(10 * time.Second)
+			}
 		}
 		return
 	})
