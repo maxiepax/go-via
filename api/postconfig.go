@@ -59,7 +59,7 @@ func ProvisioningWorker(item models.Address) {
 	}
 
 	// check if the API is available, the builtin connection timeout is 30 seconds, retrying 120 times means we wait 60 minutes before finally giving up.
-	err := retry(120, 1*time.Second, func() (err error) {
+	err := retry(120, 10*time.Second, func() (err error) {
 		test_ctx := context.Background()
 		_, err = govmomi.NewClient(test_ctx, url, true)
 		if err != nil {
