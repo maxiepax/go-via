@@ -32,7 +32,7 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 
 %post --interpreter=busybox
 
-wget http://ip/
+wget http://{{ .via_server }}/postconfig
 
 %end
 
@@ -53,6 +53,15 @@ func Ks(c *gin.Context) {
 		return
 	}
 
+	laddrport, ok := c.Request.Context().Value(http.LocalAddrContextKey).(net.Addr)
+	if !ok {
+		logrus.WithFields(logrus.Fields{
+			"interface": "could not determine the local interface used to apply to ks.cfgs postconfig callback",
+		}).Debug("ks")
+	}
+
+	laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
+
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 	//convert netmask from bit to long format.
@@ -61,15 +70,14 @@ func Ks(c *gin.Context) {
 
 	//cleanup data to allow easier custom templating
 	data := map[string]interface{}{
-		"password": item.Group.Password,
-		"ip":       item.IP,
-		"gateway":  item.Pool.Gateway,
-		"dns":      item.Group.DNS,
-		"hostname": item.Hostname,
-		"netmask":  netmask,
+		"password":   item.Group.Password,
+		"ip":         item.IP,
+		"gateway":    item.Pool.Gateway,
+		"dns":        item.Group.DNS,
+		"hostname":   item.Hostname,
+		"netmask":    netmask,
+		"via_server": laddr,
 	}
-
-	//c.JSON(http.StatusOK, item) // 200
 
 	// check if default ks has been overridden.
 	ks := defaultks
@@ -79,12 +87,12 @@ func Ks(c *gin.Context) {
 
 	t, err := template.New("").Parse(ks)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Info(err)
 		return
 	}
 	err = t.Execute(c.Writer, data)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Info(err)
 		return
 	}
 

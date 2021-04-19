@@ -134,7 +134,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				}
 
 				if hex.EncodeToString(h.Sum(nil)) != item.Hash {
-					err := fmt.Errorf("Hash was invalid")
+					err := fmt.Errorf("hash was invalid")
 					Error(c, http.StatusBadRequest, err) // 400
 					os.Remove(item.Path)
 					return

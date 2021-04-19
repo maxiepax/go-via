@@ -36,9 +36,8 @@ export class ManageGroupsComponent implements OnInit {
   Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
+  showGroupModalMode = "";
   addHostFormModal = false;
-  addGroupFormModal = false;
-  editGroupFormModal = false;
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
@@ -54,9 +53,11 @@ export class ManageGroupsComponent implements OnInit {
       password: ['', [Validators.required]],
       image_id: ['', [Validators.required]],
       pool_id: ['', [Validators.required]],
+      ntp_pc: [''],
+      ssh_pc: [''],
+      domain_pc: [''],
     });
   }
-
 
   ngOnInit(): void {
     this.apiService.getGroups().subscribe((groups: any) => {
@@ -76,10 +77,6 @@ export class ManageGroupsComponent implements OnInit {
     });
   }
 
-  addGroup() {
-    this.addGroupFormModal = true;
-  }
-
   submit_group() {
     const data = {
       ...this.Groupform.value,
@@ -87,11 +84,28 @@ export class ManageGroupsComponent implements OnInit {
       pool_id: parseInt(this.Groupform.value.pool_id),
     }
 
+    let json_pc: any = {}
+    if (data.ssh_pc) {
+      json_pc.ssh = true;
+      console.log('ssh is true');
+    }
+    if (data.ntp_pc) {
+      json_pc.ntp = true;
+    }
+    if (data.domain_pc) {
+      json_pc.domain = true;
+    }
+
+    data.options = json_pc;
+    delete data.ssh_pc;
+    delete data.ntp_pc;
+    delete data.domain_pc;
+
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
         this.groups.push(data);
         this.Groupform.reset();
-        this.addGroupFormModal = false;
+        this.showGroupModalMode = '';
       }
     }, (data: any) => {
       if (data.status) {
@@ -101,7 +115,7 @@ export class ManageGroupsComponent implements OnInit {
       }
 
     });
-
+    console.log(data);
   }
 
   removeGroup(id) {
@@ -116,21 +130,46 @@ export class ManageGroupsComponent implements OnInit {
     }
   }
 
-  editGroup(id) {
-    this.editGroupFormModal = true;
+  showGroupModal(mode, id=null) {
+    this.showGroupModalMode = mode;
+    if (mode === "edit") {
     this.group = this.groups.find(group => group.id === id);
     this.Groupform.patchValue({
       ...this.group,
+      domain_pc: this.group.options.domain,
+      ssh_pc: this.group.options.ssh,
+      ntp_pc: this.group.options.ntp,
     });
+    }
+    if (mode === "add") {
+      this.Groupform.reset();
+    }
   }
 
   updateGroup() {
-    console.log('test');
     const data = {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
       pool_id: parseInt(this.Groupform.value.pool_id),
     };
+
+    let json_pc: any = {}
+    if (data.ssh_pc) {
+      json_pc.ssh = true;
+      console.log('ssh is true');
+    }
+    if (data.ntp_pc) {
+      json_pc.ntp = true;
+    }
+    if (data.domain_pc) {
+      json_pc.domain = true;
+    }
+
+    data.options = json_pc;
+    delete data.ssh_pc;
+    delete data.ntp_pc;
+    delete data.domain_pc;
+    console.log(data.options);
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
@@ -138,7 +177,7 @@ export class ManageGroupsComponent implements OnInit {
         this.errors = resp.error;
       }
       if (resp) {
-        this.editGroupFormModal = false;
+        this.showGroupModalMode = '';
       }
     });
   }

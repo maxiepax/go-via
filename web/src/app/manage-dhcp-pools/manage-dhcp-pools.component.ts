@@ -18,8 +18,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
   pools;
   errors;
   form: FormGroup;
-  showPoolFormModal = false;
-  editPoolFormModal = false;
+  showPoolModalMode = "";
 
   constructor(
     private apiService: ApiService,
@@ -32,7 +31,6 @@ export class ManageDhcpPoolsComponent implements OnInit {
       start_address: ['', [Validators.required]],
       end_address: ['', [Validators.required]],
       gateway: ['', [Validators.required]],
-      //dns: ['', [Validators.required]]
     });
   }
 
@@ -43,17 +41,18 @@ export class ManageDhcpPoolsComponent implements OnInit {
     });
   }
 
-  addPool() {
-    this.showPoolFormModal = true;
-  }
 
-  editPool(id) {
-    this.editPoolFormModal = true;
+  showPoolModal(mode, id=null) {
+    this.showPoolModalMode = mode;
+    if (mode === "edit") {
     this.pool = this.pools.find(pool => pool.id === id);
     this.form.patchValue({
       ...this.pool,
-      //dns: (this.pool.dns || []).join(', ')
     });
+    }
+    if (mode === "add") {
+      this.form.reset();
+    }
   }
 
   submit() {
@@ -75,7 +74,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       }
     });
 
-    this.showPoolFormModal = false;
+    this.showPoolModalMode = '';
   }
 
   remove(id) {
@@ -85,7 +84,6 @@ export class ManageDhcpPoolsComponent implements OnInit {
   }
 
   updatePool() {
-    console.log('test');
     const data = {
       ...this.form.value,
       only_serve_reserved: true,
@@ -101,7 +99,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
       if (resp) {
         this.pools = this.pools.filter(item => item.id !== resp.id);
         this.pools.push(resp);
-        this.editPoolFormModal = false;
+        this.showPoolModalMode = '';
       }
     });
   }

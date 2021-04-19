@@ -1,17 +1,19 @@
 <h3> Host groups </h3>
-<p>Host groups are used to organize your hosts into groups that share the same image and configuration properties. This saves you time by being able to organize all hosts that will look the same, and simply configure the group with properties.</p>
-<button class="btn btn-outline btn-sm" (click)="addGroup()">Add Group</button>
+<p>Host groups are used to organize your hosts into groups that share the same image and configuration properties. This
+	saves you time by being able to organize all hosts that will look the same, and simply configure the group with
+	properties.</p>
+<button class="btn btn-outline btn-sm" (click)="showGroupModal('add')">Add Group</button>
 
 <div class="alert alert-danger" role="alert" *ngIf="errors">
 	<div class="alert-items">
-	  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
-		<div class="alert-icon-wrapper">
-		  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+		<div class="alert-item static" *ngFor="let error of errors | keyvalue">
+			<div class="alert-icon-wrapper">
+				<clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+			</div>
+			<span class="alert-text">
+				{{error.value}}
+			</span>
 		</div>
-		<span class="alert-text">
-			{{error.value}}
-		</span>
-	  </div>
 	</div>
 </div>
 
@@ -24,7 +26,7 @@
 		<clr-dg-column>mac address</clr-dg-column>
 		<clr-dg-column>progress</clr-dg-column>
 		<clr-dg-column>action</clr-dg-column>
-		
+
 		<clr-dg-row *ngFor="let host of group.hosts">
 			<clr-dg-cell>{{host.hostname}}.{{host.domain}}</clr-dg-cell>
 			<clr-dg-cell>{{host.ip}}</clr-dg-cell>
@@ -36,9 +38,9 @@
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
-    <button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
-	<button class="btn btn-outline btn-sm" (click)="editGroup(group.id)">Edit Group</button>
-    <button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
+	<button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
+	<button class="btn btn-outline btn-sm" (click)="showGroupModal('edit', group.id)">Edit Group</button>
+	<button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
 </div>
 
 <clr-modal [(clrModalOpen)]="addHostFormModal">
@@ -48,141 +50,105 @@
 			<cds-form-group control-width="shrink" layout="horizontal">
 				<cds-input>
 					<label>FQDN</label>
-					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn"/>
+					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn" />
 				</cds-input>
 				<cds-input>
 					<label>IPAddress</label>
-					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip"/>
+					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip" />
 				</cds-input>
 				<cds-input>
 					<label>mac</label>
-					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac"/>
+					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
 				</cds-input>
-			</cds-form-group>	
+			</cds-form-group>
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
-			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
-				<div class="alert-icon-wrapper">
-				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+				<div class="alert-item static" *ngFor="let error of errors | keyvalue">
+					<div class="alert-icon-wrapper">
+						<clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+					</div>
+					<span class="alert-text">
+						{{error.value}}
+					</span>
 				</div>
-				<span class="alert-text">
-					{{error.value}}
-				</span>
-			  </div>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-	  <button type="button" class="btn btn-outline" (click)="addHostFormModal = false">Cancel</button>
-	  <button type="button" class="btn btn-primary" (click)="submit_host()">Add</button>
+		<button type="button" class="btn btn-outline" (click)="addHostFormModal = false">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="submit_host()">Add</button>
 	</div>
-  </clr-modal>
+</clr-modal>
 
-  <clr-modal [(clrModalOpen)]="addGroupFormModal">
-	<h3 class="modal-title">Add Group</h3>
+<clr-modal [(clrModalOpen)]="showGroupModalMode">
+	<h3 *ngIf="showGroupModalMode === 'add'" class="modal-title">Add Group</h3>
+	<h3 *ngIf="showGroupModalMode === 'edit'" class="modal-title">Edit Group</h3>
 	<div class="modal-body">
 		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
 			<cds-form-group control-width="shrink" layout="horizontal">
 				<cds-input>
 					<label>Group name</label>
-					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name"/>
+					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name" />
 				</cds-input>
 				<cds-input>
 					<label>DNS</label>
-					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns"/>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns" />
 				</cds-input>
 				<cds-input>
 					<label>NTP</label>
-					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp"/>
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
 				</cds-input>
 				<cds-input>
 					<label>Password</label>
-					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password"/>
+					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
 				</cds-input>
-				<cds-select  control-width="shrink">
+				<cds-select control-width="shrink">
 					<label>Pool</label>
 					<select name="pool_id" formControlName="pool_id">
-						<option *ngFor="let pool of pools" [value]=pool.id >{{pool.name}}</option>
+						<option *ngFor="let pool of pools" [value]=pool.id>{{pool.name}}</option>
 					</select>
-			  </cds-select>
-				<cds-select  control-width="shrink">
+				</cds-select>
+				<cds-select control-width="shrink">
 					<label>Image</label>
 					<select name="image_id" formControlName="image_id">
-						<option *ngFor="let image of images" [value]=image.id >{{image.iso_image}}</option>
+						<option *ngFor="let image of images" [value]=image.id>{{image.iso_image}}</option>
 					</select>
-			  </cds-select>
+				</cds-select>
 			</cds-form-group>
+		
+		<div class="clr-control-container clr-control-inline">
+			<clr-checkbox-wrapper>
+				<input type="checkbox" clrCheckbox name="domain_pc" id="domain_pc" formControlName="domain_pc"/>
+				<label>Domain</label>
+			</clr-checkbox-wrapper>
+			<clr-checkbox-wrapper>
+				<input type="checkbox" clrCheckbox name="ssh_pc" id="ssh_pc" formControlName="ssh_pc" />
+				<label>SSH</label>
+			</clr-checkbox-wrapper>
+			<clr-checkbox-wrapper>
+				<input type="checkbox" clrCheckbox name="ntp_pc" id="ntp_pc" formControlName="ntp_pc" />
+				<label>NTP</label>
+			</clr-checkbox-wrapper>
+		</div>
+		<clr-control-helper>Select all options you wish to be included in post-conf</clr-control-helper>
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
-			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
-				<div class="alert-icon-wrapper">
-				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+				<div class="alert-item static" *ngFor="let error of errors | keyvalue">
+					<div class="alert-icon-wrapper">
+						<clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+					</div>
+					<span class="alert-text">
+						{{error.value}}
+					</span>
 				</div>
-				<span class="alert-text">
-					{{error.value}}
-				</span>
-			  </div>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-	  <button type="button" class="btn btn-outline" (click)="addGroupFormModal = false">Cancel</button>
-	  <button type="button" class="btn btn-primary" (click)="submit_group()">Add</button>
+		<button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
+		<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary" (click)="submit_group()">Add</button>
+		<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary" (click)="updateGroup()">Update</button>
 	</div>
-  </clr-modal>
-
-  <clr-modal [(clrModalOpen)]="editGroupFormModal">
-	<h3 class="modal-title">Add Group</h3>
-	<div class="modal-body">
-		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
-			<cds-form-group control-width="shrink" layout="horizontal">
-				<cds-input>
-					<label>Group name</label>
-					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name"/>
-				</cds-input>
-				<cds-input>
-					<label>DNS</label>
-					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns"/>
-				</cds-input>
-				<cds-input>
-					<label>NTP</label>
-					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp"/>
-				</cds-input>
-				<cds-input>
-					<label>Password</label>
-					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password"/>
-				</cds-input>
-				<cds-select  control-width="shrink">
-					<label>Pool</label>
-					<select name="pool_id" formControlName="pool_id">
-						<option *ngFor="let pool of pools" [value]=pool.id >{{pool.name}}</option>
-					</select>
-			  </cds-select>
-				<cds-select  control-width="shrink">
-					<label>Image</label>
-					<select name="image_id" formControlName="image_id">
-						<option *ngFor="let image of images" [value]=image.id >{{image.iso_image}}</option>
-					</select>
-			  </cds-select>
-			</cds-form-group>
-		</form>
-		<div class="alert alert-danger" role="alert" *ngIf="errors">
-			<div class="alert-items">
-			  <div class="alert-item static" *ngFor="let error of errors | keyvalue">
-				<div class="alert-icon-wrapper">
-				  <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
-				</div>
-				<span class="alert-text">
-					{{error.value}}
-				</span>
-			  </div>
-			</div>
-		</div>
-	</div>
-	<div class="modal-footer">
-	  <button type="button" class="btn btn-outline" (click)="editGroupFormModal = false">Cancel</button>
-	  <button type="button" class="btn btn-primary" (click)="updateGroup()">Update</button>
-	</div>
-  </clr-modal>
+</clr-modal>
