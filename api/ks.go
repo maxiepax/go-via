@@ -96,6 +96,11 @@ func Ks(c *gin.Context) {
 	}
 
 	logrus.Info("Served ks.cfg file")
+
+	go ProvisioningWorker(item)
+
+	logrus.Info("Started worker")
+
 }
 
 func ipv4MaskString(m []byte) string {
