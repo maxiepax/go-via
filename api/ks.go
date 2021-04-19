@@ -32,7 +32,7 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 
 %post --interpreter=busybox
 esxcli network firewall set --enabled false
-wget http://{{ .via_server }}/postconfig
+wget -O- http://{{ .via_server }}/postconfig
 esxcli network firewall set --enabled true
 
 reboot
