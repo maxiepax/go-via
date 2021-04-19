@@ -65,6 +65,7 @@ func ProvisioningWorker(item models.Address) {
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"Postconfig": "still running",
+				"error":      err,
 			}).Info(item.IP)
 		}
 		return
