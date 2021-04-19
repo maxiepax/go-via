@@ -53,9 +53,9 @@ func ProvisioningWorker(item models.Address) {
 	// connection info
 	url := &url.URL{
 		Scheme: "https",
-		Host:   "192.168.1.175", //todo
+		Host:   item.IP,
 		Path:   "sdk",
-		User:   url.UserPassword("root", "VMware1!"), //todo
+		User:   url.UserPassword("root", item.Group.Password),
 	}
 
 	// check if the API is available, the builtin connection timeout is 30 seconds, retrying 120 times means we wait 60 minutes before finally giving up.
