@@ -12,13 +12,13 @@ import (
 )
 
 type PoolForm struct {
-	Name              string `json:"name" gorm:"type:varchar(255);not null" binding:"required" `
-	StartAddress      string `json:"start_address" gorm:"type:varchar(15);not null" binding:"required" `
-	EndAddress        string `json:"end_address" gorm:"type:varchar(15);not null" binding:"required" `
-	Netmask           int    `json:"netmask" gorm:"type:integer;not null" binding:"required" `
-	LeaseTime         int    `json:"lease_time" gorm:"type:bigint" binding:"required" `
-	Gateway           string `json:"gateway" gorm:"type:varchar(15)" binding:"required" `
-	OnlyServeReserved bool   `json:"only_serve_reserved" gorm:"type:boolean"`
+	Name             string `json:"name" gorm:"type:varchar(255);not null" binding:"required" `
+	StartAddress     string `json:"start_address" gorm:"type:varchar(15);not null" binding:"required" `
+	EndAddress       string `json:"end_address" gorm:"type:varchar(15);not null" binding:"required" `
+	Netmask          int    `json:"netmask" gorm:"type:integer;not null" binding:"required" `
+	LeaseTime        int    `json:"lease_time" gorm:"type:bigint" binding:"required" `
+	Gateway          string `json:"gateway" gorm:"type:varchar(15)" binding:"required" `
+	OnlyServeReimage bool   `json:"only_serve_reimage" gorm:"type:boolean"`
 	//DNS               []string `json:"dns" gorm:"-" "type:varchar(255)`
 
 	AuthorizedVlan int    `json:"authorized_vlan" gorm:"type:bigint"`
@@ -141,7 +141,7 @@ func (p *PoolWithAddresses) IsAvailableExcept(ip net.IP, exclude string) error {
 
 	// Check reservations as well
 	var reservations []Address
-	db.DB.Where("ip = ? AND reserved", s).Find(&reservations)
+	db.DB.Where("ip = ? AND reimage", s).Find(&reservations)
 	for _, v := range reservations {
 		if v.IP == s && v.Mac != exclude {
 			return fmt.Errorf("already reserved")

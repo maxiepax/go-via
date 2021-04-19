@@ -45,9 +45,9 @@ func processPacket(t layers.DHCPMsgType, req *layers.DHCPv4, sourceNet net.IP, i
 }
 
 func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *layers.DHCPv4, err error) {
-	// Find all reserved addresses that is not yet assigned a pool
-	var reservedAddresses []models.Address
-	if res := db.DB.Where("pool_id IS NULL").Where("reserved = 1").Find(&reservedAddresses); res.Error != nil {
+	// Find all reimage addresses that is not yet assigned a pool
+	var reimageAddresses []models.Address
+	if res := db.DB.Where("pool_id IS NULL").Where("reimage = 1").Find(&reimageAddresses); res.Error != nil {
 		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, res.Error
 		}
@@ -101,14 +101,14 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 		return nil, err
 	}
 
-	// Make a list of all reserved and pool addresses
-	addresses := append(reservedAddresses, pool.Addresses...)
+	// Make a list of all reimage and pool addresses
+	addresses := append(reimageAddresses, pool.Addresses...)
 
 	// Search in the list for our mac address
 	var leaseIP net.IP
 	var lease *models.Address
 	for _, v := range addresses {
-		// Make sure the reserved IP is within the pool
+		// Make sure the reimage IP is within the pool
 		parsedIp := net.ParseIP(v.IP)
 		ok, _ := pool.Contains(parsedIp)
 
@@ -123,7 +123,7 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 	}
 
 	// Dont answer pools with "only serve requested" flag set
-	if pool.OnlyServeReserved && (lease == nil || !lease.Reserved) {
+	if pool.OnlyServeReimage && (lease == nil || !lease.Reimage) {
 		return nil, fmt.Errorf("ignored because mac address is not flagged for re-imaging")
 	}
 
@@ -157,9 +157,9 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		spew.Dump(opt82)
 	}*/
 
-	// Find all reserved addresses that is not yet assigned a pool
-	var reservedAddresses []models.Address
-	if res := db.DB.Where("pool_id IS NULL").Where("reserved = 1").Find(&reservedAddresses); res.Error != nil {
+	// Find all reimage addresses that is not yet assigned a pool
+	var reimageAddresses []models.Address
+	if res := db.DB.Where("pool_id IS NULL").Where("reimage = 1").Find(&reimageAddresses); res.Error != nil {
 		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, res.Error
 		}
@@ -181,8 +181,8 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		}
 	*/
 
-	// Make a list of all reserved and pool addresses
-	addresses := append(reservedAddresses, pool.Addresses...)
+	// Make a list of all reimage and pool addresses
+	addresses := append(reimageAddresses, pool.Addresses...)
 
 	// Extract the requested IP
 	var requestedIP net.IP = req.ClientIP
@@ -254,8 +254,8 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	}
 
 	// Dont answer pools with "only serve requested" flag set
-	if pool.OnlyServeReserved && (lease == nil || !lease.Reserved) {
-		return nil, fmt.Errorf("ignored because mac address is missing from reserved addresses")
+	if pool.OnlyServeReimage && (lease == nil || !lease.Reimage) {
+		return nil, fmt.Errorf("ignored because mac address is not flagged for reimaging")
 	}
 
 	// Its a new lease!
@@ -264,7 +264,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 			AddressForm: models.AddressForm{
 				Mac:      req.ClientHWAddr.String(),
 				Hostname: "-",
-				Reserved: false,
+				Reimage:  false,
 			},
 		}
 	}
@@ -295,8 +295,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		db.DB.Create(lease)
 	} else {
 		// Remove the previous record if there is any
-		//db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reserved=0 AND expires_at <= NOW()", lease.IP)
-		db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reserved=0 AND expires <= datetime('now', 'utc')", lease.IP)
+		db.DB.Exec("DELETE FROM addresses WHERE ip=? AND reimage=0 AND expires <= datetime('now', 'utc')", lease.IP)
 		db.DB.Save(lease)
 	}
 
@@ -369,7 +368,7 @@ func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 			AddressForm: models.AddressForm{
 				IP:       requestedIP.String(),
 				Hostname: "-",
-				Reserved: false,
+				Reimage:  false,
 			},
 		}
 	}

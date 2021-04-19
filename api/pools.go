@@ -165,7 +165,7 @@ func GetNextFreeIP(c *gin.Context) {
 
 	// Load the item
 	var item models.PoolWithAddresses
-	if res := db.DB.Table("pools").Preload("Addresses", "reserved OR expires > NOW()").First(&item, id); res.Error != nil {
+	if res := db.DB.Table("pools").Preload("Addresses", "reimage OR expires > NOW()").First(&item, id); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
 		} else {
@@ -272,7 +272,7 @@ func UpdatePool(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
 
-	item.OnlyServeReserved = form.OnlyServeReserved
+	item.OnlyServeReimage = form.OnlyServeReimage
 
 	// Save it
 	if res := db.DB.Save(&item); res.Error != nil {

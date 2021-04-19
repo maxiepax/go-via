@@ -47,8 +47,8 @@ func Ks(c *gin.Context) {
 		return
 	}
 
-	if reserved := db.DB.Model(&item).Where("ip = ?", host).Update("reserved", false); reserved.Error != nil {
-		Error(c, http.StatusInternalServerError, reserved.Error) // 500
+	if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
+		Error(c, http.StatusInternalServerError, reimage.Error) // 500
 		return
 	}
 

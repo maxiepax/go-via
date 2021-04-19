@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -57,18 +56,17 @@ func ProvisioningWorker(item models.Address) {
 		User:   url.UserPassword("root", item.Group.Password),
 	}
 
-	// check if the API is available, the builtin connection timeout is 30 seconds, retrying 120 times means we wait 60 minutes before finally giving up.
-	err := retry(120, 10*time.Second, func() (err error) {
+	// check if the API is available, we will make 120 connection attempts, the connection test will reply with "connection refused" while no os is available to respond, in that case we sleep for 10 seconds to give it some time to boot.
+	err := retry(120, 1*time.Second, func() (err error) {
 		test_ctx := context.Background()
 		_, err = govmomi.NewClient(test_ctx, url, true)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": "still running",
-				"error":      err,
+				"Postconfig": "still attempting to connect to API",
 			}).Info(item.IP)
+			// if we get "connection refused" we wait 10 seconds.
 			match, _ := regexp.MatchString("refused", err.Error())
 			if match {
-				fmt.Println("getting connection refused, sleeping for 10s.")
 				time.Sleep(10 * time.Second)
 			}
 		}
@@ -212,6 +210,10 @@ func ProvisioningWorker(item models.Address) {
 			"ssh": "suppressing shell warnings",
 		}).Info(item.IP)
 	}
+	logrus.WithFields(logrus.Fields{
+		"postconfig": "postconfig completed",
+	}).Info(item.IP)
+
 }
 
 func retry(attempts int, sleep time.Duration, f func() error) (err error) {
@@ -226,8 +228,6 @@ func retry(attempts int, sleep time.Duration, f func() error) (err error) {
 		}
 
 		time.Sleep(sleep)
-
-		log.Println("retrying after error:", err)
 	}
 	return fmt.Errorf("after %d attempts, last error: %s", attempts, err)
 }

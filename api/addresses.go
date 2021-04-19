@@ -209,7 +209,7 @@ func UpdateAddress(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
 
-	item.AddressForm.Reserved = form.Reserved
+	item.AddressForm.Reimage = form.Reimage
 
 	// Save it
 	if res := db.DB.Save(&item); res.Error != nil {
