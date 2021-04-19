@@ -31,9 +31,9 @@ install --firstdisk --overwritevmfs
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
 
 %post --interpreter=busybox
-
+esxcli network firewall set --enabled false
 wget http://{{ .via_server }}/postconfig
-
+esxcli network firewall set --enabled true
 %end
 
 reboot
