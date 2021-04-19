@@ -60,7 +60,7 @@ func Ks(c *gin.Context) {
 		}).Debug("ks")
 	}
 
-	laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
+	//laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
 
 	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
@@ -76,7 +76,7 @@ func Ks(c *gin.Context) {
 		"dns":        item.Group.DNS,
 		"hostname":   item.Hostname,
 		"netmask":    netmask,
-		"via_server": laddr,
+		"via_server": laddrport,
 	}
 
 	// check if default ks has been overridden.
