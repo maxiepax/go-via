@@ -370,5 +370,7 @@ func dirSize(path string) (int64, error) {
 		}
 		return err
 	})
+	// convert byte to mb
+	size = size / 1024 / 1024
 	return size, err
 }
