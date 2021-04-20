@@ -13,6 +13,7 @@ type AddressForm struct {
 	PoolID     NullInt32 `json:"pool_id" gorm:"type:BIGINT" swaggertype:"integer"`
 	ManagedRef string    `json:"managed_reference"`
 	GroupID    NullInt32 `json:"group_id" gorm:"type:BIGINT" swaggertype:"integer"`
+	Progress   int       `json:"progress" gorm:"type:INT"`
 }
 
 type Address struct {

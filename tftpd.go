@@ -93,6 +93,7 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 
 		// Make a buffer to read from
 		buff := bytes.NewBuffer(bc)
+
 		// Send the data from the buffer to the client
 		rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
 		n, err := rf.ReadFrom(buff)
@@ -100,6 +101,11 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			return err
 		}
+
+		address.Progress = 10
+
+		res := db.DB.Save(&address)
+		fmt.Println(res)
 
 		logrus.WithFields(logrus.Fields{
 			"file":  filename,
@@ -113,7 +119,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			logrus.WithFields(logrus.Fields{
 				"lowercase file": filename,
 			}).Debug("tftpd")
-			fmt.Println("found file with lowercase")
 		} else {
 			dir, file := path.Split(filename)
 			upperfile := strings.ToUpper(string(file))

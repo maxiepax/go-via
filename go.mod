@@ -4,13 +4,16 @@ go 1.15
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/camelcase v1.0.0 // indirect
+	github.com/fatih/color v1.10.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/google/gopacket v1.1.19
+	github.com/hashrocket/ws v0.2.1 // indirect
 	github.com/imdario/mergo v0.3.11
 	github.com/kdomanski/iso9660 v0.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
@@ -21,10 +24,12 @@ require (
 	github.com/pin/tftp v0.0.0-20210325153949-b0a0cac76b6a
 	github.com/rakyll/statik v0.1.7
 	github.com/sirupsen/logrus v1.7.0
+	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/vmware/govmomi v0.24.1 // indirect
+	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0

@@ -66,7 +66,7 @@ export class ManageGroupsComponent implements OnInit {
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
-        //console.log(groups);
+        console.log(groups);
       });
     });
     this.apiService.getImages().subscribe((images: any) => {
@@ -214,21 +214,21 @@ export class ManageGroupsComponent implements OnInit {
   }
 
   removeHost(id) {
-    console.log(id);
     this.apiService.deleteHost(id).subscribe((data: any) => {
       this.groups = this.groups.map(item => {
         item.hosts = item.hosts.filter(host => id !== host.id)
-        return item
+        return item;
       });
     });
   }
 
   reImageHost(id) {
-    console.log(id);
-
     this.apiService.patchHost(id).subscribe((data: any) => {
       console.log("PUT Request is successful ", data);
-      
+      this.groups = this.groups.map(group => {
+        group.hosts = group.hosts.map(host => host.id === id ? data : host)
+        return group;
+      })
     },
     error  => {
 

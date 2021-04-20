@@ -25,7 +25,7 @@ export class ApiService {
     return this.httpClient.patch(
       'http://' + window.location.hostname + `:8080/v1/addresses/${id}`,
       {
-        reserved: true
+        reimage: true
       }
     );
   }
