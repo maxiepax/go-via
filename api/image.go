@@ -16,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -178,7 +177,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				}).Debug("image")
 			}
 
-			spew.Dump(size)
+			item.Size = size
 
 			/*
 				mime, err := mimetype.DetectFile(item.StoragePath)
@@ -198,6 +197,7 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				"id":    item.ID,
 				"image": item.ISOImage,
 				"path":  item.Path,
+				"size":  item.Size,
 			}).Info("image")
 			c.JSON(http.StatusOK, item) // 200
 		}
