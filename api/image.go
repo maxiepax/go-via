@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/kdomanski/iso9660/util"
@@ -160,11 +161,24 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 			//remove the file
 			err = os.Remove(item.Path)
 			if err != nil {
-				log.Fatal(err)
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Debug("image")
 			}
 
 			//update item.Path
 			item.Path = fp
+
+			// get size of extracted dir
+
+			size, err := dirSize(fp)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Debug("image")
+			}
+
+			spew.Dump(size)
 
 			/*
 				mime, err := mimetype.DetectFile(item.StoragePath)
@@ -343,4 +357,18 @@ func GetInterfaceIpv4Addr(interfaceName string) (addr string, err error) {
 		return "", errors.New(fmt.Sprintf("interface %s don't have an ipv4 address\n", interfaceName))
 	}
 	return ipv4Addr.String(), nil
+}
+
+func dirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
 }
