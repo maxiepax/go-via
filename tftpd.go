@@ -25,13 +25,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 
-	//"github.com/vmware/gotftp"
 	"github.com/pin/tftp"
 )
 
@@ -112,14 +110,17 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		//chroot the rest
 		if _, err := os.Stat("tftp/" + filename); err == nil {
 			filename = "tftp/" + filename
+			logrus.WithFields(logrus.Fields{
+				"lowercase file": filename,
+			}).Debug("tftpd")
 			fmt.Println("found file with lowercase")
-			spew.Dump(filename)
 		} else {
 			dir, file := path.Split(filename)
 			upperfile := strings.ToUpper(string(file))
 			filename = "tftp/" + dir + upperfile
-			fmt.Println("found file with uppercase")
-			spew.Dump(filename)
+			logrus.WithFields(logrus.Fields{
+				"uppercase file": filename,
+			}).Debug("tftpd")
 		}
 	}
 
@@ -137,8 +138,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		"file":  filename,
 		"bytes": n,
 	}).Info("tftpd")
-	//fmt.Printf("%s sent\n", filename)
-	//fmt.Printf("%d bytes sent\n", n)
 	return nil
 }
 

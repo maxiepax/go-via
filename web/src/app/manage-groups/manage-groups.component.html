@@ -104,7 +104,7 @@
 					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
 				</cds-input>
 				<cds-select control-width="shrink">
-					<label>Pool</label>
+					<label>DHCP Pool</label>
 					<select name="pool_id" formControlName="pool_id">
 						<option *ngFor="let pool of pools" [value]=pool.id>{{pool.name}}</option>
 					</select>
@@ -120,7 +120,7 @@
 		<div class="clr-control-container clr-control-inline">
 			<clr-checkbox-wrapper>
 				<input type="checkbox" clrCheckbox name="domain_pc" id="domain_pc" formControlName="domain_pc"/>
-				<label>Domain</label>
+				<label>DNS Suffix</label>
 			</clr-checkbox-wrapper>
 			<clr-checkbox-wrapper>
 				<input type="checkbox" clrCheckbox name="ssh_pc" id="ssh_pc" formControlName="ssh_pc" />
