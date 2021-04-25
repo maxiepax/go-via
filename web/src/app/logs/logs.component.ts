@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import ReconnectingWebSocket from 'reconnecting-websocket';
 
+import { webSocket } from "rxjs/webSocket";
+const subject = webSocket("ws://' +  window.location.hostname + ':8080/v1/log");
+
+subject.subscribe(
+   msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
+   err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
+   () => console.log('complete') // Called when connection is closed (for whatever reason).
+ );
 
 @Component({
   selector: 'app-logs',
@@ -12,14 +19,9 @@ export class LogsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    const rws = new ReconnectingWebSocket('ws://' +  window.location.hostname + ':8080/v1/log');
 
-    rws.addEventListener('open', () => {
-    });
 
-    rws.onmessage = function(event) {
-      console.debug("WebSocket message received:", event);
-    };
   }
-
 }
+
+
