@@ -63,7 +63,7 @@ func ProvisioningWorker(item models.Address) {
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"Postconfig": "still attempting to connect to API",
-			}).Info(item.IP)
+			}).Debug(item.IP)
 			// if we get "connection refused" we wait 10 seconds.
 			match, _ := regexp.MatchString("refused", err.Error())
 			if match {
