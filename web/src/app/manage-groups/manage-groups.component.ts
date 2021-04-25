@@ -63,7 +63,7 @@ export class ManageGroupsComponent implements OnInit {
     ws.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
-        this.progress[data.id] = data.progress;
+        this.progress[data.id] = data.percentage;
         console.log(this.progress);
       }
     })
