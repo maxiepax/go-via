@@ -64,8 +64,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
 		logrus.WithFields(logrus.Fields{
-			"id":         address.ID,
-			"percentage": 10,
+			"id":           address.ID,
+			"percentage":   10,
+			"progresstext": "mboot.efi",
 		}).Info("progress")
 		filename, _ = mbootPath(image.Path)
 	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
@@ -74,8 +75,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			ip: "requesting boot.cfg",
 		}).Info("tftpd")
 		logrus.WithFields(logrus.Fields{
-			"id":         address.ID,
-			"percentage": 15,
+			"id":           address.ID,
+			"percentage":   15,
+			"progresstext": "installation",
 		}).Info("progress")
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")

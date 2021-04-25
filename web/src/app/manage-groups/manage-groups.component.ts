@@ -40,6 +40,7 @@ export class ManageGroupsComponent implements OnInit {
   showGroupModalMode = "";
   addHostFormModal = false;
   progress = {};
+  progressmsg = {};
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
@@ -64,6 +65,7 @@ export class ManageGroupsComponent implements OnInit {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
         this.progress[data.id] = data.percentage;
+        this.progressmsg[data.id] = data.progresstext;
         console.log(data);
       }
     })

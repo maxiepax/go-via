@@ -79,8 +79,9 @@ func ProvisioningWorker(item models.Address) {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"id":         item.ID,
-		"percentage": 50,
+		"id":           item.ID,
+		"percentage":   75,
+		"progresstext": "customization",
 	}).Info("progress")
 
 	ctx := context.Background()
@@ -220,8 +221,9 @@ func ProvisioningWorker(item models.Address) {
 	}).Info(item.IP)
 
 	logrus.WithFields(logrus.Fields{
-		"id":         item.ID,
-		"percentage": 100,
+		"id":           item.ID,
+		"percentage":   100,
+		"progresstext": "completed",
 	}).Info("progress")
 
 }
