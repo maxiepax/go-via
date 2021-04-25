@@ -40,7 +40,7 @@ export class ManageGroupsComponent implements OnInit {
   showGroupModalMode = "";
   addHostFormModal = false;
   progress = {};
-  progressmsg = {};
+  progresstext = {};
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
