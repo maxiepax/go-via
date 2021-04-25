@@ -63,12 +63,20 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting mboot.efi",
 		}).Info("tftpd")
+		logrus.WithFields(logrus.Fields{
+			"id":         address.ID,
+			"percentage": 10,
+		}).Info("progress")
 		filename, _ = mbootPath(image.Path)
 	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
 		//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
 		logrus.WithFields(logrus.Fields{
 			ip: "requesting boot.cfg",
 		}).Info("tftpd")
+		logrus.WithFields(logrus.Fields{
+			"id":         address.ID,
+			"percentage": 15,
+		}).Info("progress")
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
 		if err != nil {

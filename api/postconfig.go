@@ -78,6 +78,11 @@ func ProvisioningWorker(item models.Address) {
 		}).Info(item.IP)
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"id":         item.ID,
+		"percentage": 50,
+	}).Info("progress")
+
 	ctx := context.Background()
 	c, err := govmomi.NewClient(ctx, url, true)
 	if err != nil {
@@ -213,6 +218,11 @@ func ProvisioningWorker(item models.Address) {
 	logrus.WithFields(logrus.Fields{
 		"postconfig": "postconfig completed",
 	}).Info(item.IP)
+
+	logrus.WithFields(logrus.Fields{
+		"id":         item.ID,
+		"percentage": 100,
+	}).Info("progress")
 
 }
 

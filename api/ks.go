@@ -96,6 +96,14 @@ func Ks(c *gin.Context) {
 	}
 
 	logrus.Info("Served ks.cfg file")
+	logrus.WithFields(logrus.Fields{
+		"id":  item.ID,
+		"msg": "served ks.cfg file",
+	}).Info("ks")
+	logrus.WithFields(logrus.Fields{
+		"id":         item.ID,
+		"percentage": 20,
+	}).Info("progress")
 
 	go ProvisioningWorker(item)
 
