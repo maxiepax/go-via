@@ -39,7 +39,7 @@ export class ManageGroupsComponent implements OnInit {
   groupid = null;
   showGroupModalMode = "";
   addHostFormModal = false;
-  progress;
+  progress = {};
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
@@ -63,7 +63,8 @@ export class ManageGroupsComponent implements OnInit {
     ws.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
-        console.log(data)
+        this.progress[data.id] = data.progress;
+        console.log(this.progress);
       }
     })
   }
@@ -76,6 +77,10 @@ export class ManageGroupsComponent implements OnInit {
           return item
         });
         console.log(groups);
+        hosts.forEach(host => {
+          this.progress[host.id] = host.progress;
+          console.log(this.progress)
+        })
       });
     });
     this.apiService.getImages().subscribe((images: any) => {
