@@ -7,12 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LogsComponent implements OnInit {
 
-  data;
+  data = [];
 
   constructor() {
     const ws = new WebSocket('ws://' +  window.location.hostname + ':8080/v1/log')
     ws.addEventListener('message', event => {
-      console.log(event.data);
+      this.data.push(event.data);
     })
   }
 
