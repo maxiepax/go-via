@@ -20,6 +20,8 @@ import '@cds/core/select/register.js';
 import '@cds/core/textarea/register.js';
 import '@cds/core/time/register.js';
 import '@cds/core/toggle/register.js';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+
 
 @Component({
   selector: 'app-manage-groups',
@@ -38,6 +40,7 @@ export class ManageGroupsComponent implements OnInit {
   groupid = null;
   showGroupModalMode = "";
   addHostFormModal = false;
+  progress;
 
   constructor(private apiService: ApiService, private HostformBuilder: FormBuilder, private GroupformBuilder: FormBuilder) {
     this.Hostform = this.HostformBuilder.group({
@@ -57,6 +60,13 @@ export class ManageGroupsComponent implements OnInit {
       ssh_pc: [''],
       domain_pc: [''],
     });
+    const ws = new WebSocket('ws://' +  window.location.hostname + ':8080/v1/log')
+    ws.addEventListener('message', event => {
+      const data = JSON.parse(event.data)
+      if (data.msg === "progress") {
+        console.log(data)
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -75,6 +85,12 @@ export class ManageGroupsComponent implements OnInit {
     this.apiService.getPools().subscribe((pools: any) => {
       this.pools = pools;
     });
+
+    const rws = new ReconnectingWebSocket('ws://my.site.com');
+ 
+rws.addEventListener('open', () => {
+    rws.send('hello!');
+});
   }
 
   submit_group() {
