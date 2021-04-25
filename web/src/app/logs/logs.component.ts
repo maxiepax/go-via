@@ -12,7 +12,7 @@ export class LogsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    const rws = new ReconnectingWebSocket('ws://my.site.com');
+    const rws = new ReconnectingWebSocket('ws://' +  window.location.hostname + ':8080/v1/logs');
 
     rws.addEventListener('open', () => {
     });
