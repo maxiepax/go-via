@@ -13,6 +13,7 @@ import { HelpComponent } from './help/help.component';
 import { ManageDhcpPoolsComponent } from './manage-dhcp-pools/manage-dhcp-pools.component';
 import { ManageGroupsComponent } from './manage-groups/manage-groups.component';
 import { ManageImagesComponent } from './manage-images/manage-images.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 
@@ -22,7 +23,8 @@ import { ManageImagesComponent } from './manage-images/manage-images.component';
     HelpComponent,
     ManageDhcpPoolsComponent,
     ManageGroupsComponent,
-    ManageImagesComponent
+    ManageImagesComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,

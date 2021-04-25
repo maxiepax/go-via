@@ -25,6 +25,7 @@
     "@clr/angular": "5.0.2",
     "@clr/icons": "^5.0.2",
     "@clr/ui": "5.0.2",
+    "reconnecting-websocket": "^4.4.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"
