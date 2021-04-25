@@ -20,7 +20,6 @@ import '@cds/core/select/register.js';
 import '@cds/core/textarea/register.js';
 import '@cds/core/time/register.js';
 import '@cds/core/toggle/register.js';
-import ReconnectingWebSocket from 'reconnecting-websocket';
 
 
 @Component({
@@ -85,12 +84,6 @@ export class ManageGroupsComponent implements OnInit {
     this.apiService.getPools().subscribe((pools: any) => {
       this.pools = pools;
     });
-
-    const rws = new ReconnectingWebSocket('ws://my.site.com');
- 
-rws.addEventListener('open', () => {
-    rws.send('hello!');
-});
   }
 
   submit_group() {
