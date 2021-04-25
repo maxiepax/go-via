@@ -1,13 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-import { webSocket } from "rxjs/webSocket";
-const subject = webSocket('ws://' +  window.location.hostname + ':8080/v1/log');
-
-subject.subscribe(
-   msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
-   err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
-   () => console.log('complete') // Called when connection is closed (for whatever reason).
- );
+import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 
 @Component({
   selector: 'app-logs',
@@ -16,7 +8,18 @@ subject.subscribe(
 })
 export class LogsComponent implements OnInit {
 
-  constructor() { }
+  myWebSocket: WebSocketSubject<any> = webSocket('ws://' +  window.location.hostname + ':8080/v1/log');
+
+  constructor() {
+    this.myWebSocket.subscribe(
+      msg => console.log('message received: ' + msg),
+      // Called whenever there is a message from the server
+      err => console.log(err),
+      // Called if WebSocket API signals some kind of error
+      () => console.log('complete')
+      // Called when connection is closed (for whatever reason)
+   );
+  }
 
   ngOnInit(): void {
 
