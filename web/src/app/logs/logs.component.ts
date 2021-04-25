@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { webSocket } from "rxjs/webSocket";
-const subject = webSocket("ws://' +  window.location.hostname + ':8080/v1/log");
+const subject = webSocket('ws://' +  window.location.hostname + ':8080/v1/log');
 
 subject.subscribe(
    msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
