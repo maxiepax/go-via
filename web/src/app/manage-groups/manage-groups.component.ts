@@ -64,7 +64,7 @@ export class ManageGroupsComponent implements OnInit {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
         this.progress[data.id] = data.percentage;
-        console.log(this.progress);
+        console.log(data);
       }
     })
   }
