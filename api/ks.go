@@ -105,6 +105,9 @@ func Ks(c *gin.Context) {
 		"percentage":   20,
 		"progresstext": "kickstart",
 	}).Info("progress")
+	item.Progress = 20
+	item.Progresstext = "kickstart"
+	db.DB.Save(&item)
 
 	go ProvisioningWorker(item)
 

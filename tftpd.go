@@ -69,6 +69,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			"progresstext": "mboot.efi",
 		}).Info("progress")
 		filename, _ = mbootPath(image.Path)
+		address.Progress = 10
+		address.Progresstext = "mboot.efi"
+		db.DB.Save(&address)
 	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
 		//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
 		logrus.WithFields(logrus.Fields{
@@ -79,6 +82,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			"percentage":   15,
 			"progresstext": "installation",
 		}).Info("progress")
+		address.Progress = 15
+		address.Progresstext = "installation"
+		db.DB.Save(&address)
 
 		bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
 		if err != nil {
@@ -111,11 +117,6 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			return err
 		}
-
-		address.Progress = 10
-
-		res := db.DB.Save(&address)
-		fmt.Println(res)
 
 		logrus.WithFields(logrus.Fields{
 			"file":  filename,

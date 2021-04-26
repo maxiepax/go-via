@@ -83,6 +83,9 @@ func ProvisioningWorker(item models.Address) {
 		"percentage":   75,
 		"progresstext": "customization",
 	}).Info("progress")
+	item.Progress = 75
+	item.Progresstext = "customization"
+	db.DB.Save(&item)
 
 	ctx := context.Background()
 	c, err := govmomi.NewClient(ctx, url, true)
@@ -225,6 +228,9 @@ func ProvisioningWorker(item models.Address) {
 		"percentage":   100,
 		"progresstext": "completed",
 	}).Info("progress")
+	item.Progress = 10
+	item.Progresstext = "completed"
+	db.DB.Save(&item)
 
 }
 
