@@ -27,6 +27,7 @@ export class ApiService {
       {
         reimage: true,
         progress: 0,
+        progresstext: 'reimaging',
       }
     );
   }

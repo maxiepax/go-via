@@ -66,7 +66,6 @@ export class ManageGroupsComponent implements OnInit {
       if (data.msg === "progress") {
         this.progress[data.id] = data.percentage;
         this.progresstext[data.id] = data.progresstext;
-        console.log(data);
       }
     })
   }
@@ -81,7 +80,6 @@ export class ManageGroupsComponent implements OnInit {
         console.log(groups);
         hosts.forEach(host => {
           this.progress[host.id] = host.progress;
-          console.log(this.progress)
         })
       });
     });
