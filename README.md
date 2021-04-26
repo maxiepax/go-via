@@ -1,4 +1,4 @@
-Custom delpoyment tool for VMware ESXi Hypervisor
+Custom deployment tool for VMware ESXi Hypervisor
 =========================================
 
 Credits
