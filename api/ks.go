@@ -102,10 +102,10 @@ func Ks(c *gin.Context) {
 	}).Info("ks")
 	logrus.WithFields(logrus.Fields{
 		"id":           item.ID,
-		"percentage":   20,
+		"percentage":   50,
 		"progresstext": "kickstart",
 	}).Info("progress")
-	item.Progress = 20
+	item.Progress = 50
 	item.Progresstext = "kickstart"
 	db.DB.Save(&item)
 
