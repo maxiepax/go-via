@@ -228,7 +228,7 @@ func ProvisioningWorker(item models.Address) {
 		"percentage":   100,
 		"progresstext": "completed",
 	}).Info("progress")
-	item.Progress = 10
+	item.Progress = 100
 	item.Progresstext = "completed"
 	db.DB.Save(&item)
 
