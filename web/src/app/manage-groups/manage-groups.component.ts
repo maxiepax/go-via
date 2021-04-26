@@ -243,11 +243,11 @@ export class ManageGroupsComponent implements OnInit {
         group.hosts = group.hosts.map(host => host.id === id ? data : host)
         return group;
       })
+      this.progress[id] = 0;
+      this.progresstext = "re-imaging";
     },
     error  => {
-
       console.log("Error", error);
-      
     });
   }
 }
