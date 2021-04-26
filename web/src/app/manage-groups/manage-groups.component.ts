@@ -244,7 +244,7 @@ export class ManageGroupsComponent implements OnInit {
         return group;
       })
       this.progress[id] = 0;
-      this.progresstext = "re-imaging";
+      this.progresstext = "reimaging";
     },
     error  => {
       console.log("Error", error);

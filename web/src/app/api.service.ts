@@ -26,7 +26,7 @@ export class ApiService {
       'http://' + window.location.hostname + `:8080/v1/addresses/${id}`,
       {
         reimage: true,
-        progress: 0,
+        progress: null,
         progresstext: 'reimaging',
       }
     );
