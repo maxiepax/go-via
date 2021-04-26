@@ -16,7 +16,7 @@ go-via is a single binary, that when executed performs the tasks of dhcpd, tftpd
 
 Installation / Running
 ----------------------
-1. Download the latest release, and run ./go-via -f config.json
+Option 1: Download the latest release, and run ./go-via -f config.json
 example config file
 ``` json
 {
@@ -25,9 +25,9 @@ example config file
     }
 }
 ```
-2. Download docker image from maxiepax/go-via:latest (not very tested!)
+Option 2: Download docker image from maxiepax/go-via:latest (not very tested!)
 
-3. Download source and compile with go 1.15 and Angular 11
+Option 3: Download source and compile with go 1.15 and Angular 11
 
 Why a new version of VMware Imaging Appliance?
 ----------------------------------------------
@@ -45,16 +45,13 @@ Please note that go-via is still under heavy development, and there are bugs. Fo
 Known issue: When booting a host, it will request mboot.efi and successfully load it, however says it fails to load boot.cfg. Logs will show that it actually never requested boot.cfg.
 Workaround: Just reboot the host, eventually it magically starts working.
 
-Known issue: when you press re-image, button does not change state to disabled.
-Workaround: It does initiate the host to be re-imaged, if you open the developer tools and check console log, you will see that the database has been updated. Just reboot the host to be re-imaged and it will work.
-
 Todo
 -----
 
 - [x] Fix progress bar when re-imaging hosts
-- [] Fix re-image button so that it shows disabled once re-image has been initiated
-- [] Fix log interface in UI so that logs can be viewed live
-- [] Add on/off options to parts of default ks.cfg
-- [] Add support for custom ks.cfg based on Group and Host
+- [x] Fix re-image button so that it shows disabled once re-image has been initiated
+- [x] Fix log interface in UI so that logs can be viewed live
+- [/] Add post-deployment configuration.
+- [x] Add support for custom ks.cfg based on Group and Host
 - [] Add more backend protection to not being able to remove Image/Groups/Pools that are in use by objects.
-- [] Enhance default ks.cfg more, while still being secureboot compatible.
+- [x] Enhance default ks.cfg more, while still being secureboot compatible. - note: ks.cfg is not really possible with secureboot, added option to do post-config via SOAP API instead.
