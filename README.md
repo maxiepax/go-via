@@ -40,10 +40,10 @@ create an example config file, e.g. config.json, replace ens224 with the network
 Now start the binary as super user, pointing to the config file.
 ``` bash
 #start the application with normal debug level
-./go-via -file config.json
+sudo ./go-via -file config.json
 
 #start the application with verbose debug level
-./go-via -file config.json -debug
+sudo ./go-via -file config.json -debug
 ```
 You should be greeted with the following output.
 ``` bash
