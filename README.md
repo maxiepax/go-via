@@ -56,14 +56,11 @@ INFO[0000] Webserver                                     address=":8080"
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
 <h3> Option 2: docker container </h3>
-``` bash
 todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
-```
 
 <h3> Option 3: Download source and compile with go 1.15 and Angular 11 </h3>
-``` bash
 todo: fix documentation guidance for setting up go compiler and ng.
-```
+
 
 Why a new version of VMware Imaging Appliance?
 ----------------------------------------------
