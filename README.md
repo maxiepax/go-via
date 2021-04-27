@@ -16,7 +16,7 @@ go-via is a single binary, that when executed performs the tasks of dhcpd, tftpd
 
 Installation / Running
 ----------------------
-Option 1: Download the latest release, and run ./go-via -f config.json
+Option 1: Download the latest release, and run ./go-via -file config.json
 
 Most linux distributions should work, this has been tested on Ubuntu 20.20.
 
@@ -27,8 +27,9 @@ wget https://github.com/maxiepax/go-via/releases/download/v.0.0.24/go-via_.0.0.2
 #untar/extract it
 tar -zxvf go-via_.0.0.24_linux_amd64.tar.gz
 ```
+This will extract the files README.MD (this document) and go-via binary.
 
-example config file
+create an example config file, e.g. config.json, replace ens224 with the network interface you want to use to serve dhcpd/tftp.
 ``` json
 {
     "network": {
@@ -36,6 +37,23 @@ example config file
     }
 }
 ```
+Now start the binary as super user, pointing to the config file.
+``` bash
+#start the application with normal debug level
+./go-via -file config.json
+
+#start the application with verbose debug level
+./go-via -file config.json -debug
+```
+You should be greeted with the following output.
+``` bash
+sudo ./go-via -file config.json 
+INFO[0000] Startup                                       commit=bfe02f13d3382f1c760a1510fd3bbb966b5ac3f6 date="2021-04-26T12:01:33Z" version=.0.0.24
+INFO[0000] Existing database sqlite-database.db found   
+INFO[0000] Starting dhcp server                          int=ens224 ip=172.16.100.1 mac="00:0c:29:91:cf:eb"
+INFO[0000] Webserver                                     address=":8080"
+```
+You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
 Option 3: Download source and compile with go 1.15 and Angular 11
 
