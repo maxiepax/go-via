@@ -212,7 +212,7 @@ func main() {
 
 	listen := ":" + strconv.Itoa(conf.Port)
 	logrus.WithFields(logrus.Fields{
-		"address": listen,
+		"port": listen,
 	}).Info("Webserver")
 	err = r.Run(listen)
 
