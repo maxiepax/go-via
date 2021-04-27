@@ -17,6 +17,17 @@ go-via is a single binary, that when executed performs the tasks of dhcpd, tftpd
 Installation / Running
 ----------------------
 Option 1: Download the latest release, and run ./go-via -f config.json
+
+Most linux distributions should work, this has been tested on Ubuntu 20.20.
+
+``` bash
+#wget the release you want to download, e.g go-via_.0.0.24_linux_amd64.tar.gz
+wget https://github.com/maxiepax/go-via/releases/download/v.0.0.24/go-via_.0.0.24_linux_amd64.tar.gz
+
+#untar/extract it
+tar -zxvf go-via_.0.0.24_linux_amd64.tar.gz
+```
+
 example config file
 ``` json
 {
@@ -25,7 +36,6 @@ example config file
     }
 }
 ```
-Option 2: Download docker image from maxiepax/go-via:latest (not very tested!)
 
 Option 3: Download source and compile with go 1.15 and Angular 11
 
