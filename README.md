@@ -16,7 +16,7 @@ go-via is a single binary, that when executed performs the tasks of dhcpd, tftpd
 
 Installation / Running
 ----------------------
-Option 1: Download the latest release, and run ./go-via -file config.json
+<h3> Option 1: Download the latest release, and run ./go-via -file config.json </h3>
 
 Most linux distributions should work, this has been tested on Ubuntu 20.20.
 
