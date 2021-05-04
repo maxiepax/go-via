@@ -58,7 +58,7 @@ You can now browse to the web-frontend on the ip of the interface you specified,
 <h3> Option 2: docker container </h3>
 todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
 
-<h3> Option 3: Download source and compile with go 1.15 and Angular 11 </h3>
+<h3> Option 3: Download source and compile with go 1.16 and Angular 11 </h3>
 
 with Ubuntu 20.20 installed, do the following:
 install golang 1.16.x compiler
