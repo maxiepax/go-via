@@ -71,6 +71,7 @@ sudo apt-get install npm
 ```
 install angular-cli
 ``` bash
+sudo npm install npm@latest -g
 sudo npm install -g @angular/cli
 ```
 
