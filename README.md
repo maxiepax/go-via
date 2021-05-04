@@ -59,7 +59,21 @@ You can now browse to the web-frontend on the ip of the interface you specified,
 todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
 
 <h3> Option 3: Download source and compile with go 1.15 and Angular 11 </h3>
-todo: fix documentation guidance for setting up go compiler and ng.
+
+with Ubuntu 20.20 installed, do the following:
+install golang 1.16.x compiler
+``` bash
+sudo snap install go --classic
+```
+install npm
+``` bash
+sudo apt-get install npm
+```
+install angular-cli
+``` bash
+sudo npm install -g @angular/cli
+```
+
 
 
 Why a new version of VMware Imaging Appliance?
