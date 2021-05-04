@@ -74,6 +74,12 @@ install angular-cli
 sudo npm install npm@latest -g
 sudo npm install -g @angular/cli
 ```
+start two terminals:
+
+terminal 1:
+``` bash
+
+```
 
 
 
