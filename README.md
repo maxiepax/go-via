@@ -89,7 +89,10 @@ terminal 2:
 ``` bash
 cd ~/go-gia/web
 npm install
+# to only allow localhost access to gui:
 ng serve
+# to allow anyone access to gui:
+ng serve --host 0.0.0.0
 ```
 
 Why a new version of VMware Imaging Appliance?
