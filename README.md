@@ -88,6 +88,7 @@ go run *.go
 terminal 2:
 ``` bash
 cd ~/go-gia/web
+npm install
 ng serve
 ```
 
