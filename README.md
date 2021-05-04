@@ -78,10 +78,18 @@ start two terminals:
 
 terminal 1:
 ``` bash
-
+mkdir ~/go
+cd ~/go
+git clone https://github.com/maxiepax/go-via.git
+cd go-via
+go run *.go
 ```
 
-
+terminal 2:
+``` bash
+cd ~/go-gia/web
+ng serve
+```
 
 Why a new version of VMware Imaging Appliance?
 ----------------------------------------------
