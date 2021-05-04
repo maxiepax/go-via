@@ -43,7 +43,7 @@
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
-	<button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id)">Add host</button>
+	<button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id, group.pool_id)">Add host</button>
 	<button class="btn btn-outline btn-sm" (click)="showGroupModal('edit', group.id)">Edit Group</button>
 	<button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
 </div>
@@ -51,7 +51,7 @@
 <clr-modal [(clrModalOpen)]="addHostFormModal">
 	<h3 class="modal-title">Add Host</h3>
 	<div class="modal-body">
-		<form clrForm [formGroup]="Hostform" (ngSubmit)="submit_host()">
+		<form clrForm [formGroup]="Hostform" (ngSubmit)="submitHost()">
 			<cds-form-group control-width="shrink" layout="horizontal">
 				<cds-input>
 					<label>FQDN</label>
@@ -82,7 +82,7 @@
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-outline" (click)="addHostFormModal = false">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="submit_host()">Add</button>
+		<button type="button" class="btn btn-primary" (click)="submitHost()">Add</button>
 	</div>
 </clr-modal>
 

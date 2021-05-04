@@ -151,6 +151,9 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		return err
 	}
 	logrus.WithFields(logrus.Fields{
+		"id":    address.ID,
+		"ip":    address.IP,
+		"host":  address.Hostname,
 		"file":  filename,
 		"bytes": n,
 	}).Info("tftpd")

@@ -37,6 +37,7 @@ export class ManageGroupsComponent implements OnInit {
   Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
+  poolid = null;
   showGroupModalMode = "";
   addHostFormModal = false;
   progress = {};
@@ -196,18 +197,21 @@ export class ManageGroupsComponent implements OnInit {
     });
   }
 
-  addHostToGroup(id) {
+  addHostToGroup(group_id, pool_id) {
     this.addHostFormModal = true;
-    this.groupid = id;
+    this.groupid = group_id;
+    this.poolid = pool_id;
   }
 
 
-  submit_host() {
+  submitHost() {
+
     const data = {
       ...this.Hostform.value,
       hostname: this.Hostform.value.fqdn.split(".")[0],
       domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
       group_id: parseInt(this.groupid),
+      pool_id: parseInt(this.poolid),
     }
 
     this.apiService.addHost(data).subscribe((data: any) => {

@@ -98,6 +98,8 @@ func Ks(c *gin.Context) {
 	logrus.Info("Served ks.cfg file")
 	logrus.WithFields(logrus.Fields{
 		"id":      item.ID,
+		"ip":      item.IP,
+		"host":    item.Hostname,
 		"message": "served ks.cfg file",
 	}).Info("ks")
 	logrus.WithFields(logrus.Fields{
