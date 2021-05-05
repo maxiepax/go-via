@@ -97,7 +97,6 @@ export class ManageGroupsComponent implements OnInit {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
       pool_id: parseInt(this.Groupform.value.pool_id),
-      only_serve_reimage: 1,
     }
 
     let json_pc: any = {}
@@ -167,7 +166,6 @@ export class ManageGroupsComponent implements OnInit {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
       pool_id: parseInt(this.Groupform.value.pool_id),
-      only_serve_reimage: 1,
     };
 
     let json_pc: any = {}
