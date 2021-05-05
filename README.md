@@ -58,9 +58,42 @@ You can now browse to the web-frontend on the ip of the interface you specified,
 <h3> Option 2: docker container </h3>
 todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
 
-<h3> Option 3: Download source and compile with go 1.15 and Angular 11 </h3>
-todo: fix documentation guidance for setting up go compiler and ng.
+<h3> Option 3: Download source and compile with go 1.16 and Angular 11 </h3>
 
+with Ubuntu 20.20 installed, do the following:
+install golang 1.16.x compiler
+``` bash
+sudo snap install go --classic
+```
+install npm
+``` bash
+sudo apt-get install npm
+```
+install angular-cli
+``` bash
+sudo npm install npm@latest -g
+sudo npm install -g @angular/cli
+```
+start two terminals:
+
+terminal 1:
+``` bash
+mkdir ~/go
+cd ~/go
+git clone https://github.com/maxiepax/go-via.git
+cd go-via
+go run *.go
+```
+
+terminal 2:
+``` bash
+cd ~/go-gia/web
+npm install
+# to only allow localhost access to gui:
+ng serve
+# to allow anyone access to gui:
+ng serve --host 0.0.0.0
+```
 
 Why a new version of VMware Imaging Appliance?
 ----------------------------------------------
