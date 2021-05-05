@@ -53,49 +53,6 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 		}
 	}
 
-	// Figure out and get the pool
-	/*
-		var pool models.PoolWithAddresses
-		if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
-			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("no matching pool found")
-			}
-			return nil, res.Error
-		}
-	*/
-
-	/*
-		var pools []models.Pool
-		if res := db.DB.Table("pools").Find(&pool); res.Error != nil {
-			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("no matching pool found")
-			}
-			return nil, res.Error
-		}
-		var pool models.PoolWithAddresses
-		for _, v := range pools {
-			_, ipv4Net, err := net.ParseCIDR(sourceNet.String() + "/" + v.Netmask)
-			if err != nil {
-				continue
-			}
-			if ipv4Net.String() = v.NetAddress {
-				pool.Pool = v
-				break
-			}
-		}
-
-		if pool.ID = 0 {
-			return nil, fmt.Errorf("no matching pool found")
-		}
-
-		if res := db.DB.Table("pools").Preload("Addresses").First(&pool, pool.ID); res.Error != nil {
-			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("no matching pool found")
-			}
-			return nil, res.Error
-		}
-	*/
-
 	pool, err := api.FindPool(sourceNet.String())
 	if err != nil {
 		return nil, err
@@ -170,16 +127,6 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	if err != nil {
 		return nil, err
 	}
-
-	/*
-		var pool models.PoolWithAddresses
-		if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
-			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("no matching pool found")
-			}
-			return nil, res.Error
-		}
-	*/
 
 	// Make a list of all reimage and pool addresses
 	addresses := append(reimageAddresses, pool.Addresses...)
@@ -328,24 +275,11 @@ func listMissingOptions(req *layers.DHCPv4, resp *layers.DHCPv4) string {
 
 // a IP address conflict was detected, add/update the address table to block that address from being used for a while (lease time)
 func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DHCPv4, error) {
-	/*if opt82, ok := option82.Decode(req); ok {
-		spew.Dump(opt82)
-	}*/
 
 	pool, err := api.FindPool(sourceNet.String())
 	if err != nil {
 		return nil, err
 	}
-
-	/*
-		var pool models.PoolWithAddresses
-		if res := db.DB.Table("pools").Preload("Addresses").Where("INET_ATON(net_address) = INET_ATON(?) & ((POWER(2, netmask)-1) <<(32-netmask))", sourceNet.String()).First(&pool); res.Error != nil {
-			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("no matching pool found")
-			}
-			return nil, res.Error
-		}
-	*/
 
 	var requestedIP net.IP
 	for _, v := range req.Options {
@@ -404,9 +338,6 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 			db.DB.Where("? LIKE '%' || vendor_class || '%'", string(v.Data)).First(&deviceClass)
 		}
 	}
-
-	//if res := db.DB.Where("((ISNULL(pool_id) AND ISNULL(pool_id) AND ISNULL(address_id)) OR pool_id = ? OR (address_id > 0 AND address_id = ?)) AND (ISNULL(device_class_id) OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
-	//if res := db.DB.Where("((pool_id IS NULL) AND IFNULL(pool_id, NULL) AND IFNULL(address_id, NULL)) OR pool_id = ? OR (address_id > 0 AND address_id = ?)) AND (IFNULL(device_class_id, NULL) OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 
 	if res := db.DB.Where("((pool_id = 0 AND device_class_id = 0 AND address_id = 0) OR pool_id = ? OR address_id = ?) AND (device_class_id = 0 OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("address_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 
