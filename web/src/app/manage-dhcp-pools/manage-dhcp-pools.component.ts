@@ -58,7 +58,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
   submit() {
     const data = {
       ...this.form.value,
-      only_serve_reserved: 1,
+      only_serve_reimage: 1,
       lease_time: 7000,
       //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
@@ -86,7 +86,7 @@ export class ManageDhcpPoolsComponent implements OnInit {
   updatePool() {
     const data = {
       ...this.form.value,
-      only_serve_reserved: 1,
+      only_serve_reimage: 1,
       lease_time: 7000,
       //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
