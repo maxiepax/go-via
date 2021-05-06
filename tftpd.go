@@ -140,6 +140,14 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		}
 	}
 
+	// get the filesize to send filelength
+	fi, err := os.Stat(filename)
+	if err != nil {
+		return err
+	}
+
+	rf.(tftp.OutgoingTransfer).SetSize(fi.Size())
+
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
