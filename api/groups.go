@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -84,6 +85,7 @@ func CreateGroup(c *gin.Context) {
 
 	item := models.Group{GroupForm: form}
 
+	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
@@ -150,6 +152,12 @@ func UpdateGroup(c *gin.Context) {
 	if err := mergo.Merge(&item, models.Group{GroupForm: form}, mergo.WithOverride); err != nil {
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
+
+	//remove whitespaces surrounding comma kickstart file breaks otherwise.
+	item.DNS = strings.Join(strings.Fields(item.DNS), "")
+	item.NTP = strings.Join(strings.Fields(item.NTP), "")
+
+	spew.Dump(&item)
 
 	// Save it
 	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
