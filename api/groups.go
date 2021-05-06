@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
@@ -82,6 +83,8 @@ func CreateGroup(c *gin.Context) {
 	}
 
 	item := models.Group{GroupForm: form}
+
+	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
