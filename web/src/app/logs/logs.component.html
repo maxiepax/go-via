@@ -1,6 +1,12 @@
 <p>logs works!</p>
 
-<div id="wrapper"
+<div id="wrapper">
+  <div *ngFor="let row of data" >
+    <div> {{ row.time }} </div> <div> {{ row.}} </div>
+  </div>
+</div>
+
+<div id="wrapper">
   <div *ngFor="let row of data" >
      {{ row.msg }}
   </div>
