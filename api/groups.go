@@ -85,6 +85,7 @@ func CreateGroup(c *gin.Context) {
 	item := models.Group{GroupForm: form}
 
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
+	item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
