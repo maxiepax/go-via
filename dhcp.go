@@ -98,6 +98,7 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 		YourClientIP: leaseIP,
 		RelayAgentIP: req.RelayAgentIP,
 		ClientHWAddr: req.ClientHWAddr,
+		NextServerIP: ip.To4(),
 	}
 
 	resp.Options = append(resp.Options, layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeOffer)}))
@@ -146,6 +147,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		Xid:          req.Xid,
 		RelayAgentIP: req.RelayAgentIP,
 		ClientHWAddr: req.ClientHWAddr,
+		NextServerIP: ip.To4(),
 	}
 
 	// Try to find the lease in our address list
@@ -379,7 +381,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 		byte(layers.DHCPOptT2),
 		byte(layers.DHCPOptLeaseTime),
 		byte(layers.DHCPOptServerID),
-		byte(66),
+		//byte(66),
 		byte(67),
 	}
 	for _, v := range defaultOptions {
@@ -415,8 +417,8 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithAdd
 		// Try to generate the missing option
 		code := layers.DHCPOpt(opCode)
 		switch code {
-		case 66:
-			resp.Options = append(resp.Options, layers.NewDHCPOption(code, ip.To4()))
+		/*case 66:
+		resp.Options = append(resp.Options, layers.NewDHCPOption(code, ip.To4())) */
 		case 67:
 			resp.Options = append(resp.Options, layers.NewDHCPOption(code, []byte("mboot.efi")))
 		case layers.DHCPOptSubnetMask:
