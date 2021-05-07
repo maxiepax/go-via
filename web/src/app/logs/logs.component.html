@@ -2,7 +2,7 @@
 
 <div id="wrapper">
   <div *ngFor="let row of data" >
-    <div *ngFor="let field of row"> {{ field }} </div>
+    <div *ngFor="let field of row | keyvalue"> key: {{ field.key }} value: {{ field.value }} </div>
   </div>
 </div>
 
