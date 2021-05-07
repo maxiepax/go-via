@@ -2,12 +2,15 @@
 
 <div id="wrapper">
   <div *ngFor="let row of data" >
-    <div> {{ row.time }} </div> <div> </div>
+    <div *ngFor="let field of row"> {{ field }} </div>
   </div>
 </div>
 
+
+<!--
 <div id="wrapper">
   <div *ngFor="let row of data" >
      {{ row.msg }}
   </div>
 </div>
+-->
