@@ -72,6 +72,19 @@ func readHandler(filename string, rf io.ReaderFrom) error {
 		address.Progress = 10
 		address.Progresstext = "mboot.efi"
 		db.DB.Save(&address)
+	} else if filename == "crypto64.efi" {
+		logrus.WithFields(logrus.Fields{
+			ip: "requesting crypto64.efi",
+		}).Info("tftpd")
+		logrus.WithFields(logrus.Fields{
+			"id":           address.ID,
+			"percentage":   12,
+			"progresstext": "crypto64.efi",
+		}).Info("progress")
+		filename, _ = crypto64Path(image.Path)
+		address.Progress = 12
+		address.Progresstext = "crypto64.efi"
+		db.DB.Save(&address)
 	} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
 		//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
 		logrus.WithFields(logrus.Fields{
@@ -189,5 +202,19 @@ func mbootPath(imagePath string) (string, error) {
 	}
 	//couldn't find the file
 	return "", fmt.Errorf("could not locate a mboot.efi")
+
+}
+
+func crypto64Path(imagePath string) (string, error) {
+	//check these paths if the file exists.
+	paths := []string{"/EFI/BOOT/CRYPTO64.EFI", "/efi/boot/crypto64.efi"}
+
+	for _, v := range paths {
+		if _, err := os.Stat(imagePath + v); err == nil {
+			return imagePath + v, nil
+		}
+	}
+	//couldn't find the file
+	return "", fmt.Errorf("could not locate a crypto64.efi")
 
 }
