@@ -21,7 +21,8 @@ changelog:
     - '^docs:'
     - '^test:'
 archives:
-  files:
+  -
+    files:
     - config.example.json
 dockers:
  - ids:
