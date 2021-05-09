@@ -1,16 +1,5 @@
-<p>logs works!</p>
-
 <div id="wrapper">
-  <div *ngFor="let row of data" >
-    <div *ngFor="let field of row | keyvalue"> key: {{ field.key }} value: {{ field.value }} </div>
+  <div *ngFor="let row of data" fxLayout="row" fxLayoutGap="20px">
+    <div > {{ row.time }} </div><div [ngClass]="{'info': row.level == 'info', 'debug': row.level == 'debug'}"> {{ row.level }} </div><div *ngFor="let payload of row.payload | keyvalue"> {{ payload.key }}: {{ payload.value }} </div>
   </div>
 </div>
-
-
-<!--
-<div id="wrapper">
-  <div *ngFor="let row of data" >
-     {{ row.msg }}
-  </div>
-</div>
--->

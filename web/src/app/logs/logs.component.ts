@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
+
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
@@ -8,12 +9,19 @@ import { Component, OnInit } from '@angular/core';
 export class LogsComponent implements OnInit {
 
   data = [];
+  
 
   constructor() {
     const ws = new WebSocket('ws://' +  window.location.hostname + ':8080/v1/log')
     ws.addEventListener('message', event => {
-      this.data.push(JSON.parse(event.data));
-      console.log(JSON.parse(event.data));
+      const { time, level, ...payload } = JSON.parse(event.data);
+      const data = {
+          time,
+          level,
+          payload,
+      };
+      console.log(data)
+      this.data.push(data);
     })
   }
 

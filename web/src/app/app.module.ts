@@ -14,6 +14,8 @@ import { ManageDhcpPoolsComponent } from './manage-dhcp-pools/manage-dhcp-pools.
 import { ManageGroupsComponent } from './manage-groups/manage-groups.component';
 import { ManageImagesComponent } from './manage-images/manage-images.component';
 import { LogsComponent } from './logs/logs.component';
+import { FlexLayoutModule } from "@angular/flex-layout";
+
 
 
 
@@ -35,6 +37,7 @@ import { LogsComponent } from './logs/logs.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    FlexLayoutModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
