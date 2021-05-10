@@ -1,11 +1,13 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
 	"text/template"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -41,11 +43,15 @@ reboot
 func Ks(c *gin.Context) {
 	var item models.Address
 	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
-	//if res := db.DB.Where("ip = ?", host).First(&item); res.Error != nil {
+
 	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
+
+	options := models.GroupOptions{}
+	json.Unmarshal(item.Group.Options, &options)
+	spew.Dump(options)
 
 	if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
 		Error(c, http.StatusInternalServerError, reimage.Error) // 500
