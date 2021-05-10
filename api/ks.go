@@ -25,8 +25,7 @@ rootpw {{ .password }}{{ end }}
 
 {{ if ne .erasedisks "" }}
 # Remove ALL partitions
-clearpart --alldrives
-{{ end }}
+clearpart --alldrives{{ end }}
 
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
