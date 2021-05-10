@@ -19,16 +19,19 @@ var defaultks = `
 # Accept the VMware End User License Agreement
 vmaccepteula
 
-{{ if ne .password "" }}
 # Set the root password for the DCUI and Tech Support Mode
-rootpw {{ .password }}{{ end }}
+rootpw {{ .password }}
 
 {{ if .erasedisks }}
 # Remove ALL partitions
 clearpart --alldrives{{ end }}
 
+{{ if .bootdisk }}
+install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs
+{{ else }}
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
+{{ end }}
 
 # Set the network to static on the first network adapter
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
@@ -84,6 +87,7 @@ func Ks(c *gin.Context) {
 		"netmask":    netmask,
 		"via_server": laddrport,
 		"erasedisks": options.EraseDisks,
+		"bootdisk":   options.BootDisk,
 	}
 
 	// check if default ks has been overridden.

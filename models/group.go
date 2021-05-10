@@ -37,4 +37,5 @@ type GroupOptions struct {
 	SSH                  bool `json:"ssh"`
 	SuppressShellWarning bool `json:"suppressshellwarning"`
 	EraseDisks           bool `json:"erasedisks"`
+	BootDisk             bool `json:"bootdisk"`
 }
