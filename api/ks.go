@@ -23,8 +23,10 @@ vmaccepteula
 # Set the root password for the DCUI and Tech Support Mode
 rootpw {{ .password }}{{ end }}
 
+{{ if ne .erasedisks "" }}
 # Remove ALL partitions
 clearpart --alldrives
+{{ end }}
 
 # Install on the first local disk available on machine
 install --firstdisk --overwritevmfs
@@ -82,6 +84,7 @@ func Ks(c *gin.Context) {
 		"hostname":   item.Hostname,
 		"netmask":    netmask,
 		"via_server": laddrport,
+		"erasedisks": options.EraseDisks,
 	}
 
 	// check if default ks has been overridden.
