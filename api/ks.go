@@ -23,7 +23,7 @@ vmaccepteula
 # Set the root password for the DCUI and Tech Support Mode
 rootpw {{ .password }}{{ end }}
 
-{{ if ne .erasedisks "" }}
+{{ if .erasedisks }}
 # Remove ALL partitions
 clearpart --alldrives{{ end }}
 
