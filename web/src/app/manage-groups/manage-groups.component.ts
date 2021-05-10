@@ -58,6 +58,7 @@ export class ManageGroupsComponent implements OnInit {
       image_id: ['', [Validators.required]],
       pool_id: ['', [Validators.required]],
       erasedisks: [''],
+      bootdisk: [''],
       ntp_pc: [''],
       ssh_pc: [''],
       domain_pc: [''],
@@ -114,12 +115,16 @@ export class ManageGroupsComponent implements OnInit {
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
+    if (data.bootdisk) {
+      json_pc.bootdisk = true;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
     delete data.ntp_pc;
     delete data.domain_pc;
     delete data.erasedisks;
+    delete data.bootdisk;
 
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
@@ -160,6 +165,7 @@ export class ManageGroupsComponent implements OnInit {
       ssh_pc: this.group.options.ssh,
       ntp_pc: this.group.options.ntp,
       erasedisks: this.group.options.erasedisks,
+      bootdisk: this.group.options.bootdisk,
     });
     }
     if (mode === "add") {
@@ -188,13 +194,16 @@ export class ManageGroupsComponent implements OnInit {
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
+    if (data.bootdisk) {
+      json_pc.bootdisk = true;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
     delete data.ntp_pc;
     delete data.domain_pc;
     delete data.erasedisks;
-    console.log(data.options);
+    delete data.bootdisk;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
