@@ -116,7 +116,7 @@ export class ManageGroupsComponent implements OnInit {
       json_pc.erasedisks = true;
     }
     if (data.bootdisk) {
-      json_pc.bootdisk = true;
+      json_pc.bootdisk = data.bootdisk;
     }
 
     data.options = json_pc;
@@ -195,7 +195,7 @@ export class ManageGroupsComponent implements OnInit {
       json_pc.erasedisks = true;
     }
     if (data.bootdisk) {
-      json_pc.bootdisk = true;
+      json_pc.bootdisk = data.bootdisk;
     }
 
     data.options = json_pc;
