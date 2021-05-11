@@ -12,6 +12,13 @@ Second step is to upload an ESXi ISO. No other operating systems are currently s
 The group you create will have all the common configuration parameters for your hosts. e.g. ntp, dns, initial deployment password, ks config etc.
 When you've created a group, start adding hosts to it.
 If you want to change something in the future, it's now very easy to just change this on the group level, instead of having to modify every single host.
+<br/>
+Options:<br/>
+- Boot Device: If you don't specify a boot device --firstdisk is used. If you're server doesn't comply with this, you can manually specify the mpx device to be uesd.<br/>
+- DNS Suffix: Will configure the dns suffix for the host. If you enter the FQDN of sfo-m01-esx01.rainpole.io , the suffix is rainpole.io.<br/>
+- SSH: Will enable the service SSH on the host, and silence the warning that ssh is enabled on the host.<br/>
+- NTP: Will configure the NTP settings enterd on the host.<br/>
+- (WARNING) Erase all disks: During deployment, this will erase all data and partitions on all disks connected to the host. This includes all LUNs that may be masked to the host!<br/>
 
 <h3> Start imaging </h3>
 To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to perform a fully unattended deployment.
@@ -24,9 +31,6 @@ To edit a pool, simply click Edit Scope next to the scope you wish to edit.
 
 <h3> Edit a Group </h3>
 To edit a group, click Edit Group below the group.
-
-<h3> Editing a host </h3>
-Editing a host doesn't make sense, just delete it and re-create it.
 
 <h2> Deleting </h2>
 

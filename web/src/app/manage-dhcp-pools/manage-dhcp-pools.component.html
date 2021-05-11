@@ -50,12 +50,12 @@
   <h3 *ngIf="showPoolModalMode === 'add'" class="modal-title">Add Pool</h3>
   <h3 *ngIf="showPoolModalMode === 'edit'" class="modal-title">Edit Pool</h3>
   <div class="modal-body">
-    <form [formGroup]="form" cds-layout="compact" (ngSubmit)="submit()">
-      <cds-form-group control-width="shrink">
-        <cds-input-group layout="horizontal">
-          <label>Network/Mask</label>
-          <cds-input style="max-width:84px">
-            <label>Network</label>
+    <form clrForm [formGroup]="form" (ngSubmit)="submit()">
+      <cds-form-group style="max-width: 155px" layout="vertical">
+        <cds-input-group>
+          <label class="clr-col-8 form-input">Network/Mask</label>
+          <cds-input style="max-width:90px">
+            <label class="clr-col-8 form-input">Network</label>
             <input
               placeholder="192.168.0.0"
               type="url"
@@ -63,16 +63,16 @@
             />
           </cds-input>
           <cds-input style="max-width:18px">
-            <label></label>
+            <label class="clr-col-8 form-input"></label>
             <input placeholder="/" type="text" readonly />
           </cds-input>
           <cds-input style="max-width:45px">
-            <label>Mask</label>
+            <label class="clr-col-8 form-input">Mask</label>
             <input placeholder="24" type="number" formControlName="netmask" />
           </cds-input>
         </cds-input-group>
         <cds-input>
-          <label>Network name</label>
+          <label class="clr-col-10 form-input">Network name</label>
           <input
             placeholder="eg. mgmt network"
             type="text"
@@ -81,7 +81,7 @@
           />
         </cds-input>
         <cds-input>
-          <label>IP pool start</label>
+          <label class="clr-col-8 form-input">IP pool start</label>
           <input
             placeholder="eg. 172.16.13.10"
             type="text"
@@ -90,7 +90,7 @@
           />
         </cds-input>
         <cds-input>
-          <label>IP pool end</label>
+          <label class="clr-col-8 form-input">IP pool end</label>
           <input
             placeholder="eg. 172.16.13.110"
             type="text"
@@ -99,7 +99,7 @@
           />
         </cds-input>
         <cds-input>
-          <label>Gateway</label>
+          <label class="clr-col-8 form-input">Gateway</label>
           <input
             placeholder="eg. 172.16.13.1"
             type="text"

@@ -52,17 +52,17 @@
 	<h3 class="modal-title">Add Host</h3>
 	<div class="modal-body">
 		<form clrForm [formGroup]="Hostform" (ngSubmit)="submitHost()">
-			<cds-form-group control-width="shrink" layout="horizontal">
+			<cds-form-group layout="vertical">
 				<cds-input>
-					<label>FQDN</label>
+					<label class="clr-col-6 form-input">FQDN</label>
 					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn" />
 				</cds-input>
 				<cds-input>
-					<label>IPAddress</label>
+					<label class="clr-col-6 form-input">IPAddress</label>
 					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip" />
 				</cds-input>
 				<cds-input>
-					<label>mac</label>
+					<label class="clr-col-6 form-input">mac</label>
 					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
 				</cds-input>
 			</cds-form-group>
@@ -91,37 +91,44 @@
 	<h3 *ngIf="showGroupModalMode === 'edit'" class="modal-title">Edit Group</h3>
 	<div class="modal-body">
 		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
-			<cds-form-group control-width="shrink" layout="horizontal">
+			<cds-form-group layout="vertical">
 				<cds-input>
-					<label>Group name</label>
+					<label class="clr-col-6 form-input">Group name</label>
 					<input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name" />
 				</cds-input>
 				<cds-input>
-					<label>DNS</label>
+					<label class="clr-col-6 form-input">DNS</label>
 					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns" />
 				</cds-input>
 				<cds-input>
-					<label>NTP</label>
-					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
+					<label class="clr-col-6 form-input">NTP</label>
+					<input  placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
 				</cds-input>
 				<cds-input>
-					<label>Password</label>
-					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
+					<label class="clr-col-6 form-input">Password</label>
+					<input  placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
 				</cds-input>
 				<cds-select control-width="shrink">
-					<label>DHCP Pool</label>
+					<label class="clr-col-6 form-input">DHCP Pool</label>
 					<select name="pool_id" formControlName="pool_id">
 						<option *ngFor="let pool of pools" [value]=pool.id>{{pool.name}}</option>
 					</select>
 				</cds-select>
 				<cds-select control-width="shrink">
-					<label>Image</label>
+					<label class="clr-col-6 form-input">Image</label>
 					<select name="image_id" formControlName="image_id">
 						<option *ngFor="let image of images" [value]=image.id>{{image.iso_image}}</option>
 					</select>
 				</cds-select>
+				<cds-input style="margin-top:0.5em;">
+					<label class="clr-col-6 form-input">Boot drive (Optional)</label>
+					<input placeholder="mpx.vmhba1:C0:T0:L0" name="bootdisk" id="bootdisk" formControlName="bootdisk" />
+				</cds-input>
 			</cds-form-group>
 		
+			<div class="postconfig"> Post config options </div>
+
+		<clr-control-helper>Select all options you wish to be included in post-conf</clr-control-helper>
 		<div class="clr-control-container clr-control-inline">
 			<clr-checkbox-wrapper>
 				<input type="checkbox" clrCheckbox name="domain_pc" id="domain_pc" formControlName="domain_pc"/>
@@ -140,9 +147,7 @@
 				<label>Erase all disks</label>
 			</clr-checkbox-wrapper>	
 		</div>
-		<input name="bootdisk" id="bootdisk" formControlName="bootdisk" />
-		<label>Boot drive</label>
-		<clr-control-helper>Select all options you wish to be included in post-conf</clr-control-helper>
+		
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
