@@ -114,11 +114,12 @@ Workaround: Just reboot the host, eventually it magically starts working.
 
 Todo
 -----
-
+- [ ] Authentication (basicAuth)
+- [ ] post-config: regenerate self-signed certificate with correct hostname
 - [x] Fix progress bar when re-imaging hosts
 - [x] Fix re-image button so that it shows disabled once re-image has been initiated
 - [x] Fix log interface in UI so that logs can be viewed live
-- [/] Add post-deployment configuration.
+- [x] Add post-deployment configuration.
 - [x] Add support for custom ks.cfg based on Group and Host
-- [] Add more backend protection to not being able to remove Image/Groups/Pools that are in use by objects.
+- [x] Add more backend protection to not being able to remove Image/Groups/Pools that are in use by objects.
 - [x] Enhance default ks.cfg more, while still being secureboot compatible. - note: ks.cfg is not really possible with secureboot, added option to do post-config via SOAP API instead.
