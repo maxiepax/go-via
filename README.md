@@ -88,7 +88,7 @@ go run *.go
 
 terminal 2:
 ``` bash
-cd ~/go-gia/web
+cd ~/go-via/web
 npm install
 # to only allow localhost access to gui:
 ng serve
