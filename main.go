@@ -5,9 +5,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
@@ -94,29 +96,33 @@ func main() {
 	}
 
 	//migrate all models
-	err = db.DB.AutoMigrate(&models.Pool{}, &models.Address{}, &models.Option{}, &models.DeviceClass{}, &models.Group{}, &models.Image{})
+	err = db.DB.AutoMigrate(&models.Pool{}, &models.Address{}, &models.Option{}, &models.DeviceClass{}, &models.Group{}, &models.Image{}, &models.User{})
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
+	//create the device classes
 	var vc models.DeviceClass
-
 	if res := db.DB.FirstOrCreate(&vc, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_x86", VendorClass: "PXEClient:Arch:00007"}}); res.Error != nil {
 		logrus.Warning(res.Error)
 	}
 
-	// DHCPd
+	//create admin user if it doesn't exist
+	var adm models.User
+	hp := api.HashAndSalt([]byte("VMware1!"))
+	if res := db.DB.Where(models.User{UserForm: models.UserForm{Username: "admin"}}).Attrs(models.User{UserForm: models.UserForm{Password: hp}}).FirstOrCreate(&adm); res.Error != nil {
+		logrus.Warning(res.Error)
+	}
 
+	// DHCPd
 	for _, v := range conf.Network.Interfaces {
 		go serve(v)
 	}
 
 	// TFTPd
-
 	go TFTPd()
 
 	//REST API
-
 	r := gin.New()
 	r.Use(cors.Default())
 
@@ -124,16 +130,45 @@ func main() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
 	r.NoRoute(func(c *gin.Context) {
 		c.Request.URL.Path = "/web/" // force us to always return index.html and not the requested page to be compatible with HTML5 routing
 		http.FileServer(statikFS).ServeHTTP(c.Writer, c.Request)
 	})
+
 	ui := r.Group("/")
 	{
 		ui.GET("/web/*all", gin.WrapH(http.FileServer(statikFS)))
 
 		ui.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
+
+	// middleware to check if user is logged in
+	r.Use(func(c *gin.Context) {
+		fmt.Println("inside middleware")
+		username, password, hasAuth := c.Request.BasicAuth()
+		if !hasAuth {
+			fmt.Println("doesnt have auth")
+			spew.Dump(c.Request.Header)
+			c.Abort()
+			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			return
+		}
+		fmt.Println("has auth info")
+		spew.Dump(c.Request.Header)
+
+		var user models.User
+		if res := db.DB.Select("username", "password").Where("username = ?", username).First(&user); res.Error != nil {
+			logrus.Warning(res.Error)
+		}
+
+		//check if passwords match
+		if api.ComparePasswords(user.Password, []byte(password), username) {
+			fmt.Println("passwords match")
+		} else {
+			fmt.Println("passwords dont match")
+		}
+	})
 
 	v1 := r.Group("/v1")
 	{

@@ -29,6 +29,7 @@ require (
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/vmware/govmomi v0.24.1 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
