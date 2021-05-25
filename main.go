@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -59,6 +60,7 @@ func main() {
 
 	conf := new(config.Config)
 
+	//try to load environment variables and flags.
 	err := d.Load(conf)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
@@ -66,6 +68,7 @@ func main() {
 		}).Fatalf("failed to load config")
 	}
 
+	//if a file has been implied, also load the content of the configuration file.
 	if conf.File != "" {
 		d = multiconfig.NewWithPath(conf.File)
 
@@ -83,6 +86,37 @@ func main() {
 		logrus.WithFields(logrus.Fields{
 			"err": err,
 		}).Fatalf("failed to load config")
+	}
+
+	//if no environemnt variables, or configuration file has been declared, serve on all interfaces.
+	if len(conf.Network.Interfaces) == 0 {
+		logrus.Warning("no interfaces have been configured, trying to find interfaces to serve to, will serve on all.")
+		i, err := net.Interfaces()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Fatalf("failed to find a usable interface")
+		}
+		for _, v := range i {
+			// dont use loopback interfaces
+			if v.Flags&net.FlagLoopback != 0 {
+				continue
+			}
+			// dont use ptp interfaces
+			if v.Flags&net.FlagPointToPoint != 0 {
+				continue
+			}
+			_, _, err := findIPv4Addr(&v)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"err":   err,
+					"iface": v.Name,
+				}).Warning("interaces does not have a usable ipv4 address")
+				continue
+			}
+			conf.Network.Interfaces = append(conf.Network.Interfaces, v.Name)
+		}
+		spew.Dump(conf.Network.Interfaces)
 	}
 
 	//connect to database
