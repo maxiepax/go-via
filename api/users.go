@@ -123,6 +123,7 @@ func CreateUser(c *gin.Context) {
 
 	item := models.User{UserForm: form}
 
+	item.Password = HashAndSalt([]byte(item.Password))
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
