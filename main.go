@@ -163,6 +163,8 @@ func main() {
 		logrus.Fatal(err)
 	}
 
+	r.GET("ks.cfg", api.Ks)
+
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
 		username, password, hasAuth := c.Request.BasicAuth()
@@ -294,8 +296,6 @@ func main() {
 
 		v1.GET("log", logServer.Handle)
 	}
-
-	r.GET("ks.cfg", api.Ks)
 
 	r.GET("postconfig", api.PostConfig)
 
