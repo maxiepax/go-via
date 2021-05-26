@@ -26,8 +26,8 @@ go-via uses BasicAuth, all users added are by default Admin.
 </clr-datagrid>
 
 <clr-modal [(clrModalOpen)]="showUserModalMode">
-    <h3 *ngIf="showPoolModalMode === 'add'" class="modal-title">Add User</h3>
-    <h3 *ngIf="showPoolModalMode === 'edit'" class="modal-title">Edit User</h3>
+    <h3 *ngIf="showUserModalMode === 'add'" class="modal-title">Add User</h3>
+    <h3 *ngIf="showUserModalMode === 'edit'" class="modal-title">Edit User</h3>
     <div class="modal-body">
       <form clrForm [formGroup]="form" (ngSubmit)="submit()">
         <cds-form-group style="max-width: 155px" layout="vertical">
@@ -89,14 +89,14 @@ go-via uses BasicAuth, all users added are by default Admin.
       <button
         type="button"
         class="btn btn-outline"
-        (click)="showPoolModalMode = ''"
+        (click)="showUserModalMode = ''"
       >
         Cancel
       </button>
-      <button *ngIf="showPoolModalMode === 'add'" type="button" class="btn btn-primary" (click)="submit()">
+      <button *ngIf="showUserModalMode === 'add'" type="button" class="btn btn-primary" (click)="submit()">
         Add
       </button>
-      <button *ngIf="showPoolModalMode === 'edit'" type="button" class="btn btn-primary" (click)="update()">
+      <button *ngIf="showUserModalMode === 'edit'" type="button" class="btn btn-primary" (click)="update()">
         Update
       </button>
     </div>
