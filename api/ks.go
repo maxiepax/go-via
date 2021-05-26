@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -36,11 +35,6 @@ install --firstdisk --overwritevmfs
 # Set the network to static on the first network adapter
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
 
-%post --interpreter=busybox
-esxcli network firewall set --enabled false
-wget -O- http://{{ .via_server }}/postconfig
-esxcli network firewall set --enabled true
-
 reboot
 `
 
@@ -55,7 +49,6 @@ func Ks(c *gin.Context) {
 
 	options := models.GroupOptions{}
 	json.Unmarshal(item.Group.Options, &options)
-	spew.Dump(options)
 
 	if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
 		Error(c, http.StatusInternalServerError, reimage.Error) // 500
