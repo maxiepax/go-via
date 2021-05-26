@@ -116,7 +116,6 @@ func main() {
 			}
 			conf.Network.Interfaces = append(conf.Network.Interfaces, v.Name)
 		}
-		spew.Dump(conf.Network.Interfaces)
 	}
 
 	//connect to database
@@ -172,8 +171,8 @@ func main() {
 		if !hasAuth {
 			fmt.Println("doesnt have auth")
 			spew.Dump(c.Request.Header)
-			c.Abort()
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			c.Abort()
 			return
 		}
 		fmt.Println("has auth info")
