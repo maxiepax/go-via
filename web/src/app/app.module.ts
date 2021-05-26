@@ -15,6 +15,7 @@ import { ManageGroupsComponent } from './manage-groups/manage-groups.component';
 import { ManageImagesComponent } from './manage-images/manage-images.component';
 import { LogsComponent } from './logs/logs.component';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { ManageUsersComponent } from './manage-users/manage-users.component';
 
 
 
@@ -26,7 +27,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     ManageDhcpPoolsComponent,
     ManageGroupsComponent,
     ManageImagesComponent,
-    LogsComponent
+    LogsComponent,
+    ManageUsersComponent
   ],
   imports: [
     BrowserModule,

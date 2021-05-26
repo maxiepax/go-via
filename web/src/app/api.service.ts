@@ -120,4 +120,30 @@ export class ApiService {
       'http://' + window.location.hostname + `:8080/v1/images/${id}`
     );
   }
+
+  public getUsers() {
+    return this.httpClient.get(
+      'http://' + window.location.hostname + ':8080/v1/users'
+    );
+  }
+
+  public addUser(data) {
+    return this.httpClient.post(
+      'http://' + window.location.hostname + ':8080/v1/users',
+      data
+    );
+  }
+
+  public updateUser(id, data) {
+    return this.httpClient.patch(
+      `http://${window.location.hostname}:8080/v1/users/${id}`,
+      data
+    );
+  }
+
+  public deleteUser(id) {
+    return this.httpClient.delete(
+      'http://' + window.location.hostname + `:8080/v1/users/${id}`
+    );
+  }
 }

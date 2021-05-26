@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
@@ -166,21 +165,21 @@ func main() {
 
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
-		fmt.Println("inside middleware")
 		username, password, hasAuth := c.Request.BasicAuth()
 		if !hasAuth {
 			fmt.Println("doesnt have auth")
-			spew.Dump(c.Request.Header)
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		fmt.Println("has auth info")
-		spew.Dump(c.Request.Header)
 
+		//get the user that is trying to authenticate
 		var user models.User
 		if res := db.DB.Select("username", "password").Where("username = ?", username).First(&user); res.Error != nil {
-			logrus.Warning(res.Error)
+			logrus.WithFields(logrus.Fields{
+				"username": username,
+				"status":   "supplied username does not exist",
+			}).Info("auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -188,9 +187,15 @@ func main() {
 
 		//check if passwords match
 		if api.ComparePasswords(user.Password, []byte(password), username) {
-			fmt.Println("passwords match")
+			logrus.WithFields(logrus.Fields{
+				"username": username,
+				"status":   "successfully authenticated",
+			}).Info("auth")
 		} else {
-			fmt.Println("passwords dont match")
+			logrus.WithFields(logrus.Fields{
+				"username": username,
+				"status":   "invalid password supplied",
+			}).Info("auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -276,6 +281,15 @@ func main() {
 			images.POST("", api.CreateImage(conf))
 			images.PATCH(":id", api.UpdateImage)
 			images.DELETE(":id", api.DeleteImage)
+		}
+
+		users := v1.Group("/users")
+		{
+			users.GET("", api.ListUsers)
+			users.GET(":id", api.GetUser)
+			users.POST("", api.CreateUser)
+			users.PATCH(":id", api.UpdateUser)
+			users.DELETE(":id", api.DeleteUser)
 		}
 
 		v1.GET("log", logServer.Handle)

@@ -1,0 +1,104 @@
+<h3>Users</h3>
+<p>
+go-via uses BasicAuth, all users added are by default Admin.
+</p>
+
+<h3>Users</h3>
+<clr-datagrid>
+  <clr-dg-column>Username</clr-dg-column>
+  <clr-dg-column>Email</clr-dg-column>
+  <clr-dg-column>Comment</clr-dg-column>
+
+  <clr-dg-row *ngFor="let user of users">
+    <clr-dg-cell>{{ user.username }}</clr-dg-cell>
+    <clr-dg-cell>{{ user.email }}</clr-dg-cell>
+    <clr-dg-cell>{{ user.comment }}</clr-dg-cell>
+
+    <clr-dg-cell>
+      <button class="btn btn-primary btn-sm" (click)="showUserModal('edit', user.id)">
+        edit user
+      </button>
+      <button class="btn btn-warning-outline btn-sm" (click)="remove(user.id)">
+        remove
+      </button>
+    </clr-dg-cell>
+  </clr-dg-row>
+</clr-datagrid>
+
+<clr-modal [(clrModalOpen)]="showUserModalMode">
+    <h3 *ngIf="showPoolModalMode === 'add'" class="modal-title">Add User</h3>
+    <h3 *ngIf="showPoolModalMode === 'edit'" class="modal-title">Edit User</h3>
+    <div class="modal-body">
+      <form clrForm [formGroup]="form" (ngSubmit)="submit()">
+        <cds-form-group style="max-width: 155px" layout="vertical">
+          <cds-input-group>
+          <cds-input>
+            <label class="clr-col-8 form-input">Username</label>
+            <input
+              placeholder=""
+              type="text"
+              formControlName="username"
+              name="username"
+            />
+          </cds-input>
+          <cds-input>
+            <label class="clr-col-8 form-input">Password</label>
+            <input
+              placeholder=""
+              type="password"
+              formControlName="password"
+              name="password"
+            />
+          </cds-input>
+          <cds-input>
+            <label class="clr-col-8 form-input">email</label>
+            <input
+              placeholder="email@example.com"
+              type="text"
+              formControlName="email"
+              name="email"
+            />
+          </cds-input>
+          <cds-input>
+            <label class="clr-col-8 form-input">comment</label>
+            <input
+              placeholder=""
+              type="text"
+              formControlName="comment"
+              name="comment"
+            />
+          </cds-input>
+        </cds-form-group>
+      </form>
+      <div class="alert alert-danger" role="alert" *ngIf="errors">
+        <div class="alert-items">
+          <div
+            class="alert-item static"
+            *ngFor="let error of (errors | keyvalue)"
+          >
+            <div class="alert-icon-wrapper">
+              <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+            </div>
+            <span class="alert-text">
+              {{ error.value }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="showPoolModalMode = ''"
+      >
+        Cancel
+      </button>
+      <button *ngIf="showPoolModalMode === 'add'" type="button" class="btn btn-primary" (click)="submit()">
+        Add
+      </button>
+      <button *ngIf="showPoolModalMode === 'edit'" type="button" class="btn btn-primary" (click)="update()">
+        Update
+      </button>
+    </div>
+  </clr-modal>
