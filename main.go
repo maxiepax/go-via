@@ -181,6 +181,9 @@ func main() {
 		var user models.User
 		if res := db.DB.Select("username", "password").Where("username = ?", username).First(&user); res.Error != nil {
 			logrus.Warning(res.Error)
+			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
 
 		//check if passwords match
@@ -188,7 +191,11 @@ func main() {
 			fmt.Println("passwords match")
 		} else {
 			fmt.Println("passwords dont match")
+			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
+		c.Next()
 	})
 
 	r.NoRoute(func(c *gin.Context) {
