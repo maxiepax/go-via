@@ -165,18 +165,6 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	r.NoRoute(func(c *gin.Context) {
-		c.Request.URL.Path = "/web/" // force us to always return index.html and not the requested page to be compatible with HTML5 routing
-		http.FileServer(statikFS).ServeHTTP(c.Writer, c.Request)
-	})
-
-	ui := r.Group("/")
-	{
-		ui.GET("/web/*all", gin.WrapH(http.FileServer(statikFS)))
-
-		ui.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
-
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
 		fmt.Println("inside middleware")
@@ -203,6 +191,18 @@ func main() {
 			fmt.Println("passwords dont match")
 		}
 	})
+
+	r.NoRoute(func(c *gin.Context) {
+		c.Request.URL.Path = "/web/" // force us to always return index.html and not the requested page to be compatible with HTML5 routing
+		http.FileServer(statikFS).ServeHTTP(c.Writer, c.Request)
+	})
+
+	ui := r.Group("/")
+	{
+		ui.GET("/web/*all", gin.WrapH(http.FileServer(statikFS)))
+
+		ui.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	v1 := r.Group("/v1")
 	{

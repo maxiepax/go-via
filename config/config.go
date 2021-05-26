@@ -8,5 +8,5 @@ type Config struct {
 }
 
 type Network struct {
-	Interfaces []string
+	Interfaces []string //`default:"all"`
 }
