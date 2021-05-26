@@ -17,4 +17,4 @@ tftp
 tftp/*
 *.db
 go-via
-sqlite-database*
+database/sqlite-database*
