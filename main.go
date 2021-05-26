@@ -190,7 +190,7 @@ func main() {
 			logrus.WithFields(logrus.Fields{
 				"username": username,
 				"status":   "successfully authenticated",
-			}).Info("auth")
+			}).Debug("auth")
 		} else {
 			logrus.WithFields(logrus.Fields{
 				"username": username,
