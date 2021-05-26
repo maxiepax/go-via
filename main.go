@@ -172,7 +172,7 @@ func main() {
 			fmt.Println("doesnt have auth")
 			spew.Dump(c.Request.Header)
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
-			c.Abort()
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		fmt.Println("has auth info")
