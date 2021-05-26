@@ -44,6 +44,7 @@ export class ManageUsersComponent implements OnInit {
     this.user = this.users.find(user => user.id === id);
     this.form.patchValue({
       ...this.user,
+      password: undefined,
     });
     }
     if (mode === "add") {

@@ -123,6 +123,7 @@ func CreateUser(c *gin.Context) {
 
 	item := models.User{UserForm: form}
 
+	// hash and salt the plaintext password
 	hp := HashAndSalt([]byte(item.Password))
 	item.Password = hp
 	if res := db.DB.Create(&item); res.Error != nil {
@@ -174,6 +175,10 @@ func UpdateUser(c *gin.Context) {
 	if err := mergo.Merge(&item, models.User{UserForm: form}, mergo.WithOverride); err != nil {
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
+
+	// hash and salt the plaintext password
+	hp := HashAndSalt([]byte(item.Password))
+	item.Password = hp
 
 	// Save it
 	if res := db.DB.Save(&item); res.Error != nil {
