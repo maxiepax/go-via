@@ -69,7 +69,7 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-
 sudo chmod +x /usr/bin/docker-compose
 ```
 
-create the following docker-compose.yaml file to not specify a config file (dhcpd will serve on all interfaces)
+Option A: create the following docker-compose.yaml file to not specify a config file (dhcpd will serve on all interfaces)
 ``` yaml
 version: "3.9"
 services:
@@ -81,7 +81,7 @@ services:
       - ./database:/go/database
 ```
 
-or create this docker-compose.yaml to specify a config file, and place config in ./config/config.json
+Option B: or create this docker-compose.yaml to specify a config file, and place config in ./config/config.json
 ``` yaml
 version: "3.9"
 services:
