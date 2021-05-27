@@ -135,12 +135,11 @@ Known issues
 ------------
 Please note that go-via is still under heavy development, and there are bugs. Following is the list of known issues.
 
-Known issue: When booting a host, it will request mboot.efi and successfully load it, however says it fails to load boot.cfg. Logs will show that it actually never requested boot.cfg.
-Workaround: Just reboot the host, eventually it magically starts working.
+currently tracking no known issues! :D
 
 Todo
 -----
-- [ ] Authentication (basicAuth)
+- [x] Authentication (basicAuth)
 - [ ] post-config: regenerate self-signed certificate with correct hostname
 - [x] Fix progress bar when re-imaging hosts
 - [x] Fix re-image button so that it shows disabled once re-image has been initiated
