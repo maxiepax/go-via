@@ -69,7 +69,7 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-
 sudo chmod +x /usr/bin/docker-compose
 ```
 
-create the following docker-compose.yaml file
+create the following docker-compose.yaml file to not specify a config file (dhcpd will serve on all interfaces)
 ``` yaml
 version: "3.9"
 services:
@@ -79,6 +79,20 @@ services:
     volumes:
       - ./tftp:/go/tftp
       - ./database:/go/database
+```
+
+or create this docker-compose.yaml to specify a config file, and place config in ./config/config.json
+``` yaml
+version: "3.9"
+services:
+  go-via:
+    image: maxiepax/go-via:latest
+    network_mode: host
+    volumes:
+      - ./tftp:/go/tftp
+      - ./database:/go/database
+      - ./config:/config
+    command: -file /config/config.json
 ```
 
 now start the container
