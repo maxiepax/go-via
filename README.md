@@ -59,6 +59,7 @@ You can now browse to the web-frontend on the ip of the interface you specified,
 <h3> Option 2: docker container </h3>
 To run this container on a ubuntu 21.04 server, do the following:
 
+
 install docker-ce, instructions found here: https://docs.docker.com/engine/install/ubuntu/
 
 install latest docker-compose,  
