@@ -57,7 +57,32 @@ INFO[0000] Webserver                                     address=":8080"
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
 <h3> Option 2: docker container </h3>
-todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
+To run this container on a ubuntu 21.04 server, do the following:
+
+install docker-ce, instructions found here: https://docs.docker.com/engine/install/ubuntu/
+install latest docker-compose,  
+``` bash
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+sudo chmod +x /usr/bin/docker-compose
+```
+
+create the following docker-compose.yaml file
+``` yaml
+version: "3.9"
+services:
+  go-via:
+    image: maxiepax/go-via:latest
+    network_mode: host
+    volumes:
+      - ./tftp:/go/tftp
+      - ./database:/go/database
+```
+
+now start the container
+
+``` bash
+sudo docker-compose up -d
+```
 
 <h3> Option 3: Download source and compile with go 1.16 and Angular 11 </h3>
 
