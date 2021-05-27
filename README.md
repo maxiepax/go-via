@@ -56,6 +56,8 @@ INFO[0000] Webserver                                     address=":8080"
 ```
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
+The default username/password is admin/VMware1!
+
 <h3> Option 2: docker container </h3>
 To run this container on a ubuntu 21.04 server, do the following:<br>
 
