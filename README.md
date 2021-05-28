@@ -56,8 +56,50 @@ INFO[0000] Webserver                                     address=":8080"
 ```
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
+The default username/password is admin/VMware1!
+
 <h3> Option 2: docker container </h3>
-todo: i automatically build a container each build, but havnt tested that it actually works, see this as a placeholder for now.
+To run this container on a ubuntu 21.04 server, do the following:<br>
+
+install docker-ce, instructions found here: https://docs.docker.com/engine/install/ubuntu/
+
+install latest docker-compose,  
+``` bash
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+sudo chmod +x /usr/bin/docker-compose
+```
+
+Option A: create the following docker-compose.yaml file to not specify a config file (dhcpd will serve on all interfaces)
+``` yaml
+version: "3.9"
+services:
+  go-via:
+    image: maxiepax/go-via:latest
+    network_mode: host
+    volumes:
+      - ./tftp:/go/tftp
+      - ./database:/go/database
+```
+
+Option B: or create this docker-compose.yaml to specify a config file, and place config in ./config/config.json
+``` yaml
+version: "3.9"
+services:
+  go-via:
+    image: maxiepax/go-via:latest
+    network_mode: host
+    volumes:
+      - ./tftp:/go/tftp
+      - ./database:/go/database
+      - ./config:/config
+    command: -file /config/config.json
+```
+
+now start the container
+
+``` bash
+sudo docker-compose up -d
+```
 
 <h3> Option 3: Download source and compile with go 1.16 and Angular 11 </h3>
 
@@ -109,12 +151,11 @@ Known issues
 ------------
 Please note that go-via is still under heavy development, and there are bugs. Following is the list of known issues.
 
-Known issue: When booting a host, it will request mboot.efi and successfully load it, however says it fails to load boot.cfg. Logs will show that it actually never requested boot.cfg.
-Workaround: Just reboot the host, eventually it magically starts working.
+currently tracking no known issues! :D
 
 Todo
 -----
-- [ ] Authentication (basicAuth)
+- [x] Authentication (basicAuth)
 - [ ] post-config: regenerate self-signed certificate with correct hostname
 - [x] Fix progress bar when re-imaging hosts
 - [x] Fix re-image button so that it shows disabled once re-image has been initiated
