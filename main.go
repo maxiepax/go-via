@@ -304,8 +304,11 @@ func main() {
 	logrus.WithFields(logrus.Fields{
 		"port": listen,
 	}).Info("Webserver")
-	//err = r.Run(listen)
+	err = r.Run(listen)
 	//enable HTTPS
+	logrus.WithFields(logrus.Fields{
+		"port": "8443",
+	}).Info("Webserver")
 	err = r.RunTLS(":8443", "./cert/server.crt", "./cert/server.key")
 
 	logrus.WithFields(logrus.Fields{
