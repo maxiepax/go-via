@@ -163,6 +163,7 @@ func main() {
 		logrus.Fatal(err)
 	}
 
+	// ks.cfg is served at top to not place it behind BasicAuth
 	r.GET("ks.cfg", api.Ks)
 
 	// middleware to check if user is logged in
@@ -303,7 +304,9 @@ func main() {
 	logrus.WithFields(logrus.Fields{
 		"port": listen,
 	}).Info("Webserver")
-	err = r.Run(listen)
+	//err = r.Run(listen)
+	//enable HTTPS
+	err = r.RunTLS(":8443", "./cert/server.crt", "./cert/server.key")
 
 	logrus.WithFields(logrus.Fields{
 		"error": err,
