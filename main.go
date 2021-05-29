@@ -318,6 +318,10 @@ func main() {
 		os.MkdirAll("cert", os.ModePerm)
 		ca.CreateCA()
 		ca.CreateCert()
+	} else {
+		logrus.WithFields(logrus.Fields{
+			crt.Name(): "server.crt found",
+		}).Info("cert")
 	}
 	//enable HTTPS
 	logrus.WithFields(logrus.Fields{
