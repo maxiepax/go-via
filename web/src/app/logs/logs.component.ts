@@ -12,7 +12,7 @@ export class LogsComponent implements OnInit {
   
 
   constructor() {
-    const ws = new WebSocket('ws://' +  window.location.hostname + ':8080/v1/log')
+    const ws = new WebSocket('wss://' +  window.location.hostname + ':8443/v1/log')
     ws.addEventListener('message', event => {
       const { time, level, msg, ...payload } = JSON.parse(event.data);
       const data = {

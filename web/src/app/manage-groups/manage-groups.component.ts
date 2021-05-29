@@ -63,7 +63,7 @@ export class ManageGroupsComponent implements OnInit {
       ssh_pc: [''],
       domain_pc: [''],
     });
-    const ws = new WebSocket('ws://' +  window.location.hostname + ':8080/v1/log')
+    const ws = new WebSocket('wss://' +  window.location.hostname + ':8443/v1/log')
     ws.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
