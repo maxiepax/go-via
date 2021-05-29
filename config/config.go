@@ -2,7 +2,7 @@ package config
 
 type Config struct {
 	Debug   bool
-	Port    int `default:"8080"`
+	Port    int `default:"8443"`
 	File    string
 	Network Network
 }
