@@ -8,10 +8,13 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/config"
+	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/maxiepax/go-via/websockets"
@@ -304,12 +307,23 @@ func main() {
 	logrus.WithFields(logrus.Fields{
 		"port": listen,
 	}).Info("Webserver")
-	go err = r.Run(listen)
+	//err = r.Run(listen)
 	//enable HTTPS
 	logrus.WithFields(logrus.Fields{
 		"port": "8443",
 	}).Info("Webserver")
-	go err = r.RunTLS(":8443", "./cert/server.crt", "./cert/server.key")
+
+	// check if folder cert exists, if not we will create
+	crt, err := os.Stat("./cert/server.crt")
+	if os.IsNotExist(err) {
+		// create folder for certificates
+		os.MkdirAll("cert", os.ModePerm)
+		ca.CreateCA()
+		ca.CreateCert()
+	}
+	spew.Dump(crt)
+
+	err = r.RunTLS(":8443", "./cert/server.crt", "./cert/server.key")
 
 	logrus.WithFields(logrus.Fields{
 		"error": err,

@@ -18,3 +18,5 @@ tftp/*
 *.db
 go-via
 database/sqlite-database*
+cert
+cert/*

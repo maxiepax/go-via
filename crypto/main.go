@@ -10,13 +10,12 @@ import (
 	"log"
 	"math/big"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
-func createCA() {
+func CreateCA() {
 	ca := &x509.Certificate{
 		SerialNumber: big.NewInt(1653),
 		Subject: pkix.Name{
@@ -44,7 +43,6 @@ func createCA() {
 	}
 
 	// Public key
-	os.MkdirAll(filepath.Dir("cert"), os.ModePerm)
 	certOut, err := os.Create("cert/ca.crt")
 	if err != nil {
 		logrus.Fatal(err)
@@ -67,7 +65,7 @@ func createCA() {
 	}).Info("cert")
 }
 
-func createCert() {
+func CreateCert() {
 
 	// Load CA
 	catls, err := tls.LoadX509KeyPair("cert/ca.crt", "cert/ca.key")
