@@ -155,7 +155,7 @@ func main() {
 	}
 
 	// TFTPd
-	go TFTPd()
+	go TFTPd(conf)
 
 	//REST API
 	r := gin.New()
