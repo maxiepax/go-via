@@ -83,6 +83,7 @@ export class ManageGroupsComponent implements OnInit {
         console.log(groups);
         hosts.forEach(host => {
           this.progress[host.id] = host.progress;
+          this.progresstext[host.id] = host.progresstext;
         })
       });
     });
