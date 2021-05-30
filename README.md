@@ -79,6 +79,9 @@ services:
     volumes:
       - ./tftp:/go/tftp
       - ./database:/go/database
+      - ./config:/go/config
+      - ./cert:/go/cert
+
 ```
 
 Option B: or create this docker-compose.yaml to specify a config file, and place config in ./config/config.json
@@ -91,8 +94,10 @@ services:
     volumes:
       - ./tftp:/go/tftp
       - ./database:/go/database
-      - ./config:/config
-    command: -file /config/config.json
+      - ./config:/go/config
+      - ./cert:/go/cert
+    command: -file /go/config/config.json
+
 ```
 
 now start the container
