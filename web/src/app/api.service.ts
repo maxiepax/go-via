@@ -10,20 +10,20 @@ export class ApiService {
 
   public getHosts() {
     return this.httpClient.get(
-      'https://' + window.location.hostname + ':8443/v1/addresses'
+      'https://' + window.location.host + '/v1/addresses'
     );
   }
 
   public addHost(data) {
     return this.httpClient.post(
-      'https://' + window.location.hostname + ':8443/v1/addresses',
+      'https://' + window.location.host + '/v1/addresses',
       data
     );
   }
 
   public patchHost(id) {
     return this.httpClient.patch(
-      'https://' + window.location.hostname + `:8443/v1/addresses/${id}`,
+      'https://' + window.location.host + `/v1/addresses/${id}`,
       {
         reimage: true,
         progress: 0,
@@ -34,65 +34,65 @@ export class ApiService {
 
   public deleteHost(id) {
     return this.httpClient.delete(
-      'https://' + window.location.hostname + `:8443/v1/addresses/${id}`
+      'https://' + window.location.host + `/v1/addresses/${id}`
     );
   }
 
   public getPools() {
     return this.httpClient.get(
-      'https://' + window.location.hostname + ':8443/v1/pools'
+      'https://' + window.location.host + '/v1/pools'
     );
   }
 
   public addPool(data) {
     return this.httpClient.post(
-      'https://' + window.location.hostname + ':8443/v1/pools',
+      'https://' + window.location.host + '/v1/pools',
       data
     );
   }
 
   public updatePool(id, data) {
     return this.httpClient.patch(
-      `https://${window.location.hostname}:8443/v1/pools/${id}`,
+      `https://${window.location.host}/v1/pools/${id}`,
       data
     );
   }
 
   public deletePool(id) {
     return this.httpClient.delete(
-      'https://' + window.location.hostname + `:8443/v1/pools/${id}`
+      'https://' + window.location.host + `/v1/pools/${id}`
     );
   }
 
   public getGroups() {
     return this.httpClient.get(
-      'https://' + window.location.hostname + ':8443/v1/groups'
+      'https://' + window.location.host + '/v1/groups'
     );
   }
 
   public addGroup(data) {
     return this.httpClient.post(
-      'https://' + window.location.hostname + ':8443/v1/groups',
+      'https://' + window.location.host + '/v1/groups',
       data
     );
   }
 
   public updateGroup(id, data) {
     return this.httpClient.patch(
-      `https://${window.location.hostname}:8443/v1/groups/${id}`,
+      `https://${window.location.host}/v1/groups/${id}`,
       data
     );
   }
 
   public deleteGroup(id) {
     return this.httpClient.delete(
-      'https://' + window.location.hostname + `:8443/v1/groups/${id}`
+      'https://' + window.location.host + `/v1/groups/${id}`
     );
   }
 
   public getImages() {
     return this.httpClient.get(
-      'https://' + window.location.hostname + ':8443/v1/images'
+      'https://' + window.location.host + '/v1/images'
     );
   }
 
@@ -104,7 +104,7 @@ export class ApiService {
 
     const req = new HttpRequest(
       'POST',
-      'https://' + window.location.hostname + `:8443/v1/images`,
+      'https://' + window.location.host + `/v1/images`,
       formData,
       {
         reportProgress: true,
@@ -117,33 +117,33 @@ export class ApiService {
 
   public deleteImage(id) {
     return this.httpClient.delete(
-      'https://' + window.location.hostname + `:8443/v1/images/${id}`
+      'https://' + window.location.host + `/v1/images/${id}`
     );
   }
 
   public getUsers() {
     return this.httpClient.get(
-      'https://' + window.location.hostname + ':8443/v1/users'
+      'https://' + window.location.host + '/v1/users'
     );
   }
 
   public addUser(data) {
     return this.httpClient.post(
-      'https://' + window.location.hostname + ':8443/v1/users',
+      'https://' + window.location.host + '/v1/users',
       data
     );
   }
 
   public updateUser(id, data) {
     return this.httpClient.patch(
-      `https://${window.location.hostname}:8443/v1/users/${id}`,
+      `https://${window.location.host}/v1/users/${id}`,
       data
     );
   }
 
   public deleteUser(id) {
     return this.httpClient.delete(
-      'https://' + window.location.hostname + `:8443/v1/users/${id}`
+      'https://' + window.location.host + `/v1/users/${id}`
     );
   }
 }
