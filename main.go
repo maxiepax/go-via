@@ -81,6 +81,7 @@ func main() {
 		}
 	}
 
+	//validate configuration file
 	err = d.Validate(conf)
 	if err != nil {
 		flag.Usage()
@@ -302,12 +303,6 @@ func main() {
 
 	r.GET("postconfig", api.PostConfig)
 
-	listen := ":" + strconv.Itoa(conf.Port)
-	logrus.WithFields(logrus.Fields{
-		"port": listen,
-	}).Info("Webserver")
-	//err = r.Run(listen)
-
 	// check if ./cert/server.crt exists, if not we will create the folder, and initiate a new CA and a self-signed certificate
 	crt, err := os.Stat("./cert/server.crt")
 	if os.IsNotExist(err) {
@@ -324,10 +319,11 @@ func main() {
 		}).Info("cert")
 	}
 	//enable HTTPS
+	listen := ":" + strconv.Itoa(conf.Port)
 	logrus.WithFields(logrus.Fields{
-		"port": "8443",
-	}).Info("Webserver")
-	err = r.RunTLS(":8443", "./cert/server.crt", "./cert/server.key")
+		"port": listen,
+	}).Info("Webserver test")
+	err = r.RunTLS(listen, "./cert/server.crt", "./cert/server.key")
 
 	logrus.WithFields(logrus.Fields{
 		"error": err,
