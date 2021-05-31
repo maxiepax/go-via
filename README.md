@@ -30,17 +30,26 @@ tar -zxvf go-via_.0.0.24_linux_amd64.tar.gz
 ```
 This will extract the files README.MD (this document) and go-via binary.
 
-Optional: create an example config file, e.g. config.json, replace ens224 with the network interface you want to use to serve dhcpd/tftp.
+Optional: example config files.
+
+Multi interface, and custom port.
+``` json
+{
+    "network": {
+        "interfaces": ["ens224", "ens192"]
+    },
+    "port": 443
+}
+```
+single interface, default port 8443
 ``` json
 {
     "network": {
         "interfaces": ["ens224"]
     }
-    "port": {
-        "8443"
-    }
 }
 ```
+
 Now start the binary as super user, pointing to the config file.
 ``` bash
 #start the application with normal debug level
