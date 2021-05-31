@@ -41,7 +41,7 @@ Multi interface, and custom port.
     "port": 443
 }
 ```
-single interface, default port 8443
+Single interface, default port 8443
 ``` json
 {
     "network": {
