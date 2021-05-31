@@ -178,6 +178,7 @@ currently tracking no known issues! :D
 
 Todo
 -----
+- [x] HTTPS
 - [x] Authentication (basicAuth)
 - [ ] post-config: regenerate self-signed certificate with correct hostname
 - [x] Fix progress bar when re-imaging hosts
