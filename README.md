@@ -50,8 +50,11 @@ Single interface, default port 8443
 }
 ```
 
-Now start the binary as super user, pointing to the config file.
+Now start the binary as super user, (optionally: pointing to the config file.)
 ``` bash
+#start teh application with default settings
+sudo ./go-via
+
 #start the application with normal debug level
 sudo ./go-via -file config.json
 
