@@ -70,7 +70,7 @@ INFO[0000] Starting dhcp server                          int=ens224 ip=172.16.10
 INFO[0000] Starting dhcp server                          int=ens192 ip=192.168.1.173 mac="00:0c:29:91:cf:e1"
 INFO[0000] Starting dhcp server                          int=docker0 ip=172.17.0.1 mac="02:42:09:9f:04:4f"
 INFO[0000] cert                                          server.crt="server.crt found"
-INFO[0000] Webserver test                                port=":8443"
+INFO[0000] Webserver.                                    port=":8443"
 ```
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
