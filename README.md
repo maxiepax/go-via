@@ -172,7 +172,7 @@ The old version of VIA had some things it didn't support which made it hard to r
 
 Known issues
 ------------
-Please note that go-via is still under heavy development, and there are bugs. Following is the list of known issues.
+Please note that go-via is still under heavy development, and there may be bugs. Following is the list of known issues.
 
 currently tracking no known issues! :D
 
