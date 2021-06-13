@@ -66,7 +66,7 @@ func main() {
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"err": err,
-		}).Fatalf("failed to load config")
+		}).Info("failed to load config")
 	}
 
 	//if a file has been implied, also load the content of the configuration file.
@@ -77,7 +77,7 @@ func main() {
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"err": err,
-			}).Fatalf("failed to load config")
+			}).Info("failed to load config")
 		}
 	}
 
@@ -87,7 +87,7 @@ func main() {
 		flag.Usage()
 		logrus.WithFields(logrus.Fields{
 			"err": err,
-		}).Fatalf("failed to load config")
+		}).Info("failed to load config")
 	}
 
 	//if no environemnt variables, or configuration file has been declared, serve on all interfaces.
@@ -97,7 +97,7 @@ func main() {
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"err": err,
-			}).Fatalf("failed to find a usable interface")
+			}).Info("failed to find a usable interface")
 		}
 		for _, v := range i {
 			// dont use loopback interfaces
@@ -322,7 +322,7 @@ func main() {
 	listen := ":" + strconv.Itoa(conf.Port)
 	logrus.WithFields(logrus.Fields{
 		"port": listen,
-	}).Info("Webserver test")
+	}).Info("Webserver")
 	err = r.RunTLS(listen, "./cert/server.crt", "./cert/server.key")
 
 	logrus.WithFields(logrus.Fields{
