@@ -122,7 +122,12 @@ func CreateAddress(c *gin.Context) {
 	}
 
 	item := models.Address{AddressForm: form}
-	spew.Dump(item)
+
+	// get the pool network info to verify if this ip should be added to the pool.
+	var network models.Pool
+	db.DB.First(&network, "pool_id = ?", network.ID)
+	spew.Dump(network)
+
 	// get the pool network info to verify if this ip should be added to the pool.
 	/*
 		if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
