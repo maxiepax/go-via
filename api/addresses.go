@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -128,8 +129,19 @@ func CreateAddress(c *gin.Context) {
 
 	cidr := item.IP + "/" + strconv.Itoa(na.Netmask)
 	network := na.NetAddress + "/" + strconv.Itoa(na.Netmask)
-	fmt.Println(cidr)
-	fmt.Println(network)
+
+	// first check if the address is even in the network.
+
+	_, neta, _ := net.ParseCIDR(network)
+	ipb, _, _ := net.ParseCIDR(cidr)
+
+	if neta.Contains(ipb) {
+		fmt.Println("ip is okey")
+	} else {
+		fmt.Println("ip is not valid")
+	}
+
+	//then check if it's in the given range by the pool.
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
