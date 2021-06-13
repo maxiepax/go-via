@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net"
@@ -133,15 +134,23 @@ func CreateAddress(c *gin.Context) {
 	// first check if the address is even in the network.
 	_, neta, _ := net.ParseCIDR(network)
 	ipb, _, _ := net.ParseCIDR(cidr)
-
+	start := net.ParseIP(na.StartAddress)
+	end := net.ParseIP(na.EndAddress)
 	if neta.Contains(ipb) {
-		fmt.Println("ip is okey")
+		//then check if it's in the given range by the pool.
+		trial := net.ParseIP(item.IP)
+
+		if bytes.Compare(trial, start) >= 0 && bytes.Compare(trial, end) <= 0 {
+			fmt.Printf("%v is between %v and %v\n", trial, start, end)
+		} else {
+			fmt.Printf("%v is NOT between %v and %v\n", trial, start, end)
+			Error(c, http.StatusBadRequest, fmt.Errorf("the ip address is not in the scope of the dhcp pool associated with the group")) // 400
+			return
+		}
 	} else {
-		Error(c, http.StatusBadRequest, fmt.Errorf("ip is not in dhcp pool range")) // 400
+		Error(c, http.StatusBadRequest, fmt.Errorf("the ip address is not in the scope of the dhcp pool associated with the group")) // 400
 		return
 	}
-
-	//then check if it's in the given range by the pool.
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
