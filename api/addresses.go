@@ -129,8 +129,8 @@ func CreateAddress(c *gin.Context) {
 		return
 	}
 	spew.Dump(item)
-	fmt.Println("ip address: " + item.IP)
-	fmt.Println("network address: " + item.Pool.NetAddress)
+	fmt.Println("ip address: " + item.IP + "/" + item.Pool.NetAddress)
+	fmt.Println("network address: " + item.Pool.NetAddress + "/" + item.Pool.NetAddress)
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
