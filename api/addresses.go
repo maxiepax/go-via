@@ -126,8 +126,8 @@ func CreateAddress(c *gin.Context) {
 	var na models.Pool
 	db.DB.First(&na, "id = ?", item.AddressForm.PoolID)
 
-	cidr := item.IP + "/" + strconv.Itoa(na.Netmask)
-	network := na.NetAddress + "/" + strconv.Itoa(na.Netmask)
+	cidr := item.IP + "/"
+	network := na.NetAddress
 	fmt.Println(cidr)
 	fmt.Println(network)
 
