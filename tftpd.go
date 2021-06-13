@@ -116,8 +116,12 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			// add kickstart path to kernelopt
 			re = regexp.MustCompile("kernelopt=.*")
 			o := re.Find(bc)
-			//bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":8443/ks.cfg")...))
 			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
+
+			// add kickstart path to kernelopt
+			re = regexp.MustCompile("kernelopt=.*")
+			o = re.Find(bc)
+			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" allowLegacyCPU=true")...))
 
 			// replace prefix with prefix=foldername
 			split := strings.Split(image.Path, "/")
