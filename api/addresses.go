@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -126,12 +125,11 @@ func CreateAddress(c *gin.Context) {
 	// get the pool network info to verify if this ip should be added to the pool.
 	var na models.Pool
 	db.DB.First(&na, "id = ?", item.AddressForm.PoolID)
-	spew.Dump(na)
 
-	fmt.Print("ip address: " + item.IP + "/")
-	fmt.Println(na.Netmask)
-	fmt.Print("network address: " + na.NetAddress + "/")
-	fmt.Println(na.Netmask)
+	cidr := item.IP + "/" + strconv.Itoa(na.Netmask)
+	network := na.NetAddress + "/" + strconv.Itoa(na.Netmask)
+	fmt.Println(cidr)
+	fmt.Println(network)
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
