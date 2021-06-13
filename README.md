@@ -30,19 +30,31 @@ tar -zxvf go-via_.0.0.24_linux_amd64.tar.gz
 ```
 This will extract the files README.MD (this document) and go-via binary.
 
-Optional: create an example config file, e.g. config.json, replace ens224 with the network interface you want to use to serve dhcpd/tftp.
+Optional: example config files.
+
+Multi interface, and custom port.
+``` json
+{
+    "network": {
+        "interfaces": ["ens224", "ens192"]
+    },
+    "port": 443
+}
+```
+Single interface, default port 8443
 ``` json
 {
     "network": {
         "interfaces": ["ens224"]
     }
-    "port": {
-        "8443"
-    }
 }
 ```
-Now start the binary as super user, pointing to the config file.
+
+Now start the binary as super user, (optionally: pointing to the config file.)
 ``` bash
+#start teh application with default settings
+sudo ./go-via
+
 #start the application with normal debug level
 sudo ./go-via -file config.json
 
@@ -51,11 +63,14 @@ sudo ./go-via -file config.json -debug
 ```
 You should be greeted with the following output.
 ``` bash
-sudo ./go-via -file config.json 
-INFO[0000] Startup                                       commit=bfe02f13d3382f1c760a1510fd3bbb966b5ac3f6 date="2021-04-26T12:01:33Z" version=.0.0.24
+INFO[0000] Startup                                       commit=none date=unknown version=dev
+WARN[0000] no interfaces have been configured, trying to find interfaces to serve to, will serve on all. 
 INFO[0000] Existing database sqlite-database.db found   
 INFO[0000] Starting dhcp server                          int=ens224 ip=172.16.100.1 mac="00:0c:29:91:cf:eb"
-INFO[0000] Webserver                                     address=":8080"
+INFO[0000] Starting dhcp server                          int=ens192 ip=192.168.1.173 mac="00:0c:29:91:cf:e1"
+INFO[0000] Starting dhcp server                          int=docker0 ip=172.17.0.1 mac="02:42:09:9f:04:4f"
+INFO[0000] cert                                          server.crt="server.crt found"
+INFO[0000] Webserver                                     port=":8443"
 ```
 You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
 
@@ -157,12 +172,13 @@ The old version of VIA had some things it didn't support which made it hard to r
 
 Known issues
 ------------
-Please note that go-via is still under heavy development, and there are bugs. Following is the list of known issues.
+Please note that go-via is still under heavy development, and there may be bugs. Following is the list of known issues.
 
 currently tracking no known issues! :D
 
 Todo
 -----
+- [x] HTTPS
 - [x] Authentication (basicAuth)
 - [ ] post-config: regenerate self-signed certificate with correct hostname
 - [x] Fix progress bar when re-imaging hosts
