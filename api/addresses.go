@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -134,6 +135,9 @@ func CreateAddress(c *gin.Context) {
 
 	_, neta, _ := net.ParseCIDR(network)
 	ipb, _, _ := net.ParseCIDR(cidr)
+
+	spew.Dump(neta)
+	spew.Dump(ipb)
 
 	if neta.Contains(ipb) {
 		fmt.Println("ip is okey")
