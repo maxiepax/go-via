@@ -141,9 +141,17 @@ func CreateAddress(c *gin.Context) {
 		trial := net.ParseIP(item.IP)
 
 		if bytes.Compare(trial, start) >= 0 && bytes.Compare(trial, end) <= 0 {
-			fmt.Printf("%v is between %v and %v\n", trial, start, end)
+			logrus.WithFields(logrus.Fields{
+				"ip":    trial,
+				"start": start,
+				"end":   end,
+			}).Debug("ip validation successful")
 		} else {
-			fmt.Printf("%v is NOT between %v and %v\n", trial, start, end)
+			logrus.WithFields(logrus.Fields{
+				"ip":    trial,
+				"start": start,
+				"end":   end,
+			}).Debug("the ip address is not in the scope of the dhcp pool associated with the group")
 			Error(c, http.StatusBadRequest, fmt.Errorf("the ip address is not in the scope of the dhcp pool associated with the group")) // 400
 			return
 		}
@@ -151,6 +159,7 @@ func CreateAddress(c *gin.Context) {
 		Error(c, http.StatusBadRequest, fmt.Errorf("the ip address is not in the scope of the dhcp pool associated with the group")) // 400
 		return
 	}
+	// if ip address checks pas, continue to commit.
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
