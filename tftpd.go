@@ -26,6 +26,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/maxiepax/go-via/config"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -49,6 +50,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 		//get the object that correlates with the ip
 		var address models.Address
 		db.DB.Preload(clause.Associations).First(&address, "ip = ?", ip)
+		spew.Dump(address)
 
 		//get the image info that correlates with the pool the ip is in
 		var image models.Image
