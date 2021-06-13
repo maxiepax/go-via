@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -121,6 +122,7 @@ func CreateAddress(c *gin.Context) {
 	}
 
 	item := models.Address{AddressForm: form}
+	spew.Dump(item)
 
 	// If we have a managed reference, try to find the item
 	if form.ManagedRef != "" {
