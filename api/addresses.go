@@ -125,19 +125,21 @@ func CreateAddress(c *gin.Context) {
 	spew.Dump(item)
 
 	// If we have a managed reference, try to find the item
-	if form.ManagedRef != "" {
-		if res := db.DB.Where("managed_ref", form.ManagedRef).First(&item); res.Error != nil {
-			if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
-				Error(c, http.StatusInternalServerError, res.Error) // 500
-				return
-			}
-		} else {
-			// We found it, update the data
-			if err := mergo.Merge(&item, models.Address{AddressForm: form}, mergo.WithOverride); err != nil {
-				Error(c, http.StatusInternalServerError, err) // 500
+	/*
+		if form.ManagedRef != "" {
+			if res := db.DB.Where("managed_ref", form.ManagedRef).First(&item); res.Error != nil {
+				if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+					Error(c, http.StatusInternalServerError, res.Error) // 500
+					return
+				}
+			} else {
+				// We found it, update the data
+				if err := mergo.Merge(&item, models.Address{AddressForm: form}, mergo.WithOverride); err != nil {
+					Error(c, http.StatusInternalServerError, err) // 500
+				}
 			}
 		}
-	}
+	*/
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
