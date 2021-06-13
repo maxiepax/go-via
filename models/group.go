@@ -38,4 +38,5 @@ type GroupOptions struct {
 	SuppressShellWarning bool   `json:"suppressshellwarning"`
 	EraseDisks           bool   `json:"erasedisks"`
 	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
+	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
 }

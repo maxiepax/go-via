@@ -15,6 +15,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -120,10 +121,15 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			o := re.Find(bc)
 			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
 
-			// add kickstart path to kernelopt
-			re = regexp.MustCompile("kernelopt=.*")
-			o = re.Find(bc)
-			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" allowLegacyCPU=true")...))
+			options := models.GroupOptions{}
+			json.Unmarshal(address.Group.Options, &options)
+
+			// add allowLegacyCPU=true to kernelopt
+			if options.AllowLegacyCPU {
+				re = regexp.MustCompile("kernelopt=.*")
+				o = re.Find(bc)
+				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" allowLegacyCPU=true")...))
+			}
 
 			// replace prefix with prefix=foldername
 			split := strings.Split(image.Path, "/")

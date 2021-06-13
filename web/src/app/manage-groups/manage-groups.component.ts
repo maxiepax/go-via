@@ -59,6 +59,7 @@ export class ManageGroupsComponent implements OnInit {
       pool_id: ['', [Validators.required]],
       erasedisks: [''],
       bootdisk: [''],
+      allowlegacycpu: [''],
       ntp_pc: [''],
       ssh_pc: [''],
       domain_pc: [''],
@@ -119,6 +120,9 @@ export class ManageGroupsComponent implements OnInit {
     if (data.bootdisk) {
       json_pc.bootdisk = data.bootdisk;
     }
+    if (data.allowlegacycpu) {
+      json_pc.allowlegacycpu = data.allowlegacycpu;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
@@ -126,6 +130,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.domain_pc;
     delete data.erasedisks;
     delete data.bootdisk;
+    delete data.allowlegacycpu;
 
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
@@ -167,6 +172,8 @@ export class ManageGroupsComponent implements OnInit {
       ntp_pc: this.group.options.ntp,
       erasedisks: this.group.options.erasedisks,
       bootdisk: this.group.options.bootdisk,
+      allowlegacycpu: this.group.options.allowlegacycpu,
+
     });
     }
     if (mode === "add") {
@@ -198,6 +205,9 @@ export class ManageGroupsComponent implements OnInit {
     if (data.bootdisk) {
       json_pc.bootdisk = data.bootdisk;
     }
+    if (data.allowlegacycpu) {
+      json_pc.allowlegacycpu = data.allowlegacycpu;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
@@ -205,6 +215,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.domain_pc;
     delete data.erasedisks;
     delete data.bootdisk;
+    delete data.allowlegacycpu;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
