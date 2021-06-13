@@ -124,22 +124,14 @@ func CreateAddress(c *gin.Context) {
 	item := models.Address{AddressForm: form}
 
 	// get the pool network info to verify if this ip should be added to the pool.
-	var network models.Pool
-	db.DB.First(&network, "id = ?", item.AddressForm.PoolID)
-	spew.Dump(network)
+	var na models.Pool
+	db.DB.First(&na, "id = ?", item.AddressForm.PoolID)
+	spew.Dump(na)
 
-	// get the pool network info to verify if this ip should be added to the pool.
-	/*
-		if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
-		}
-		spew.Dump(item)
-		fmt.Print("ip address: " + item.IP + "/")
-		fmt.Println(item.Pool.Netmask)
-		fmt.Print("network address: " + item.Pool.NetAddress + "/")
-		fmt.Println(item.Pool.Netmask)
-	*/
+	fmt.Print("ip address: " + item.IP + "/")
+	fmt.Println(na.Netmask)
+	fmt.Print("network address: " + na.NetAddress + "/")
+	fmt.Println(na.Netmask)
 
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
