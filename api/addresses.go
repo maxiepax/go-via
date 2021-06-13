@@ -138,6 +138,7 @@ func CreateAddress(c *gin.Context) {
 		fmt.Println("ip is okey")
 	} else {
 		Error(c, http.StatusBadRequest, fmt.Errorf("ip is not in dhcp pool range")) // 400
+		return
 	}
 
 	//then check if it's in the given range by the pool.
