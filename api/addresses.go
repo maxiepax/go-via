@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -132,17 +131,13 @@ func CreateAddress(c *gin.Context) {
 	network := na.NetAddress + "/" + strconv.Itoa(na.Netmask)
 
 	// first check if the address is even in the network.
-
 	_, neta, _ := net.ParseCIDR(network)
 	ipb, _, _ := net.ParseCIDR(cidr)
-
-	spew.Dump(neta)
-	spew.Dump(ipb)
 
 	if neta.Contains(ipb) {
 		fmt.Println("ip is okey")
 	} else {
-		fmt.Println("ip is not valid")
+		Error(c, http.StatusBadRequest, fmt.Errorf("ip is not in dhcp pool range")) // 400
 	}
 
 	//then check if it's in the given range by the pool.
