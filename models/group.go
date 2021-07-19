@@ -14,6 +14,7 @@ type GroupForm struct {
 	Password string         `json:"password" gorm:"type:varchar(255)"`
 	ImageID  int            `json:"image_id" gorm:"type:INT"`
 	Ks       string         `json:"ks" gorm:"type:text"`
+	Syslog   string         `json:"syslog" gorm:"type:varchar(255)"`
 	Options  datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
@@ -39,4 +40,5 @@ type GroupOptions struct {
 	EraseDisks           bool   `json:"erasedisks"`
 	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
 	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
+	Syslog               bool   `json:"syslog"`
 }

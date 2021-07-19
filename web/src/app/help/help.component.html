@@ -19,6 +19,7 @@ Options:<br/>
 - SSH: Will enable the service SSH on the host, and silence the warning that ssh is enabled on the host.<br/>
 - NTP: Will configure the NTP settings enterd on the host.<br/>
 - (WARNING) Erase all disks: During deployment, this will erase all data and partitions on all disks connected to the host. This includes all LUNs that may be masked to the host!<br/>
+- Allow Legacy CPU: If your hardware is not on the CGP and you recieve "CPU is not supported by ESXi X.X.X", enabeling this option will bypass the security check, please note this is only inteded for lab purpose!<br/>
 
 <h3> Start imaging </h3>
 To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to perform a fully unattended deployment.
