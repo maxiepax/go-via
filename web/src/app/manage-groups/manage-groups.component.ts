@@ -52,8 +52,9 @@ export class ManageGroupsComponent implements OnInit {
     });
     this.Groupform = this.GroupformBuilder.group({
       name: ['', [Validators.required]],
-      dns: ['', [Validators.required]],
-      ntp: ['', [Validators.required]],
+      dns: [''],
+      ntp: [''],
+      syslog: [''],
       password: ['', [Validators.required]],
       image_id: ['', [Validators.required]],
       pool_id: ['', [Validators.required]],
