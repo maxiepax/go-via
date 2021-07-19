@@ -177,6 +177,27 @@ func ProvisioningWorker(item models.Address) {
 		}).Info(item.IP)
 	}
 
+	if options.Syslog {
+		//configure Syslog
+		cmd := strings.Fields("system syslog config set --loghost=")
+		cmd = append(cmd, item.Group.Syslog)
+		_, err := e.Run(cmd)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
+		}
+		_, err = e.Run(strings.Fields("esxcli system syslog reload"))
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"syslog": "syslog configured",
+		}).Info(item.IP)
+	}
+
 	if options.SSH {
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
