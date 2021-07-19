@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -179,15 +180,15 @@ func ProvisioningWorker(item models.Address) {
 
 	if options.Syslog {
 		//configure Syslog
-		cmd := strings.Fields("system syslog config set --loghost=")
-		cmd = append(cmd, item.Group.Syslog)
+		cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
+		spew.Dump(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"Postconfig": err,
 			}).Info(item.IP)
 		}
-		_, err = e.Run(strings.Fields("esxcli system syslog reload"))
+		_, err = e.Run(strings.Fields("system syslog reload"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"Postconfig": err,
