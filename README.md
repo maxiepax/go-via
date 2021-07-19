@@ -21,12 +21,12 @@ Installation / Running
 Most linux distributions should work, this has been tested on Ubuntu 20.20.
 
 ``` bash
-#wget the release you want to download, e.g go-via_.0.0.25_linux_amd64.tar.gz
-wget https://github.com/maxiepax/go-via/releases/download/v.0.0.25/go-via_.0.0.25_linux_amd64.tar.gz
+#wget the release you want to download, e.g go-via_.<release>_linux_amd64.tar.gz
+wget https://github.com/maxiepax/go-via/releases/download/<release>/go-via_.<release>_linux_amd64.tar.gz
 
 
 #untar/extract it
-tar -zxvf go-via_.0.0.24_linux_amd64.tar.gz
+tar -zxvf go-via_.<release>_linux_amd64.tar.gz
 ```
 This will extract the files README.MD (this document) and go-via binary.
 
