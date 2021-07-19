@@ -105,6 +105,10 @@
 					<input  placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
 				</cds-input>
 				<cds-input>
+					<label class="clr-col-6 form-input">Syslog</label>
+					<input  placeholder="eg. tcp://172.16.0.2:514,ssl://172.16.0.3:1514" type="text" formControlName="syslog" name="syslog" />
+				</cds-input>
+				<cds-input>
 					<label class="clr-col-6 form-input">Password</label>
 					<input  placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
 				</cds-input>
@@ -141,6 +145,10 @@
 			<clr-checkbox-wrapper>
 				<input type="checkbox" clrCheckbox name="ntp_pc" id="ntp_pc" formControlName="ntp_pc" />
 				<label>NTP</label>
+			</clr-checkbox-wrapper>
+			<clr-checkbox-wrapper>
+				<input type="checkbox" clrCheckbox name="syslog_pc" id="syslog_pc" formControlName="syslog_pc" />
+				<label>Syslog</label>
 			</clr-checkbox-wrapper>
 			<clr-checkbox-wrapper>
 				<input type="checkbox" clrCheckbox name="erasedisks" id="erasedisks" formControlName="erasedisks" />
