@@ -23,13 +23,13 @@ rootpw {{ .password }}
 
 {{ if .erasedisks }}
 # Remove ALL partitions
-clearpart --alldrives{{ end }}
+clearpart --alldrives --overwritevmfs{{ end }}
 
 {{ if .bootdisk }}
-install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs
+install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs --novmfsondisk
 {{ else }}
 # Install on the first local disk available on machine
-install --overwritevmfs --firstdisk="localesx,usb,ahci,vmw_ahci,VMware"
+install --overwritevmfs --novmfsondisk --firstdisk="localesx,usb,ahci,vmw_ahci,VMware"
 {{ end }}
 
 # Set the network to static on the first network adapter
