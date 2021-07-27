@@ -29,7 +29,7 @@ clearpart --alldrives{{ end }}
 install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs
 {{ else }}
 # Install on the first local disk available on machine
-install --firstdisk --overwritevmfs
+install --overwritevmfs --firstdisk="localesx,usb,ahci,vmw_ahci,VMware"
 {{ end }}
 
 # Set the network to static on the first network adapter
