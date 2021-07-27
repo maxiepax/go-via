@@ -23,7 +23,7 @@ rootpw {{ .password }}
 
 {{ if .erasedisks }}
 # Remove ALL partitions
-clearpart --alldrives --overwritevmfs{{ end }}
+clearpart --overwritevmfs --alldrives {{ end }}
 
 {{ if .bootdisk }}
 install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs --novmfsondisk
