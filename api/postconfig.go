@@ -111,16 +111,29 @@ func ProvisioningWorker(item models.Address) {
 	}
 
 	if options.Domain {
-		cmd := strings.Fields("network ip dns search add -d")
-		cmd = append(cmd, item.Domain)
-		_, err := e.Run(cmd)
+		search := strings.Fields("network ip dns search add -d")
+		search = append(search, item.Domain)
+		_, err := e.Run(search)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"Postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
-			"domain": item.Domain,
+			"search domain": item.Domain,
+		}).Info(item.IP)
+
+		hd := string(item.Hostname + "." + item.Domain)
+		fqdn := strings.Fields("system hostname set --fqdn")
+		fqdn = append(fqdn, hd)
+		_, err = e.Run(fqdn)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"fqdn": hd,
 		}).Info(item.IP)
 	}
 
