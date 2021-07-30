@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
 	"time"
 
@@ -19,6 +18,7 @@ import (
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/find"
 	"github.com/vmware/govmomi/govc/host/esxcli"
+	"github.com/vmware/govmomi/vim25"
 	"github.com/vmware/govmomi/vim25/types"
 	"gorm.io/gorm/clause"
 )
@@ -58,7 +58,7 @@ func ProvisioningWorker(item models.Address) {
 	}
 
 	// check if the API is available, we will make 120 connection attempts, the connection test will reply with "connection refused" while no os is available to respond, in that case we sleep for 10 seconds to give it some time to boot.
-	err := retry(120, 1*time.Second, func() (err error) {
+	/*err := retry(120, 1*time.Second, func() (err error) {
 		test_ctx := context.Background()
 		_, err = govmomi.NewClient(test_ctx, url, true)
 		if err != nil {
@@ -78,6 +78,7 @@ func ProvisioningWorker(item models.Address) {
 			"postconfig": err,
 		}).Info(item.IP)
 	}
+	*/
 
 	logrus.WithFields(logrus.Fields{
 		"id":           item.ID,
@@ -95,6 +96,9 @@ func ProvisioningWorker(item models.Address) {
 			"Postconfig": err,
 		}).Info(item.IP)
 	}
+
+	retryer := vim25.Retry(c.RoundTripper, vim25.RetryTemporaryNetworkError, 3)
+	c.RoundTripper = retryer
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
 	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
