@@ -98,7 +98,7 @@ func ProvisioningWorker(item models.Address) {
 		}).Info(item.IP)
 	}
 
-	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 3)
+	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 30)
 	c.RoundTripper = retryer
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
@@ -291,5 +291,5 @@ func retry(attempts int, sleep time.Duration, f func() error) (err error) {
 }
 
 func CustomRetryTemporaryNetworkError(err error) (bool, time.Duration) {
-	return vim25.IsTemporaryNetworkError(err), time.Second * 5
+	return vim25.IsTemporaryNetworkError(err), time.Second * 10
 }
