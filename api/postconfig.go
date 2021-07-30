@@ -40,7 +40,12 @@ func PostConfig(c *gin.Context) {
 
 }
 
+
 func ProvisioningWorker(item models.Address) {
+
+	func test(int i) {
+		id := 1;
+	}
 
 	//create empty model and load it with the json content from database
 	options := models.GroupOptions{}
@@ -48,7 +53,9 @@ func ProvisioningWorker(item models.Address) {
 	logrus.WithFields(logrus.Fields{
 		"Started worker for ": item.Hostname,
 	}).Debug("host")
+	
 
+	
 	// connection info
 	url := &url.URL{
 		Scheme: "https",
@@ -56,9 +63,11 @@ func ProvisioningWorker(item models.Address) {
 		Path:   "sdk",
 		User:   url.UserPassword("root", item.Group.Password),
 	}
+	
 
 	// check if the API is available, we will make 120 connection attempts, the connection test will reply with "connection refused" while no os is available to respond, in that case we sleep for 10 seconds to give it some time to boot.
-	/*err := retry(120, 1*time.Second, func() (err error) {
+	/*
+	err := retry(120, 1*time.Second, func() (err error) {
 		test_ctx := context.Background()
 		_, err = govmomi.NewClient(test_ctx, url, true)
 		if err != nil {
@@ -88,7 +97,7 @@ func ProvisioningWorker(item models.Address) {
 	item.Progress = 75
 	item.Progresstext = "customization"
 	db.DB.Save(&item)
-
+	
 	ctx := context.Background()
 	c, err := govmomi.NewClient(ctx, url, true)
 	if err != nil {
@@ -97,10 +106,6 @@ func ProvisioningWorker(item models.Address) {
 		}).Info(item.IP)
 	}
 
-	func CustomRetryTemporaryNetworkError(err error) (bool, time.Duration) {
-		return vim25.IsTemporaryNetworkError(err), time.Second * 5
-	}
-	
 	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 3)
 	c.RoundTripper = retryer
 
@@ -291,4 +296,8 @@ func retry(attempts int, sleep time.Duration, f func() error) (err error) {
 		time.Sleep(sleep)
 	}
 	return fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+}
+
+func CustomRetryTemporaryNetworkError(err error) (bool, time.Duration) {
+	return vim25.IsTemporaryNetworkError(err), time.Second * 5
 }
