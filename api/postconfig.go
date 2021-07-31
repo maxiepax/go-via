@@ -55,7 +55,7 @@ func PostConfigID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, item) // 200
+	c.JSON(http.StatusOK, "OK") // 200
 
 	logrus.Info("Manual PostConfig of host" + item.Hostname + "started!")
 
@@ -120,10 +120,10 @@ func ProvisioningWorker(item models.Address) {
 			"Postconfig": err,
 		}).Info(item.IP)
 	}
-
+	spew.Dump(c.RoundTripper)
 	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 30)
 	c.RoundTripper = retryer
-	spew.Dump(c.RoundTripper)
+
 	spew.Dump(retryer)
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
