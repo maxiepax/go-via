@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net"
 	"net/http"
 	"net/url"
@@ -19,7 +18,6 @@ import (
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/find"
 	"github.com/vmware/govmomi/govc/host/esxcli"
-	"github.com/vmware/govmomi/vim25"
 	"github.com/vmware/govmomi/vim25/types"
 	"gorm.io/gorm/clause"
 )
@@ -80,30 +78,6 @@ func ProvisioningWorker(item models.Address) {
 		User:   url.UserPassword("root", item.Group.Password),
 	}
 
-	// check if the API is available, we will make 120 connection attempts, the connection test will reply with "connection refused" while no os is available to respond, in that case we sleep for 10 seconds to give it some time to boot.
-	/*
-		err := retry(120, 1*time.Second, func() (err error) {
-			test_ctx := context.Background()
-			_, err = govmomi.NewClient(test_ctx, url, true)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"Postconfig": "still attempting to connect to API",
-				}).Debug(item.IP)
-				// if we get "connection refused" we wait 10 seconds.
-				match, _ := regexp.MatchString("refused", err.Error())
-				if match {
-					time.Sleep(10 * time.Second)
-				}
-			}
-			return
-		})
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-	*/
-
 	logrus.WithFields(logrus.Fields{
 		"id":           item.ID,
 		"percentage":   75,
@@ -124,7 +98,7 @@ func ProvisioningWorker(item models.Address) {
 			logrus.WithFields(logrus.Fields{
 				"IP":     item.IP,
 				"status": "timeout exceeded, failing postconfig",
-			}).Info("Postconfig")
+			}).Info("postconfig")
 			return
 		}
 		c, err = govmomi.NewClient(ctx, url, true)
@@ -135,7 +109,7 @@ func ProvisioningWorker(item models.Address) {
 				"retry":     i,
 				"retry max": timeout,
 				"err":       err,
-			}).Info("Postconfig")
+			}).Info("postconfig")
 			i += 1
 			<-time.After(time.Second * 10)
 			continue
@@ -147,13 +121,13 @@ func ProvisioningWorker(item models.Address) {
 	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"Postconfig": err,
+			"postconfig": err,
 		}).Info(item.IP)
 	}
 	e, err := esxcli.NewExecutor(c.Client, host)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"Postconfig": err,
+			"postconfig": err,
 		}).Info(item.IP)
 	}
 
@@ -163,7 +137,7 @@ func ProvisioningWorker(item models.Address) {
 		_, err := e.Run(search)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -176,7 +150,7 @@ func ProvisioningWorker(item models.Address) {
 		_, err = e.Run(fqdn)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -193,7 +167,7 @@ func ProvisioningWorker(item models.Address) {
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -203,7 +177,7 @@ func ProvisioningWorker(item models.Address) {
 		_, err = e.Run(strings.Fields("system ntp set --enabled true"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -213,14 +187,14 @@ func ProvisioningWorker(item models.Address) {
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 
 		err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -230,7 +204,7 @@ func ProvisioningWorker(item models.Address) {
 		err = s.Start(ctx, "ntpd")
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -245,13 +219,13 @@ func ProvisioningWorker(item models.Address) {
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		_, err = e.Run(strings.Fields("system syslog reload"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -263,14 +237,14 @@ func ProvisioningWorker(item models.Address) {
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 
 		err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -280,7 +254,7 @@ func ProvisioningWorker(item models.Address) {
 		err = s.Start(ctx, "TSM-SSH")
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -294,7 +268,7 @@ func ProvisioningWorker(item models.Address) {
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
+				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
@@ -314,24 +288,4 @@ func ProvisioningWorker(item models.Address) {
 	item.Progresstext = "completed"
 	db.DB.Save(&item)
 
-}
-
-func retry(attempts int, sleep time.Duration, f func() error) (err error) {
-	for i := 0; ; i++ {
-		err = f()
-		if err == nil {
-			return
-		}
-
-		if i >= (attempts - 1) {
-			break
-		}
-
-		time.Sleep(sleep)
-	}
-	return fmt.Errorf("after %d attempts, last error: %s", attempts, err)
-}
-
-func CustomRetryTemporaryNetworkError(err error) (bool, time.Duration) {
-	return vim25.IsTemporaryNetworkError(err), time.Second * 10
 }
