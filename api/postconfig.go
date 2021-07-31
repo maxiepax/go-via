@@ -120,7 +120,7 @@ func ProvisioningWorker(item models.Address) {
 			"Postconfig": err,
 		}).Info(item.IP)
 	}
-	spew.Dump(c.RoundTripper)
+	spew.Dump(c)
 	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 30)
 	c.RoundTripper = retryer
 
