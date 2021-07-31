@@ -119,7 +119,10 @@ func ProvisioningWorker(item models.Address) {
 	ctx := context.Background()
 	i := 1
 	timeout := 360
-	for i < timeout {
+	for {
+		if i > timeout {
+			return
+		}
 		c, err = govmomi.NewClient(ctx, url, true)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
