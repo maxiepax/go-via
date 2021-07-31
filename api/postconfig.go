@@ -63,23 +63,6 @@ func PostConfigID(c *gin.Context) {
 
 }
 
-func PostConfigDebug(c *gin.Context) {
-	var item models.Address
-	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
-
-	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	c.JSON(http.StatusOK, item) // 200
-
-	logrus.Info("ks config done!")
-
-	go ProvisioningWorker(item)
-
-}
-
 func ProvisioningWorker(item models.Address) {
 
 	//create empty model and load it with the json content from database
