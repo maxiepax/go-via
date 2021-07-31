@@ -121,6 +121,7 @@ func ProvisioningWorker(item models.Address) {
 	timeout := 5
 	for {
 		if i > timeout {
+			fmt.Println("timeout exceeded, failing")
 			return
 		}
 		c, err = govmomi.NewClient(ctx, url, true)
