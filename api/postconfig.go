@@ -92,7 +92,7 @@ func ProvisioningWorker(item models.Address) {
 	var err error
 	ctx := context.Background()
 	i := 1
-	timeout := 2
+	timeout := 360
 	for {
 		if i > timeout {
 			logrus.WithFields(logrus.Fields{
