@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -215,7 +214,6 @@ func ProvisioningWorker(item models.Address) {
 	if options.Syslog {
 		//configure Syslog
 		cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
-		spew.Dump(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
