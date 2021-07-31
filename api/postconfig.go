@@ -118,7 +118,7 @@ func ProvisioningWorker(item models.Address) {
 	var err error
 	ctx := context.Background()
 	i := 1
-	timeout := 360
+	timeout := 5
 	for {
 		if i > timeout {
 			return
@@ -129,6 +129,8 @@ func ProvisioningWorker(item models.Address) {
 				"Postconfig": err,
 			}).Info(item.IP)
 			i += 1
+			fmt.Println("sleeping for 10 seconds")
+			<-time.After(time.Second * 10)
 			continue
 		}
 		break
