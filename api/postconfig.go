@@ -121,16 +121,22 @@ func ProvisioningWorker(item models.Address) {
 	timeout := 2
 	for {
 		if i > timeout {
-			fmt.Println("timeout exceeded, failing")
+			logrus.WithFields(logrus.Fields{
+				"IP":     item.IP,
+				"status": "timeout exceeded, failing postconfig",
+			}).Info("Postconfig")
 			return
 		}
 		c, err = govmomi.NewClient(ctx, url, true)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"Postconfig": err,
-			}).Info(item.IP)
+				"IP":        item.IP,
+				"status":    "Hosts SOAP API not ready yet, retrying",
+				"retry":     i,
+				"retry max": timeout,
+				"err":       err,
+			}).Info("Postconfig")
 			i += 1
-			fmt.Println("sleeping for 10 seconds")
 			<-time.After(time.Second * 10)
 			continue
 		}
