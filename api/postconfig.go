@@ -100,6 +100,8 @@ func ProvisioningWorker(item models.Address) {
 
 	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 30)
 	c.RoundTripper = retryer
+	spew.Dump(c.RoundTripper)
+	spew.Dump(retryer)
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
 	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
