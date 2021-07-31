@@ -116,10 +116,10 @@ func ProvisioningWorker(item models.Address) {
 	// ensure that host has enough time to boot, and for SOAP API to respond.
 	var c *govmomi.Client
 	var err error
+	ctx := context.Background()
 	i := 1
 	timeout := 360
 	for i < timeout {
-		ctx := context.Background()
 		c, err = govmomi.NewClient(ctx, url, true)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
