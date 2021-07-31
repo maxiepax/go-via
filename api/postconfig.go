@@ -118,7 +118,7 @@ func ProvisioningWorker(item models.Address) {
 	var err error
 	ctx := context.Background()
 	i := 1
-	timeout := 5
+	timeout := 2
 	for {
 		if i > timeout {
 			fmt.Println("timeout exceeded, failing")
