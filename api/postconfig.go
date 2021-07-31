@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,6 +25,45 @@ import (
 )
 
 func PostConfig(c *gin.Context) {
+	var item models.Address
+	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+
+	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusOK, item) // 200
+
+	logrus.Info("ks config done!")
+
+	go ProvisioningWorker(item)
+
+}
+
+func PostConfigID(c *gin.Context) {
+	var item models.Address
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	if res := db.DB.Preload(clause.Associations).Where("id = ?", id).First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusOK, item) // 200
+
+	logrus.Info("Manual PostConfig of host" + item.Hostname + "started!")
+
+	go ProvisioningWorker(item)
+
+}
+
+func PostConfigDebug(c *gin.Context) {
 	var item models.Address
 	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
 
