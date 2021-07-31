@@ -113,18 +113,23 @@ func ProvisioningWorker(item models.Address) {
 	item.Progresstext = "customization"
 	db.DB.Save(&item)
 
-	ctx := context.Background()
-	c, err := govmomi.NewClient(ctx, url, true)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"Postconfig": err,
-		}).Info(item.IP)
+	// ensure that host has enough time to boot, and for SOAP API to respond.
+	var c *govmomi.Client
+	var err error
+	i := 1
+	timeout := 360
+	for i < timeout {
+		ctx := context.Background()
+		c, err = govmomi.NewClient(ctx, url, true)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Postconfig": err,
+			}).Info(item.IP)
+			i += 1
+			continue
+		}
+		break
 	}
-	spew.Dump(c)
-	retryer := vim25.Retry(c.RoundTripper, CustomRetryTemporaryNetworkError, 30)
-	c.RoundTripper = retryer
-
-	spew.Dump(retryer)
 
 	// since we're always going to be talking directly to the host, dont asume connection through vCenter.
 	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
