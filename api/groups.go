@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/basvanbeek/gopasswordhash"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
+	"github.com/kless/osutil/user/crypt/sha512_crypt"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
@@ -88,7 +88,7 @@ func CreateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = gopasswordhash.CreateHash(item.Password)
+	item.Password, _ = crypt_sha512(item.Password)
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
@@ -157,7 +157,7 @@ func UpdateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = gopasswordhash.CreateHash(item.Password)
+	item.Password, _ = crypt_sha512(item.Password)
 
 	// Save it
 	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
@@ -209,4 +209,13 @@ func DeleteGroup(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{}) //204
+}
+
+func crypt_sha512(pass string) (string, error) {
+	c := sha512_crypt.New()
+	sha, err := c.Generate([]byte(pass), []byte("$6$"+random(16)))
+	if err != nil {
+		return "", fmt.Errorf("Error generating crypt for password: %s\n", err)
+	}
+	return sha, err
 }
