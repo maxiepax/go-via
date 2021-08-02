@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/basvanbeek/gopasswordhash"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -87,7 +88,7 @@ func CreateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = CreateHash(item.Password)
+	item.Password, _ = gopasswordhash.CreateHash(item.Password)
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
@@ -156,7 +157,7 @@ func UpdateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = CreateHash(item.Password)
+	item.Password, _ = gopasswordhash.CreateHash(item.Password)
 
 	// Save it
 	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
