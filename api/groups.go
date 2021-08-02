@@ -9,10 +9,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
-	"github.com/kless/osutil/user/crypt/sha512_crypt"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
+	"github.com/tredoe/osutil/user/crypt/sha512_crypt"
 	"gorm.io/gorm"
 )
 
