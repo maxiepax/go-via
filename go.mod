@@ -3,6 +3,7 @@ module github.com/maxiepax/go-via
 go 1.15
 
 require (
+	github.com/GehirnInc/crypt v0.0.0-20200316065508-bb7000b8a962 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/basvanbeek/gopasswordhash v0.0.0-20141223190806-832babdd3591 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
@@ -29,6 +30,8 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
+	github.com/tredoe/goutil v1.0.1 // indirect
+	github.com/tredoe/osutil v1.0.6 // indirect
 	github.com/vmware/govmomi v0.24.1 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect

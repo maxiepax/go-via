@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/GehirnInc/crypt"
+	_ "github.com/GehirnInc/crypt/sha512_crypt"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/sirupsen/logrus"
-	"github.com/tredoe/osutil/user/crypt/sha512_crypt"
 	"gorm.io/gorm"
 )
 
@@ -88,7 +89,7 @@ func CreateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = crypt_sha512(item.Password)
+	item.Password = crypt_sha512(item.Password)
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
@@ -157,7 +158,7 @@ func UpdateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password, _ = crypt_sha512(item.Password)
+	item.Password = crypt_sha512(item.Password)
 
 	// Save it
 	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
@@ -211,11 +212,8 @@ func DeleteGroup(c *gin.Context) {
 	c.JSON(http.StatusNoContent, gin.H{}) //204
 }
 
-func crypt_sha512(pass string) (string, error) {
-	c := sha512_crypt.New()
-	sha, err := c.Generate([]byte(pass), []byte("$6$"+random(16)))
-	if err != nil {
-		return "", fmt.Errorf("Error generating crypt for password: %s\n", err)
-	}
-	return sha, err
+func crypt_sha512(pass string) string {
+	crypt := crypt.SHA512.New()
+	ret, _ := crypt.Generate([]byte("secret"), []byte(""))
+	return ret
 }
