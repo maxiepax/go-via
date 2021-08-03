@@ -31,6 +31,7 @@ func ListGroups(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
+	items.Password = ""
 	c.JSON(http.StatusOK, items) // 200
 }
 
@@ -89,7 +90,6 @@ func CreateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password = crypt_sha512(item.Password)
 
 	if res := db.DB.Create(&item); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
@@ -158,7 +158,6 @@ func UpdateGroup(c *gin.Context) {
 	//remove whitespaces surrounding comma kickstart file breaks otherwise.
 	item.DNS = strings.Join(strings.Fields(item.DNS), "")
 	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-	item.Password = crypt_sha512(item.Password)
 
 	// Save it
 	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
