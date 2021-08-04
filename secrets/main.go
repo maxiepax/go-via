@@ -15,31 +15,33 @@ import (
 
 func Init() string {
 	var key []byte
-	if _, err := os.Stat("secrets/secrets.key"); os.IsNotExist(err) {
+	if _, err := os.Stat("secret/secret.key"); os.IsNotExist(err) {
 		//secrets file does not exist, create folder and file
-		os.MkdirAll("secrets", os.ModePerm)
+		os.MkdirAll("secret", os.ModePerm)
 		logrus.Info("no secrets file has been detected, attempting to create a new one and generate secret key.")
-		file, err := os.Create("secrets/secrets.key")
+		file, err := os.Create("secret/secret.key")
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
 		file.Close()
-		logrus.Info("secrets/secrets.key created.")
+		logrus.Info("secret/secret.key created.")
 
 		//generate a random 32 byte AES-256 key
 		bytes := make([]byte, 32)
 		if _, err := rand.Read(bytes); err != nil {
 			panic(err.Error())
 		}
+		fmt.Println(bytes)
 
 		//convert key to string and write to file
 		key := hex.EncodeToString(bytes)
+		fmt.Println(key)
 		file.WriteString(key)
-		logrus.Info("secrets key persisted to file")
+		logrus.Info("secret key persisted to file")
 	} else {
 		//Database exists, moving on.
-		logrus.Info("found existing secrets key!")
-		key, _ = ioutil.ReadFile("secrets/secrets.key")
+		logrus.Info("found existing secret key!")
+		key, _ = ioutil.ReadFile("secret/secret.key")
 	}
 	return string(key)
 }
