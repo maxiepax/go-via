@@ -14,7 +14,7 @@ import (
 )
 
 func Init() string {
-
+	var key []byte
 	if _, err := os.Stat("secrets/secrets.key"); os.IsNotExist(err) {
 		//secrets file does not exist, create folder and file
 		os.MkdirAll("secrets", os.ModePerm)
@@ -39,9 +39,9 @@ func Init() string {
 	} else {
 		//Database exists, moving on.
 		logrus.Info("found existing secrets key!")
-		key, _ := ioutil.ReadFile("secrets/secrets.key")
-		return string(key)
+		key, _ = ioutil.ReadFile("secrets/secrets.key")
 	}
+	return string(key)
 }
 
 func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
