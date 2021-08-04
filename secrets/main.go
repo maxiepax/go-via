@@ -36,8 +36,11 @@ func Init() string {
 		//convert key to string and write to file
 		key := hex.EncodeToString(bytes)
 		fmt.Println(key)
-		file.WriteString(key)
-		logrus.Info("secret key persisted to file")
+		wr, err := file.WriteString(key)
+		if err != nil {
+			logrus.Fatal(err.Error())
+		}
+		logrus.Info("secret key persisted to file, %v bytes", wr)
 	} else {
 		//Database exists, moving on.
 		logrus.Info("found existing secret key!")
