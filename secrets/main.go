@@ -23,7 +23,6 @@ func Init() string {
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
-		file.Close()
 		logrus.Info("secret/secret.key created.")
 
 		//generate a random 32 byte AES-256 key
@@ -41,6 +40,7 @@ func Init() string {
 			logrus.Fatal(err.Error())
 		}
 		logrus.Info("secret key persisted to file, %v bytes", wr)
+		file.Close()
 	} else {
 		//Database exists, moving on.
 		logrus.Info("found existing secret key!")
