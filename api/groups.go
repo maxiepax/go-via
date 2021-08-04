@@ -31,7 +31,7 @@ func ListGroups(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
 	}
-	items.Password = ""
+
 	c.JSON(http.StatusOK, items) // 200
 }
 

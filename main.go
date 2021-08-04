@@ -16,6 +16,7 @@ import (
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/secrets"
 	"github.com/maxiepax/go-via/websockets"
 	"github.com/rakyll/statik/fs"
 
@@ -119,6 +120,10 @@ func main() {
 			conf.Network.Interfaces = append(conf.Network.Interfaces, v.Name)
 		}
 	}
+
+	// load secrets key
+	key := secrets.Init()
+	logrus.Info(key)
 
 	//connect to database
 	//db.Connect(true)
