@@ -78,7 +78,6 @@ func GetGroup(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /groups [post]
-//func CreateGroup(c *gin.Context) {
 func CreateGroup(key string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var form models.GroupForm
@@ -130,53 +129,57 @@ func CreateGroup(key string) func(c *gin.Context) {
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /groups/{id} [patch]
-func UpdateGroup(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		Error(c, http.StatusBadRequest, err) // 400
-		return
-	}
-
-	// Load the form data
-	var form models.GroupForm
-	if err := c.ShouldBind(&form); err != nil {
-		Error(c, http.StatusBadRequest, err) // 400
-		return
-	}
-
-	// Load the item
-	var item models.Group
-	if res := db.DB.First(&item, id); res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
-		} else {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
+//func UpdateGroup(c *gin.Context) {
+func UpdateGroup(key string) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			Error(c, http.StatusBadRequest, err) // 400
+			return
 		}
-		return
+
+		// Load the form data
+		var form models.GroupForm
+		if err := c.ShouldBind(&form); err != nil {
+			Error(c, http.StatusBadRequest, err) // 400
+			return
+		}
+
+		// Load the item
+		var item models.Group
+		if res := db.DB.First(&item, id); res.Error != nil {
+			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+				Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+			} else {
+				Error(c, http.StatusInternalServerError, res.Error) // 500
+			}
+			return
+		}
+
+		// Merge the item and the form data
+		if err := mergo.Merge(&item, models.Group{GroupForm: form}, mergo.WithOverride); err != nil {
+			Error(c, http.StatusInternalServerError, err) // 500
+		}
+
+		//remove whitespaces surrounding comma kickstart file breaks otherwise.
+		item.DNS = strings.Join(strings.Fields(item.DNS), "")
+		item.NTP = strings.Join(strings.Fields(item.NTP), "")
+		item.Password = secrets.Encrypt(item.Password, key)
+
+		// Save it
+		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		// Load a new version with relations
+		if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		c.JSON(http.StatusOK, item) // 200
 	}
-
-	// Merge the item and the form data
-	if err := mergo.Merge(&item, models.Group{GroupForm: form}, mergo.WithOverride); err != nil {
-		Error(c, http.StatusInternalServerError, err) // 500
-	}
-
-	//remove whitespaces surrounding comma kickstart file breaks otherwise.
-	item.DNS = strings.Join(strings.Fields(item.DNS), "")
-	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-
-	// Save it
-	if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	// Load a new version with relations
-	if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	c.JSON(http.StatusOK, item) // 200
 }
 
 // DeleteGroup Remove an existing group

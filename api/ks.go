@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 )
@@ -19,7 +20,7 @@ var defaultks = `
 vmaccepteula
 
 # Set the root password for the DCUI and Tech Support Mode
-rootpw --iscrypted {{ .password }}
+rootpw {{ .password }}
 
 {{ if .erasedisks }}
 # Remove ALL partitions
@@ -38,88 +39,92 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 reboot
 `
 
-func Ks(c *gin.Context) {
-	var item models.Address
-	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+func Ks(key string) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var item models.Address
+		host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
 
-	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
+		if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
 
-	options := models.GroupOptions{}
-	json.Unmarshal(item.Group.Options, &options)
+		options := models.GroupOptions{}
+		json.Unmarshal(item.Group.Options, &options)
 
-	if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
-		Error(c, http.StatusInternalServerError, reimage.Error) // 500
-		return
-	}
+		if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
+			Error(c, http.StatusInternalServerError, reimage.Error) // 500
+			return
+		}
 
-	laddrport, ok := c.Request.Context().Value(http.LocalAddrContextKey).(net.Addr)
-	if !ok {
+		laddrport, ok := c.Request.Context().Value(http.LocalAddrContextKey).(net.Addr)
+		if !ok {
+			logrus.WithFields(logrus.Fields{
+				"interface": "could not determine the local interface used to apply to ks.cfgs postconfig callback",
+			}).Debug("ks")
+		}
+
+		//laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
+
+		logrus.Info("Disabling re-imaging for host to avoid re-install looping")
+
+		//convert netmask from bit to long format.
+		nm := net.CIDRMask(item.Pool.Netmask, 32)
+		netmask := ipv4MaskString(nm)
+
+		//decrypt password
+		item.Group.Password = secrets.Decrypt(item.Group.Password, key)
+
+		//cleanup data to allow easier custom templating
+		data := map[string]interface{}{
+			"password":   item.Group.Password,
+			"ip":         item.IP,
+			"gateway":    item.Pool.Gateway,
+			"dns":        item.Group.DNS,
+			"hostname":   item.Hostname,
+			"netmask":    netmask,
+			"via_server": laddrport,
+			"erasedisks": options.EraseDisks,
+			"bootdisk":   options.BootDisk,
+		}
+
+		// check if default ks has been overridden.
+		ks := defaultks
+		if item.Group.Ks != "" {
+			ks = item.Group.Ks
+		}
+
+		t, err := template.New("").Parse(ks)
+		if err != nil {
+			logrus.Info(err)
+			return
+		}
+		err = t.Execute(c.Writer, data)
+		if err != nil {
+			logrus.Info(err)
+			return
+		}
+
+		logrus.Info("Served ks.cfg file")
 		logrus.WithFields(logrus.Fields{
-			"interface": "could not determine the local interface used to apply to ks.cfgs postconfig callback",
-		}).Debug("ks")
+			"id":      item.ID,
+			"ip":      item.IP,
+			"host":    item.Hostname,
+			"message": "served ks.cfg file",
+		}).Info("ks")
+		logrus.WithFields(logrus.Fields{
+			"id":           item.ID,
+			"percentage":   50,
+			"progresstext": "kickstart",
+		}).Info("progress")
+		item.Progress = 50
+		item.Progresstext = "kickstart"
+		db.DB.Save(&item)
+
+		go ProvisioningWorker(item)
+
+		logrus.Info("Started worker")
 	}
-
-	//laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
-
-	logrus.Info("Disabling re-imaging for host to avoid re-install looping")
-
-	//convert netmask from bit to long format.
-	nm := net.CIDRMask(item.Pool.Netmask, 32)
-	netmask := ipv4MaskString(nm)
-
-	//cleanup data to allow easier custom templating
-	data := map[string]interface{}{
-		"password":   item.Group.Password,
-		"ip":         item.IP,
-		"gateway":    item.Pool.Gateway,
-		"dns":        item.Group.DNS,
-		"hostname":   item.Hostname,
-		"netmask":    netmask,
-		"via_server": laddrport,
-		"erasedisks": options.EraseDisks,
-		"bootdisk":   options.BootDisk,
-	}
-
-	// check if default ks has been overridden.
-	ks := defaultks
-	if item.Group.Ks != "" {
-		ks = item.Group.Ks
-	}
-
-	t, err := template.New("").Parse(ks)
-	if err != nil {
-		logrus.Info(err)
-		return
-	}
-	err = t.Execute(c.Writer, data)
-	if err != nil {
-		logrus.Info(err)
-		return
-	}
-
-	logrus.Info("Served ks.cfg file")
-	logrus.WithFields(logrus.Fields{
-		"id":      item.ID,
-		"ip":      item.IP,
-		"host":    item.Hostname,
-		"message": "served ks.cfg file",
-	}).Info("ks")
-	logrus.WithFields(logrus.Fields{
-		"id":           item.ID,
-		"percentage":   50,
-		"progresstext": "kickstart",
-	}).Info("progress")
-	item.Progress = 50
-	item.Progresstext = "kickstart"
-	db.DB.Save(&item)
-
-	go ProvisioningWorker(item)
-
-	logrus.Info("Started worker")
-
 }
 
 func ipv4MaskString(m []byte) string {
