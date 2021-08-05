@@ -121,7 +121,7 @@ func Ks(key string) func(c *gin.Context) {
 		item.Progresstext = "kickstart"
 		db.DB.Save(&item)
 
-		go ProvisioningWorker(item)
+		go ProvisioningWorker(item, key)
 
 		logrus.Info("Started worker")
 	}
