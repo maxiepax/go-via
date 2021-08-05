@@ -129,7 +129,6 @@ func CreateGroup(key string) func(c *gin.Context) {
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /groups/{id} [patch]
-//func UpdateGroup(c *gin.Context) {
 func UpdateGroup(key string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
