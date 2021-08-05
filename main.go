@@ -280,7 +280,7 @@ func main() {
 		{
 			groups.GET("", api.ListGroups)
 			groups.GET(":id", api.GetGroup)
-			groups.POST("", api.CreateGroup)
+			groups.POST("", api.CreateGroup(key))
 			groups.PATCH(":id", api.UpdateGroup)
 			groups.DELETE(":id", api.DeleteGroup)
 		}

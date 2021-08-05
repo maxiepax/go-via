@@ -13,6 +13,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -77,40 +78,44 @@ func GetGroup(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
 // @Router /groups [post]
-func CreateGroup(c *gin.Context) {
-	var form models.GroupForm
+//func CreateGroup(c *gin.Context) {
+func CreateGroup(key string) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var form models.GroupForm
 
-	if err := c.ShouldBind(&form); err != nil {
-		Error(c, http.StatusBadRequest, err) // 400
-		return
+		if err := c.ShouldBind(&form); err != nil {
+			Error(c, http.StatusBadRequest, err) // 400
+			return
+		}
+
+		item := models.Group{GroupForm: form}
+
+		//remove whitespaces surrounding comma kickstart file breaks otherwise.
+		item.DNS = strings.Join(strings.Fields(item.DNS), "")
+		item.NTP = strings.Join(strings.Fields(item.NTP), "")
+		item.Password = secrets.Encrypt(item.Password, key)
+
+		if res := db.DB.Create(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		// Load a new version with relations
+		if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		c.JSON(http.StatusOK, item) // 200
+
+		logrus.WithFields(logrus.Fields{
+			"Name":     item.Name,
+			"DNS":      item.DNS,
+			"NTP":      item.NTP,
+			"Image ID": item.ImageID,
+			"Pool ID":  item.PoolID,
+		}).Debug("group")
 	}
-
-	item := models.Group{GroupForm: form}
-
-	//remove whitespaces surrounding comma kickstart file breaks otherwise.
-	item.DNS = strings.Join(strings.Fields(item.DNS), "")
-	item.NTP = strings.Join(strings.Fields(item.NTP), "")
-
-	if res := db.DB.Create(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	// Load a new version with relations
-	if res := db.DB.Preload("Pool").First(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	c.JSON(http.StatusOK, item) // 200
-
-	logrus.WithFields(logrus.Fields{
-		"Name":     item.Name,
-		"DNS":      item.DNS,
-		"NTP":      item.NTP,
-		"Image ID": item.ImageID,
-		"Pool ID":  item.PoolID,
-	}).Debug("group")
 }
 
 // UpdateGroup Update an existing group
