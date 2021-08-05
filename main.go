@@ -172,7 +172,7 @@ func main() {
 	}
 
 	// ks.cfg is served at top to not place it behind BasicAuth
-	r.GET("ks.cfg", api.Ks(key)))
+	r.GET("ks.cfg", api.Ks(key))
 
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
@@ -305,8 +305,8 @@ func main() {
 
 		postconfig := v1.Group("/postconfig")
 		{
-			postconfig.GET("", api.PostConfig)
-			postconfig.GET(":id", api.PostConfigID)
+			postconfig.GET("", api.PostConfig(key))
+			postconfig.GET(":id", api.PostConfigID(key))
 		}
 
 		v1.GET("log", logServer.Handle)
