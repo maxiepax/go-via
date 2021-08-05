@@ -71,8 +71,9 @@ func Ks(key string) func(c *gin.Context) {
 		netmask := ipv4MaskString(nm)
 
 		//decrypt password
+		password := secrets.Decrypt(item.Group.Password, key)
 		item.Group.Password = secrets.Decrypt(item.Group.Password, key)
-		fmt.Println(item.Group.Password)
+		fmt.Println(password)
 		fmt.Println(key)
 
 		//cleanup data to allow easier custom templating
