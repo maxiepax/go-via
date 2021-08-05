@@ -312,8 +312,6 @@ func main() {
 		v1.GET("log", logServer.Handle)
 	}
 
-	/*	r.GET("postconfig", api.PostConfig) */
-
 	// check if ./cert/server.crt exists, if not we will create the folder, and initiate a new CA and a self-signed certificate
 	crt, err := os.Stat("./cert/server.crt")
 	if os.IsNotExist(err) {

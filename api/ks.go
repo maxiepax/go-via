@@ -64,8 +64,6 @@ func Ks(key string) func(c *gin.Context) {
 			}).Debug("ks")
 		}
 
-		//laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
-
 		logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 		//convert netmask from bit to long format.
@@ -74,6 +72,7 @@ func Ks(key string) func(c *gin.Context) {
 
 		//decrypt password
 		item.Group.Password = secrets.Decrypt(item.Group.Password, key)
+		fmt.Println(item.Group.Password)
 
 		//cleanup data to allow easier custom templating
 		data := map[string]interface{}{
