@@ -172,13 +172,15 @@ func main() {
 	}
 
 	// ks.cfg is served at top to not place it behind BasicAuth
-	r.GET("ks.cfg", api.Ks(key))
+	r.GET("ks.cfg", api.Ks("", key))
 
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
 		username, password, hasAuth := c.Request.BasicAuth()
 		if !hasAuth {
-			fmt.Println("doesnt have auth")
+			logrus.WithFields(logrus.Fields{
+				"login": "user tried to access webpage with invalid login/no login"
+			}).Info("auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
