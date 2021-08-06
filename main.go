@@ -305,8 +305,8 @@ func main() {
 
 		postconfig := v1.Group("/postconfig")
 		{
-			postconfig.GET("", api.PostConfig)
-			postconfig.GET(":id", api.PostConfigID)
+			postconfig.GET("", api.PostConfig(key))
+			postconfig.GET(":id", api.PostConfigID(key))
 		}
 
 		v1.GET("log", logServer.Handle)
