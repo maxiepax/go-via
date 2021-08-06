@@ -1,18 +1,10 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
-	"text/template"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maxiepax/go-via/db"
-	"github.com/maxiepax/go-via/models"
-	"github.com/maxiepax/go-via/secrets"
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm/clause"
 )
 
 var defaultks = `
@@ -39,6 +31,11 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 reboot
 `
 
+func Ks(c *gin.Context) {
+	c.JSON(http.StatusOK, "test") // 200
+}
+
+/*
 func Ks(key string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var item models.Address
@@ -127,7 +124,7 @@ func Ks(key string) func(c *gin.Context) {
 		logrus.Info("Started worker")
 	}
 }
-
+*/
 func ipv4MaskString(m []byte) string {
 	if len(m) != 4 {
 		panic("ipv4Mask: len must be 4 bytes")
