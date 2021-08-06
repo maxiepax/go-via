@@ -5,7 +5,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -123,7 +122,6 @@ func main() {
 
 	// load secrets key
 	key := secrets.Init()
-	logrus.Info(key)
 
 	//connect to database
 	//db.Connect(true)
@@ -178,7 +176,9 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		username, password, hasAuth := c.Request.BasicAuth()
 		if !hasAuth {
-			fmt.Println("doesnt have auth")
+			logrus.WithFields(logrus.Fields{
+				"login": "unauthorized request",
+			}).Info("auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return

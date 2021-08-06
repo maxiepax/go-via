@@ -42,7 +42,6 @@ reboot
 //func Ks(c *gin.Context) {
 func Ks(key string) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		fmt.Println(key)
 		var item models.Address
 		host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
 

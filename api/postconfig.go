@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -76,8 +75,6 @@ func ProvisioningWorker(item models.Address, key string) {
 	// decrypt login password
 	decryptedPassword := secrets.Decrypt(item.Group.Password, key)
 
-	spew.Dump(decryptedPassword)
-
 	// connection info
 	url := &url.URL{
 		Scheme: "https",
@@ -85,8 +82,6 @@ func ProvisioningWorker(item models.Address, key string) {
 		Path:   "sdk",
 		User:   url.UserPassword("root", decryptedPassword),
 	}
-
-	spew.Dump(url)
 
 	logrus.WithFields(logrus.Fields{
 		"id":           item.ID,
