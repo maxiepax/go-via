@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
+	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 )
@@ -65,17 +66,18 @@ func Ks(key string) func(c *gin.Context) {
 			}).Debug("ks")
 		}
 
-		//laddr, _, _ := net.SplitHostPort(string(laddrport.String()))
-
 		logrus.Info("Disabling re-imaging for host to avoid re-install looping")
 
 		//convert netmask from bit to long format.
 		nm := net.CIDRMask(item.Pool.Netmask, 32)
 		netmask := ipv4MaskString(nm)
 
+		//decrypt the password
+		decryptedPassword := secrets.Decrypt(item.Group.Password, key)
+
 		//cleanup data to allow easier custom templating
 		data := map[string]interface{}{
-			"password":   item.Group.Password,
+			"password":   decryptedPassword,
 			"ip":         item.IP,
 			"gateway":    item.Pool.Gateway,
 			"dns":        item.Group.DNS,
