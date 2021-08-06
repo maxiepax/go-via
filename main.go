@@ -5,7 +5,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -179,7 +178,7 @@ func main() {
 		username, password, hasAuth := c.Request.BasicAuth()
 		if !hasAuth {
 			logrus.WithFields(logrus.Fields{
-				"login": "user tried to access webpage with invalid login/no login"
+				"login": "user tried to access webpage with invalid login/no login",
 			}).Info("auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
