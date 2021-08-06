@@ -19,7 +19,7 @@ var defaultks = `
 vmaccepteula
 
 # Set the root password for the DCUI and Tech Support Mode
-rootpw --iscrypted {{ .password }}
+rootpw {{ .password }}
 
 {{ if .erasedisks }}
 # Remove ALL partitions
