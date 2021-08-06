@@ -113,8 +113,14 @@ func ProvisioningWorker(item models.Address, key string) {
 				"status":    "Hosts SOAP API not ready yet, retrying",
 				"retry":     i,
 				"retry max": timeout,
-				"err":       err,
 			}).Info("postconfig")
+			logrus.WithFields(logrus.Fields{
+				"IP":        item.IP,
+				"status":    "Hosts SOAP API not ready yet, retrying",
+				"retry":     i,
+				"retry max": timeout,
+				"err":       err,
+			}).Debug("postconfig")
 			i += 1
 			<-time.After(time.Second * 10)
 			continue
