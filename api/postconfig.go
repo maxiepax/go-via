@@ -76,6 +76,8 @@ func ProvisioningWorker(item models.Address, key string) {
 	// decrypt login password
 	decryptedPassword := secrets.Decrypt(item.Group.Password, key)
 
+	spew.Dump(decryptedPassword)
+
 	// connection info
 	url := &url.URL{
 		Scheme: "https",
