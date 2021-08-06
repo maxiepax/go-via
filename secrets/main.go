@@ -13,23 +13,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Credits to this person for excellent code: https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/
-
 func Init() string {
-	var key []byte
-	if _, err := os.Stat("secret/secret.key"); os.IsNotExist(err) {
+
+	if _, err := os.Stat("secrets/secrets.key"); os.IsNotExist(err) {
 		//secrets file does not exist, create folder and file
-		os.MkdirAll("secret", os.ModePerm)
-		logrus.WithFields(logrus.Fields{
-			"key": "no secrets file has been detected, attempting to create a new one and generate secret key",
-		}).Info("secrets")
-		file, err := os.Create("secret/secret.key")
+		os.MkdirAll("secrets", os.ModePerm)
+		logrus.Info("no secrets file has been detected, attempting to create a new one and generate secret key.")
+		file, err := os.Create("secrets/secrets.key")
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
-		logrus.WithFields(logrus.Fields{
-			"key": "secret/secret.key created",
-		}).Info("secrets")
+		file.Close()
+		logrus.Info("secrets/secrets.key created.")
 
 		//generate a random 32 byte AES-256 key
 		bytes := make([]byte, 32)
@@ -39,23 +34,14 @@ func Init() string {
 
 		//convert key to string and write to file
 		key := hex.EncodeToString(bytes)
-		wr, err := file.WriteString(key)
-		if err != nil {
-			logrus.Fatal(err.Error())
-		}
-		logrus.WithFields(logrus.Fields{
-			"key":   "secret key persisted to file",
-			"bytes": wr,
-		}).Info("secrets")
-		file.Close()
+		file.WriteString(key)
+		logrus.Info("secrets key persisted to file")
 	} else {
 		//Database exists, moving on.
-		logrus.WithFields(logrus.Fields{
-			"key": "found existing secret key!",
-		}).Info("secrets")
-		key, _ = ioutil.ReadFile("secret/secret.key")
+		logrus.Info("found existing secrets key!")
+		key, _ := ioutil.ReadFile("secrets/secrets.key")
+		return string(key)
 	}
-	return string(key)
 }
 
 func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {

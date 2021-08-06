@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
-	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/find"
@@ -22,49 +21,46 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-//func PostConfig(c *gin.Context) {
-func PostConfig(key string) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var item models.Address
-		host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+func PostConfig(c *gin.Context) {
+	var item models.Address
+	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
 
-		if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
-		}
-
-		c.JSON(http.StatusOK, item) // 200
-
-		logrus.Info("ks config done!")
-
-		go ProvisioningWorker(item, key)
+	if res := db.DB.Preload(clause.Associations).Where("ip = ?", host).First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
 	}
+
+	c.JSON(http.StatusOK, item) // 200
+
+	logrus.Info("ks config done!")
+
+	go ProvisioningWorker(item)
+
 }
 
-func PostConfigID(key string) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var item models.Address
+func PostConfigID(c *gin.Context) {
+	var item models.Address
 
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			Error(c, http.StatusBadRequest, err) // 400
-			return
-		}
-
-		if res := db.DB.Preload(clause.Associations).Where("id = ?", id).First(&item); res.Error != nil {
-			Error(c, http.StatusInternalServerError, res.Error) // 500
-			return
-		}
-
-		c.JSON(http.StatusOK, "OK") // 200
-
-		logrus.Info("Manual PostConfig of host" + item.Hostname + "started!")
-
-		go ProvisioningWorker(item, key)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
 	}
+
+	if res := db.DB.Preload(clause.Associations).Where("id = ?", id).First(&item); res.Error != nil {
+		Error(c, http.StatusInternalServerError, res.Error) // 500
+		return
+	}
+
+	c.JSON(http.StatusOK, "OK") // 200
+
+	logrus.Info("Manual PostConfig of host" + item.Hostname + "started!")
+
+	go ProvisioningWorker(item)
+
 }
 
-func ProvisioningWorker(item models.Address, key string) {
+func ProvisioningWorker(item models.Address) {
 
 	//create empty model and load it with the json content from database
 	options := models.GroupOptions{}
@@ -72,9 +68,6 @@ func ProvisioningWorker(item models.Address, key string) {
 	logrus.WithFields(logrus.Fields{
 		"Started worker for ": item.Hostname,
 	}).Debug("host")
-
-	// decrypt password
-	item.Group.Password = secrets.Decrypt(item.Group.Password, key)
 
 	// connection info
 	url := &url.URL{

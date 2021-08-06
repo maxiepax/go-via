@@ -5,6 +5,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -123,7 +124,6 @@ func main() {
 	// load secrets key
 	key := secrets.Init()
 	logrus.Info(key)
-	//test
 
 	//connect to database
 	//db.Connect(true)
@@ -178,9 +178,7 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		username, password, hasAuth := c.Request.BasicAuth()
 		if !hasAuth {
-			logrus.WithFields(logrus.Fields{
-				"login": "user tried to access webpage with invalid login/no login",
-			}).Info("auth")
+			fmt.Println("doesnt have auth")
 			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -282,8 +280,8 @@ func main() {
 		{
 			groups.GET("", api.ListGroups)
 			groups.GET(":id", api.GetGroup)
-			groups.POST("", api.CreateGroup(key))
-			groups.PATCH(":id", api.UpdateGroup(key))
+			groups.POST("", api.CreateGroup)
+			groups.PATCH(":id", api.UpdateGroup)
 			groups.DELETE(":id", api.DeleteGroup)
 		}
 
@@ -307,12 +305,14 @@ func main() {
 
 		postconfig := v1.Group("/postconfig")
 		{
-			postconfig.GET("", api.PostConfig(key))
-			postconfig.GET(":id", api.PostConfigID(key))
+			postconfig.GET("", api.PostConfig)
+			postconfig.GET(":id", api.PostConfigID)
 		}
 
 		v1.GET("log", logServer.Handle)
 	}
+
+	/*	r.GET("postconfig", api.PostConfig) */
 
 	// check if ./cert/server.crt exists, if not we will create the folder, and initiate a new CA and a self-signed certificate
 	crt, err := os.Stat("./cert/server.crt")
