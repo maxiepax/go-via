@@ -145,7 +145,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 				//fmt.Fprintf(os.Stderr, "%v\n", err)
 				logrus.WithFields(logrus.Fields{
 					"os.Stderr": err,
-				}).Info("tftpd")
+				}).Debug("tftpd")
 				return err
 			}
 
