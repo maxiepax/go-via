@@ -171,7 +171,7 @@ func main() {
 	}
 
 	// ks.cfg is served at top to not place it behind BasicAuth
-	r.GET("ks.cfg", api.Ks("", key))
+	r.GET("ks.cfg", api.Ks(key))
 
 	// middleware to check if user is logged in
 	r.Use(func(c *gin.Context) {
