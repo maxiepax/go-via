@@ -152,8 +152,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":            item.IP,
 			"search domain": item.Domain,
-		}).Info(item.IP)
+		}).Info("postconfig")
 
 		hd := string(item.Hostname + "." + item.Domain)
 		fqdn := strings.Fields("system hostname set --fqdn")
@@ -165,8 +166,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
 			"fqdn": hd,
-		}).Info(item.IP)
+		}).Info("postconfig")
 	}
 
 	if options.NTP {
@@ -192,8 +194,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
 			"ntpd": "Service enabled",
-		}).Info(item.IP)
+		}).Info("postconfig")
 
 		s, err := host.ConfigManager().ServiceSystem(ctx)
 		if err != nil {
@@ -209,8 +212,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
 			"ntpd": "Startup Policy -> Start and stop with host",
-		}).Info(item.IP)
+		}).Info("postconfig")
 
 		err = s.Start(ctx, "ntpd")
 		if err != nil {
@@ -219,8 +223,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
 			"ntpd": "Service started",
-		}).Info(item.IP)
+		}).Info("postconfig")
 	}
 
 	if options.Syslog {
@@ -239,8 +244,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
 			"syslog": "syslog configured",
-		}).Info(item.IP)
+		}).Info("postconfig")
 	}
 
 	if options.SSH {
@@ -258,8 +264,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":  item.IP,
 			"ssh": "Startup Policy -> Start and stop with host",
-		}).Info(item.IP)
+		}).Info("postconfig")
 
 		err = s.Start(ctx, "TSM-SSH")
 		if err != nil {
@@ -268,8 +275,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":  item.IP,
 			"ssh": "Service started",
-		}).Info(item.IP)
+		}).Info("postconfig")
 	}
 
 	if options.SuppressShellWarning {
@@ -282,8 +290,9 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
+			"IP":  item.IP,
 			"ssh": "suppressing shell warnings",
-		}).Info(item.IP)
+		}).Info("postconfig")
 	}
 	logrus.WithFields(logrus.Fields{
 		"postconfig": "postconfig completed",
