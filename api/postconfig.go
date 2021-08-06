@@ -56,7 +56,7 @@ func PostConfigID(key string) func(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, "OK") // 200
+		c.JSON(http.StatusOK, item) // 200
 
 		logrus.Info("Manual PostConfig of host" + item.Hostname + "started!")
 
