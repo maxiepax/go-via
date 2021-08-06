@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
-	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 )
@@ -39,7 +38,7 @@ network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ 
 reboot
 `
 
-func Ks(key string) func(c *gin.Context) {
+func Ks() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var item models.Address
 		host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
@@ -71,10 +70,10 @@ func Ks(key string) func(c *gin.Context) {
 		netmask := ipv4MaskString(nm)
 
 		//decrypt password
-		password := secrets.Decrypt(item.Group.Password, key)
+		/*password := secrets.Decrypt(item.Group.Password, key)
 		item.Group.Password = secrets.Decrypt(item.Group.Password, key)
 		fmt.Println(password)
-		fmt.Println(key)
+		fmt.Println(key)*/
 
 		//cleanup data to allow easier custom templating
 		data := map[string]interface{}{
@@ -121,7 +120,7 @@ func Ks(key string) func(c *gin.Context) {
 		item.Progress = 50
 		item.Progresstext = "kickstart"
 		db.DB.Save(&item)
-
+		key := "test"
 		go ProvisioningWorker(item, key)
 
 		logrus.Info("Started worker")
