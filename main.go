@@ -124,6 +124,7 @@ func main() {
 	// load secrets key
 	key := secrets.Init()
 	logrus.Info(key)
+	//test
 
 	//connect to database
 	//db.Connect(true)
