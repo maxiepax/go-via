@@ -83,7 +83,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		Scheme: "https",
 		Host:   item.IP,
 		Path:   "sdk",
-		User:   url.UserPassword("root", "VMware1!"),
+		User:   url.UserPassword("root", decryptedPassword),
 	}
 
 	spew.Dump(url)
