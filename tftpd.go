@@ -181,18 +181,16 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 
 		file, err := os.Open(filename)
 		if err != nil {
-			//fmt.Fprintf(os.Stderr, "%v\n", err)
 			logrus.WithFields(logrus.Fields{
 				"could not open file": err,
-			}).Info("tftpd")
+			}).Debug("tftpd")
 			return err
 		}
 		n, err := rf.ReadFrom(file)
 		if err != nil {
-			//fmt.Fprintf(os.Stderr, "%v\n", err)
 			logrus.WithFields(logrus.Fields{
 				"could not read from file": err,
-			}).Info("tftpd")
+			}).Debug("tftpd")
 			return err
 		}
 		logrus.WithFields(logrus.Fields{
@@ -211,7 +209,6 @@ func TFTPd(conf *config.Config) {
 	s.SetTimeout(5 * time.Second)  // optional
 	err := s.ListenAndServe(":69") // blocks until s.Shutdown() is called
 	if err != nil {
-		//fmt.Fprintf(os.Stdout, "server: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"could not start tftp server:": err,
 		}).Info("tftpd")
