@@ -7,8 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/GehirnInc/crypt"
-	_ "github.com/GehirnInc/crypt/sha512_crypt"
+	/*_ "github.com/GehirnInc/crypt/sha512_crypt"*/
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -218,8 +217,10 @@ func DeleteGroup(c *gin.Context) {
 	c.JSON(http.StatusNoContent, gin.H{}) //204
 }
 
+/*
 func crypt_sha512(pass string) string {
 	crypt := crypt.SHA512.New()
 	ret, _ := crypt.Generate([]byte("secret"), []byte(""))
 	return ret
 }
+*/

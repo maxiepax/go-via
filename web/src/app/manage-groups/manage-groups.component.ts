@@ -20,6 +20,7 @@ import '@cds/core/select/register.js';
 import '@cds/core/textarea/register.js';
 import '@cds/core/time/register.js';
 import '@cds/core/toggle/register.js';
+import { id } from '@cds/core/internal';
 
 
 @Component({
@@ -72,6 +73,19 @@ export class ManageGroupsComponent implements OnInit {
       if (data.msg === "progress") {
         this.progress[data.id] = data.percentage;
         this.progresstext[data.id] = data.progresstext;
+      }
+      if (data.progresstext === "completed") {
+        console.log("a host completed re-imaging");
+        this.groups = this.groups.map(group => {
+          console.log(this.groups);
+          this.hosts = this.hosts.map(host => {
+            console.log(this.hosts)
+            host = this.hosts.findIndex((obj => obj.id == data.id));
+            console.log(host)
+            this.groups[host].reimaging === false;
+          })  
+        return group;
+        })
       }
     })
   }
