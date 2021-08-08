@@ -83,6 +83,7 @@ export class ManageGroupsComponent implements OnInit {
             host = this.hosts.findIndex((obj => obj.id == data.id));
             console.log(host)
             this.hosts[host].reimaging === false;
+            console.log(host)
             return host
           })
         return group;
