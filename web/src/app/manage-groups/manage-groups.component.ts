@@ -75,17 +75,14 @@ export class ManageGroupsComponent implements OnInit {
         this.progresstext[data.id] = data.progresstext;
       }
       if (data.progresstext === "completed") {
-        console.log("a host completed re-imaging");
         this.apiService.getGroups().subscribe((groups: any) => {
           this.apiService.getHosts().subscribe((hosts: any) => {
             this.groups = groups.map(item => {
               item.hosts = hosts.filter(host => host.group_id === item.id)
               return item
             });
-            console.log("before foreach");
             hosts.forEach(host => {
               if (host.id === data.id) {
-                console.log(host);
                 host.reimage = false;
               }
             })
@@ -102,7 +99,6 @@ export class ManageGroupsComponent implements OnInit {
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
-        console.log(groups);
         hosts.forEach(host => {
           this.progress[host.id] = host.progress;
           this.progresstext[host.id] = host.progresstext;
@@ -302,14 +298,27 @@ export class ManageGroupsComponent implements OnInit {
   }
 
   reImageHost(id) {
-    this.apiService.patchHost(id).subscribe((data: any) => {
-      console.log("PUT Request is successful ", data);
+    this.apiService.reimageHost(id).subscribe((data: any) => {
       this.groups = this.groups.map(group => {
         group.hosts = group.hosts.map(host => host.id === id ? data : host)
         return group;
       })
       this.progress[id] = 0;
       this.progresstext[id] = "reimaging";
+    },
+    error  => {
+      console.log("Error", error);
+    });
+  }
+
+  cancelImageHost(id) {
+    this.apiService.cancelImageHost(id).subscribe((data: any) => {
+      this.groups = this.groups.map(group => {
+        group.hosts = group.hosts.map(host => host.id === id ? data : host)
+        return group;
+      })
+      this.progress[id] = 0;
+      this.progresstext[id] = "reimaging canceled";
     },
     error  => {
       console.log("Error", error);

@@ -21,13 +21,24 @@ export class ApiService {
     );
   }
 
-  public patchHost(id) {
+  public reimageHost(id) {
     return this.httpClient.patch(
       'https://' + window.location.host + `/v1/addresses/${id}`,
       {
         reimage: true,
         progress: 0,
         progresstext: 'reimaging',
+      }
+    );
+  }
+
+  public cancelImageHost(id) {
+    return this.httpClient.patch(
+      'https://' + window.location.host + `/v1/addresses/${id}`,
+      {
+        reimage: false,
+        progress: 0,
+        progresstext: 'reimaging canceled',
       }
     );
   }
