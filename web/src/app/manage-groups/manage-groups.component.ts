@@ -76,18 +76,18 @@ export class ManageGroupsComponent implements OnInit {
       }
       if (data.progresstext === "completed") {
         console.log("a host completed re-imaging");
-        this.groups = this.groups.map(group => {
-          console.log(this.groups);
-          this.hosts = this.hosts.map(host => {
-            console.log(this.hosts)
-            host = this.hosts.findIndex((obj => obj.id == data.id));
-            console.log(host)
-            this.hosts[host].reimaging === false;
-            console.log(host)
-            return host
-          })
-        return group;
-        })
+        this.apiService.getGroups().subscribe((groups: any) => {
+          this.apiService.getHosts().subscribe((hosts: any) => {
+            this.groups = groups.map(item => {
+              item.hosts = hosts.filter(host => host.group_id === item.id)
+              return item
+            });
+            console.log("before foreach");
+            hosts.forEach(host => {
+              console.log(host)
+            })
+          });
+        });
       }
     })
   }
