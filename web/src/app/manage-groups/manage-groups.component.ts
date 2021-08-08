@@ -85,8 +85,8 @@ export class ManageGroupsComponent implements OnInit {
             console.log("before foreach");
             hosts.forEach(host => {
               if (host.id === data.id) {
-                host.reimaging = false;
-                return host
+                console.log(host);
+                host.reimage = false;
               }
             })
           });
