@@ -37,7 +37,6 @@ export class ManageDhcpPoolsComponent implements OnInit {
   ngOnInit(): void {
     this.apiService.getPools().subscribe((data: any) => {
       this.pools = data;
-      console.log(this.pools);
     });
   }
 
@@ -60,11 +59,9 @@ export class ManageDhcpPoolsComponent implements OnInit {
       ...this.form.value,
       only_serve_reimage: true,
       lease_time: 7000,
-      //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
 
     this.apiService.addPool(data).subscribe((resp: any) => {
-      console.log(resp);
       if (resp.error) {
         this.errors = resp.error;
       }
@@ -88,7 +85,6 @@ export class ManageDhcpPoolsComponent implements OnInit {
       ...this.form.value,
       only_serve_reimage: true,
       lease_time: 7000,
-      //dns: this.form.value.dns.split(',').map(a => a.trim())
     };
 
     this.apiService.updatePool(this.pool.id, data).subscribe((resp: any) => {

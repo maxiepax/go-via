@@ -39,7 +39,6 @@
 			</clr-dg-cell>
 			<clr-dg-cell>
 				<button class="btn btn-warning-outline btn-sm" (click)="removeHost(host.id)">remove</button>
-				<!--<button *ngIf="host.reimage === false" class="btn btn-warning-outline btn-sm" (click)="reImageHost(host.id)" [disabled]="(host.reimage)?'disabled':''">re-image</button>-->
 				<button *ngIf="host.reimage === false" class="btn btn-warning-outline btn-sm" (click)="reImageHost(host.id)">re-image</button>
 				<button *ngIf="host.reimage === true" class="btn btn-warning-outline btn-sm" (click)="cancelImageHost(host.id)">cancel</button>
 			</clr-dg-cell>

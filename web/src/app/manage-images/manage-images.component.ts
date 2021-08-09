@@ -28,7 +28,6 @@ fileInfos?: Observable<any>;
   ngOnInit(): void {
     this.apiService.getImages().subscribe((images: any) => {
       this.images = images;
-      console.log(images)
     });
   }
 
@@ -38,7 +37,6 @@ fileInfos?: Observable<any>;
 
   upload(): void {
     this.progress = 0;
-  console.log(this.hash)
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
   
