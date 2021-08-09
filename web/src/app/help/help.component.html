@@ -47,6 +47,23 @@ To delete a group, first remove all the hosts in the group.
 <h3> Deleting hosts </h3>
 To remove a host, simply click remove next to the host and it will be removed.
 
+<h1> Backup </h1>
+<h3> Database </h3>
+Everything stateful is kept in the database/qslite-database.sql file. Please see sqlite recommended way of taking backup of database.
+
+<h3> Config file </h3>
+Config file is simply a static file, just back it up as a file.
+
+<h3> Secrets </h3>
+If no secrets file is found go-via will create one, and generate a SHA-256 hash. It is critical that this file is backed up to ensure that you can decrypt secrets.<br/>
+If you loose this file, a new file be generated with a new hash, and all secrets will be invalid and lost forever. Backup the secrets file as a regular file.
+
+<h3> Certificates </h3>
+If no custom certificates are placed in the certificates folder go-via will generate self-signed ones. It's not critical to backup these certificates but to avoid browsers getting annoyed you may as well back these up as regular files.
+
+<h1> Restore </h1>
+If the server is lost, just deploy the latest verison of go-via and place backed up database, config, certificate and secret in their corresponding folder and start go-via again.
+
 <h1> Other </h1>
 
 <h3> Cancel re-image </h3>
