@@ -99,6 +99,7 @@ services:
       - ./database:/go/database
       - ./config:/go/config
       - ./cert:/go/cert
+      - ./secret:/go/secret
 
 ```
 
@@ -114,6 +115,7 @@ services:
       - ./database:/go/database
       - ./config:/go/config
       - ./cert:/go/cert
+      - ./secret:/go/secret
     command: -file /go/config/config.json
 
 ```
