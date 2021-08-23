@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -314,6 +315,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		resp, err := http.Post("https://"+item.IP+"/host/ssl_cert", "text/plain", crt)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
