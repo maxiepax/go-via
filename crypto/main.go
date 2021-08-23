@@ -65,7 +65,7 @@ func CreateCA() {
 	}).Info("cert")
 }
 
-func CreateCert() {
+func CreateCert(path string) {
 
 	// Load CA
 	catls, err := tls.LoadX509KeyPair("cert/ca.crt", "cert/ca.key")
@@ -104,7 +104,7 @@ func CreateCert() {
 	}
 
 	// Public key
-	certOut, err := os.Create("cert/server.crt")
+	certOut, err := os.Create(path + "/server.crt")
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -115,7 +115,7 @@ func CreateCert() {
 	}).Info("cert")
 
 	// Private key
-	keyOut, err := os.OpenFile("cert/server.key", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	keyOut, err := os.OpenFile(path+"/server.key", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		logrus.Fatal(err)
 	}
