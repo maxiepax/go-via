@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -326,6 +325,29 @@ func ProvisioningWorker(item models.Address, key string) {
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
 		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
+
+		//ugly hack since hostd can't be restarted
+		_, err = e.Run(strings.Fields("network ip interface set -e false -i vmk0"))
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"IP":    item.IP,
+			"hostd": "restarting hostd",
+		}).Info("postconfig")
+
+		_, err = e.Run(strings.Fields("network ip interface set -e true -i vmk0"))
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"IP":    item.IP,
+			"hostd": "restarting hostd",
+		}).Info("postconfig")
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -347,14 +369,12 @@ func putRequest(url string, data io.Reader, username string, password string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, url, data)
 	req.SetBasicAuth(username, password)
-	spew.Dump(data)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info("")
 	}
-	debug, err := client.Do(req)
-	spew.Dump(debug)
+	_, err = client.Do(req)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
