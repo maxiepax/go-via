@@ -2,12 +2,10 @@ package api
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
-	"fmt"
+	"io"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strconv"
@@ -315,20 +313,24 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		resp, err := http.Post("https://"+item.IP+"/host/ssl_cert", "text/plain", crt)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		defer resp.Body.Close()
+		putRequest("https://"+item.IP+"/host/ssl_cert", crt)
 
-		b, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(b)
+		/*
+			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+			resp, err := http.Post("https://"+item.IP+"/host/ssl_cert", "text/plain", crt)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"postconfig": err,
+				}).Info(item.IP)
+			}
+			defer resp.Body.Close()
+
+			b, err := httputil.DumpResponse(resp, true)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(b)
+		*/
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -344,4 +346,20 @@ func ProvisioningWorker(item models.Address, key string) {
 	item.Progresstext = "completed"
 	db.DB.Save(&item)
 
+}
+
+func putRequest(url string, data io.Reader) {
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPut, url, data)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info("")
+	}
+	_, err = client.Do(req)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info("")
+	}
 }
