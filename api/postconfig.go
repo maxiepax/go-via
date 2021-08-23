@@ -316,7 +316,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		defer crt.Close()
 
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		putRequest("https://"+item.IP+"/host/ssl_cert", crt)
+		putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
 
 		/*
 			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -351,9 +351,10 @@ func ProvisioningWorker(item models.Address, key string) {
 
 }
 
-func putRequest(url string, data io.Reader) {
+func putRequest(url string, data io.Reader, username string, password string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, url, data)
+	req.SetBasicAuth(username, password)
 	spew.Dump(data)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
