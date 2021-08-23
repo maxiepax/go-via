@@ -6,11 +6,13 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
 	"github.com/maxiepax/go-via/secrets"
@@ -294,6 +296,13 @@ func ProvisioningWorker(item models.Address, key string) {
 			"ssh": "suppressing shell warnings",
 		}).Info("postconfig")
 	}
+
+	if options.Certificate {
+		os.MkdirAll("/cert/"+item.Hostname+"."+item.Domain+"/", os.ModePerm)
+		ca.CreateCert("/cert/"+item.Hostname+"."+item.Domain+"/", "rui")
+
+	}
+
 	logrus.WithFields(logrus.Fields{
 		"postconfig": "postconfig completed",
 	}).Info(item.IP)

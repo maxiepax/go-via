@@ -41,4 +41,5 @@ type GroupOptions struct {
 	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
 	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
 	Syslog               bool   `json:"syslog"`
+	Certificate          bool   `json:"certificate"`
 }
