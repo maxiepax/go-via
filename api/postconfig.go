@@ -301,7 +301,6 @@ func ProvisioningWorker(item models.Address, key string) {
 
 	if options.Certificate {
 		//create directory
-		fmt.Println("./cert/" + item.Hostname + "." + item.Domain)
 		os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
 		//create certificate
 		ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui", item.Hostname+"."+item.Domain)
@@ -315,7 +314,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
-		resp, err := http.Post("https://"+item.Hostname+"."+item.Domain, "text/plain", crt)
+		resp, err := http.Post("https://"+item.Hostname+"."+item.Domain+"/host/ssl_cert", "text/plain", crt)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
