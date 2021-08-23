@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strconv"
@@ -299,9 +300,34 @@ func ProvisioningWorker(item models.Address, key string) {
 	}
 
 	if options.Certificate {
+		//create directory
 		fmt.Println("./cert/" + item.Hostname + "." + item.Domain)
 		os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
+		//create certificate
 		ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui", item.Hostname+"."+item.Domain)
+
+		//post to esxi host https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.security.doc/GUID-43B7B817-C58F-4C6F-AF3D-9F1D52B116A0.html
+		crt, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.crt")
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": "couldn't find the .crt file",
+			}).Info(item.IP)
+		}
+		defer crt.Close()
+
+		resp, err := http.Post("https://"+item.Hostname+"."+item.Domain, "text/plain", crt)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		defer resp.Body.Close()
+
+		b, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(b)
 	}
 
 	logrus.WithFields(logrus.Fields{
