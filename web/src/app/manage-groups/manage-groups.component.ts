@@ -66,6 +66,7 @@ export class ManageGroupsComponent implements OnInit {
       syslog_pc: [''],
       ssh_pc: [''],
       domain_pc: [''],
+      certificate_pc: [''],
     });
     const ws = new WebSocket('wss://' +  window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
@@ -123,7 +124,6 @@ export class ManageGroupsComponent implements OnInit {
     let json_pc: any = {}
     if (data.ssh_pc) {
       json_pc.ssh = true;
-      console.log('ssh is true');
     }
     if (data.ntp_pc) {
       json_pc.ntp = true;
@@ -143,6 +143,9 @@ export class ManageGroupsComponent implements OnInit {
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
+    if (data.certificate_pc) {
+      json_pc.certificate = data.certificate_pc;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
@@ -152,6 +155,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
+    delete data.certificate_pc;
 
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
@@ -195,6 +199,7 @@ export class ManageGroupsComponent implements OnInit {
       erasedisks: this.group.options.erasedisks,
       bootdisk: this.group.options.bootdisk,
       allowlegacycpu: this.group.options.allowlegacycpu,
+      certificate_pc: this.group.options.certificate,
 
     });
     }
@@ -233,6 +238,9 @@ export class ManageGroupsComponent implements OnInit {
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
+    if (data.certificate_pc) {
+      json_pc.certificate = data.certificate_pc;
+    }
 
     data.options = json_pc;
     delete data.ssh_pc;
@@ -242,6 +250,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
+    delete data.certificate_pc;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
