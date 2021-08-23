@@ -314,7 +314,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
-		resp, err := http.Post("https://"+item.Hostname+"."+item.Domain+"/host/ssl_cert", "text/plain", crt)
+		resp, err := http.Post("https://"+item.IP+"/host/ssl_cert", "text/plain", crt)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
