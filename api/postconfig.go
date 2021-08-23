@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net"
@@ -313,6 +314,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		putRequest("https://"+item.IP+"/host/ssl_cert", crt)
 
 		/*
