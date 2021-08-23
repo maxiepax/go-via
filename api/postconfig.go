@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -353,12 +354,14 @@ func ProvisioningWorker(item models.Address, key string) {
 func putRequest(url string, data io.Reader) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, url, data)
+	spew.Dump(data)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info("")
 	}
-	_, err = client.Do(req)
+	debug, err := client.Do(req)
+	spew.Dump(debug)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
