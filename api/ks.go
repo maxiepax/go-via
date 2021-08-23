@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -74,7 +73,6 @@ func Ks(key string) func(c *gin.Context) {
 
 		//decrypt the password
 		decryptedPassword := secrets.Decrypt(item.Group.Password, key)
-		spew.Dump(decryptedPassword)
 
 		//cleanup data to allow easier custom templating
 		data := map[string]interface{}{

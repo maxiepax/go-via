@@ -111,7 +111,7 @@ func CreateCert(path string, name string) {
 	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: cert_b})
 	certOut.Close()
 	logrus.WithFields(logrus.Fields{
-		"cert": "server.crt created",
+		"cert": path + "/" + name + ".crt created",
 	}).Info("cert")
 
 	// Private key
@@ -122,7 +122,7 @@ func CreateCert(path string, name string) {
 	pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
 	keyOut.Close()
 	logrus.WithFields(logrus.Fields{
-		"cert": "server.key created",
+		"cert": path + "/" + name + ".key created",
 	}).Info("cert")
 
 }

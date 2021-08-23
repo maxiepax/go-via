@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"net/url"
@@ -298,6 +299,7 @@ func ProvisioningWorker(item models.Address, key string) {
 	}
 
 	if options.Certificate {
+		fmt.Println("/cert/" + item.Hostname + "." + item.Domain + "/")
 		os.MkdirAll("/cert/"+item.Hostname+"."+item.Domain+"/", os.ModePerm)
 		ca.CreateCert("/cert/"+item.Hostname+"."+item.Domain+"/", "rui")
 	}
