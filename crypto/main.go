@@ -19,12 +19,10 @@ func CreateCA() {
 	ca := &x509.Certificate{
 		SerialNumber: big.NewInt(1653),
 		Subject: pkix.Name{
-			Organization:  []string{"ORGANIZATION_NAME"},
-			Country:       []string{"COUNTRY_CODE"},
-			Province:      []string{"PROVINCE"},
-			Locality:      []string{"CITY"},
-			StreetAddress: []string{"ADDRESS"},
-			PostalCode:    []string{"POSTAL_CODE"},
+			Organization: []string{"VMware ESX Server Default Certificate"},
+			Country:      []string{"US"},
+			Province:     []string{"California"},
+			Locality:     []string{"Palo Alto"},
 		},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(10, 0, 0),
@@ -65,7 +63,7 @@ func CreateCA() {
 	}).Info("cert")
 }
 
-func CreateCert(path string, name string) {
+func CreateCert(path string, name string, cn string) {
 
 	// Load CA
 	catls, err := tls.LoadX509KeyPair("cert/ca.crt", "cert/ca.key")
@@ -81,12 +79,11 @@ func CreateCert(path string, name string) {
 	cert := &x509.Certificate{
 		SerialNumber: big.NewInt(1658),
 		Subject: pkix.Name{
-			Organization:  []string{"ORGANIZATION_NAME"},
-			Country:       []string{"COUNTRY_CODE"},
-			Province:      []string{"PROVINCE"},
-			Locality:      []string{"CITY"},
-			StreetAddress: []string{"ADDRESS"},
-			PostalCode:    []string{"POSTAL_CODE"},
+			Organization: []string{"VMware ESX Server Default Certificate"},
+			Country:      []string{"US"},
+			Province:     []string{"California"},
+			Locality:     []string{"Palo Alto"},
+			CommonName:   cn,
 		},
 		NotBefore:    time.Now(),
 		NotAfter:     time.Now().AddDate(10, 0, 0),
@@ -94,6 +91,10 @@ func CreateCert(path string, name string) {
 		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
 		KeyUsage:     x509.KeyUsageDigitalSignature,
 	}
+	// add SAN
+	cert.DNSNames = []string{cn}
+	cert.EmailAddresses = []string{"ssl-certificates@vmware.com"}
+
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
 	pub := &priv.PublicKey
 

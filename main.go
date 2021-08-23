@@ -323,7 +323,7 @@ func main() {
 		}).Info("cert")
 		os.MkdirAll("cert", os.ModePerm)
 		ca.CreateCA()
-		ca.CreateCert("./cert", "server")
+		ca.CreateCert("./cert", "server", "server")
 	} else {
 		logrus.WithFields(logrus.Fields{
 			crt.Name(): "server.crt found",

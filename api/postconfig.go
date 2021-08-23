@@ -301,7 +301,7 @@ func ProvisioningWorker(item models.Address, key string) {
 	if options.Certificate {
 		fmt.Println("./cert/" + item.Hostname + "." + item.Domain)
 		os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
-		ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui")
+		ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui", item.Hostname+item.Domain)
 	}
 
 	logrus.WithFields(logrus.Fields{
