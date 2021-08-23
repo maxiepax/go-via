@@ -315,25 +315,17 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		defer crt.Close()
 
+		key, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.key")
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": "couldn't find the .key file",
+			}).Info(item.IP)
+		}
+		defer key.Close()
+
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
-
-		/*
-			http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-			resp, err := http.Post("https://"+item.IP+"/host/ssl_cert", "text/plain", crt)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"postconfig": err,
-				}).Info(item.IP)
-			}
-			defer resp.Body.Close()
-
-			b, err := httputil.DumpResponse(resp, true)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(b)
-		*/
+		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
 	}
 
 	logrus.WithFields(logrus.Fields{
