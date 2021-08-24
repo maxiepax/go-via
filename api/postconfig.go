@@ -393,6 +393,20 @@ func ProvisioningWorker(item models.Address, key string) {
 			break
 		}
 
+		// re-authenticate and create new session since last reboot.
+		host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		e, err := esxcli.NewExecutor(c.Client, host)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+
 		// bring host out of maintenanace mode
 		cmd = strings.Fields("system maintenanceMode set -e false")
 		_, err = e.Run(cmd)
