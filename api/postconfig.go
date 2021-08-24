@@ -326,27 +326,28 @@ func ProvisioningWorker(item models.Address, key string) {
 		putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
 		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
 
-		//ugly hack since hostd can't be restarted
-		_, err = e.Run(strings.Fields("network ip interface set -e false -i vmk0"))
+		// set the host into maintenanace mode
+		_, err = e.Run(strings.Fields("system maintenanceMode set –enable true"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
-			"IP":    item.IP,
-			"hostd": "restarting hostd",
+			"IP":          item.IP,
+			"certificate": "set host into maintenance mode",
 		}).Info("postconfig")
 
-		_, err = e.Run(strings.Fields("network ip interface set -e true -i vmk0"))
+		// reboot the host
+		_, err = e.Run(strings.Fields("system shutdown reboot --reason certificate"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
 		}
 		logrus.WithFields(logrus.Fields{
-			"IP":    item.IP,
-			"hostd": "restarting hostd",
+			"IP":          item.IP,
+			"certificate": "rebooting host to activate new certificates",
 		}).Info("postconfig")
 	}
 
