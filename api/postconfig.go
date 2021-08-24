@@ -327,7 +327,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
 
 		// set the host into maintenanace mode
-		cmd := strings.Fields("system maintenanceMode set –e true")
+		cmd := strings.Fields("system maintenanceMode set -e true")
 		_, err = e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
