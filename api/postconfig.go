@@ -352,6 +352,15 @@ func ProvisioningWorker(item models.Address, key string) {
 			"certificate": "rebooting host to activate new certificates",
 		}).Info("postconfig")
 
+		logrus.WithFields(logrus.Fields{
+			"id":           item.ID,
+			"percentage":   90,
+			"progresstext": "rebooting host",
+		}).Info("progress")
+		item.Progress = 90
+		item.Progresstext = "rebooting host"
+		db.DB.Save(&item)
+
 		// wait for the SOAP API to come back
 		time.Sleep(15 * time.Second)
 		for {
