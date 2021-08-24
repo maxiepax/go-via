@@ -352,7 +352,39 @@ func ProvisioningWorker(item models.Address, key string) {
 			"certificate": "rebooting host to activate new certificates",
 		}).Info("postconfig")
 
-		// set the host into maintenanace mode
+		// wait for the SOAP API to come back
+		time.Sleep(15 * time.Second)
+		for {
+			if i > timeout {
+				logrus.WithFields(logrus.Fields{
+					"IP":     item.IP,
+					"status": "timeout exceeded, failing postconfig",
+				}).Info("postconfig")
+				return
+			}
+			c, err = govmomi.NewClient(ctx, url, true)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"IP":        item.IP,
+					"status":    "Hosts SOAP API not ready yet, retrying",
+					"retry":     i,
+					"retry max": timeout,
+				}).Info("postconfig")
+				logrus.WithFields(logrus.Fields{
+					"IP":        item.IP,
+					"status":    "Hosts SOAP API not ready yet, retrying",
+					"retry":     i,
+					"retry max": timeout,
+					"err":       err,
+				}).Debug("postconfig")
+				i += 1
+				<-time.After(time.Second * 10)
+				continue
+			}
+			break
+		}
+
+		// bring host out of maintenanace mode
 		cmd = strings.Fields("system maintenanceMode set -e false")
 		_, err = e.Run(cmd)
 		if err != nil {
