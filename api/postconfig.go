@@ -327,7 +327,8 @@ func ProvisioningWorker(item models.Address, key string) {
 		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
 
 		// set the host into maintenanace mode
-		_, err = e.Run(strings.Fields("system maintenanceMode set –enable true"))
+		cmd := strings.Fields("system maintenanceMode set –e true")
+		_, err = e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
@@ -339,7 +340,8 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info("postconfig")
 
 		// reboot the host
-		_, err = e.Run(strings.Fields("system shutdown reboot --reason certificate"))
+		cmd = strings.Fields("system shutdown reboot -r certificate")
+		_, err = e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
