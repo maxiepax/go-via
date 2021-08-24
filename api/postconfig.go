@@ -351,6 +351,20 @@ func ProvisioningWorker(item models.Address, key string) {
 			"IP":          item.IP,
 			"certificate": "rebooting host to activate new certificates",
 		}).Info("postconfig")
+
+		// set the host into maintenanace mode
+		cmd = strings.Fields("system maintenanceMode set -e false")
+		_, err = e.Run(cmd)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"IP":          item.IP,
+			"certificate": "remove host from maintenance mode",
+		}).Info("postconfig")
+
 	}
 
 	logrus.WithFields(logrus.Fields{
