@@ -12,7 +12,7 @@ require (
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.7.3
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/google/gopacket v1.1.19
 	github.com/hashrocket/ws v0.2.1 // indirect
