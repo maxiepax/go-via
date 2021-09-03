@@ -18,6 +18,17 @@ type GroupForm struct {
 	Options  datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
+type NoPWGroupForm struct {
+	PoolID  int            `json:"pool_id" gorm:"type:BIGINT"`
+	Name    string         `json:"name" gorm:"type:varchar(255)"`
+	DNS     string         `json:"dns" gorm:"type:varchar(255)"`
+	NTP     string         `json:"ntp" gorm:"type:varchar(255)"`
+	ImageID int            `json:"image_id" gorm:"type:INT"`
+	Ks      string         `json:"ks" gorm:"type:text"`
+	Syslog  string         `json:"syslog" gorm:"type:varchar(255)"`
+	Options datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
+}
+
 type Group struct {
 	ID int `json:"id" gorm:"primary_key"`
 
@@ -25,7 +36,21 @@ type Group struct {
 
 	Pool    *Pool     `json:"pool,omitempty" gorm:"foreignkey:PoolID"`
 	Option  []Option  `json:"option,omitempty" gorm:"foreignkey:PoolID"`
-	Address []Address `json:"option,omitempty" gorm:"foreignkey:GroupID"`
+	Address []Address `json:"address,omitempty" gorm:"foreignkey:GroupID"`
+
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+}
+
+type NoPWGroup struct {
+	ID int `json:"id" gorm:"primary_key"`
+
+	NoPWGroupForm
+
+	Pool    *Pool     `json:"pool,omitempty" gorm:"foreignkey:PoolID"`
+	Option  []Option  `json:"option,omitempty" gorm:"foreignkey:PoolID"`
+	Address []Address `json:"address,omitempty" gorm:"foreignkey:GroupID"`
 
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`

@@ -26,7 +26,7 @@ import (
 // @Failure 500 {object} models.APIError
 // @Router /groups [get]
 func ListGroups(c *gin.Context) {
-	var items []models.Group
+	var items []models.NoPWGroup
 	if res := db.DB.Preload("Pool").Preload("Option").Find(&items); res.Error != nil {
 		Error(c, http.StatusInternalServerError, res.Error) // 500
 		return
@@ -54,7 +54,7 @@ func GetGroup(c *gin.Context) {
 	}
 
 	// Load the item
-	var item models.Group
+	var item models.NoPWGroup
 	if res := db.DB.Preload("Pool").First(&item, id); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404

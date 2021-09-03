@@ -160,7 +160,7 @@ func (p *Pool) LastAddr() (net.IP, error) {
 	}
 
 	if startNet.IP.To4() == nil {
-		return net.IP{}, fmt.Errorf("does not support IPv6 addresses.")
+		return net.IP{}, fmt.Errorf("does not support IPv6 addresses")
 	}
 	ip := make(net.IP, len(startNet.IP.To4()))
 	binary.BigEndian.PutUint32(ip, binary.BigEndian.Uint32(startNet.IP.To4())|^binary.BigEndian.Uint32(startNet.Mask))
