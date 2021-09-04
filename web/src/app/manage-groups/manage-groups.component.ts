@@ -218,7 +218,6 @@ export class ManageGroupsComponent implements OnInit {
     let json_pc: any = {}
     if (data.ssh_pc) {
       json_pc.ssh = true;
-      console.log('ssh is true');
     }
     if (data.ntp_pc) {
       json_pc.ntp = true;
@@ -242,10 +241,9 @@ export class ManageGroupsComponent implements OnInit {
       json_pc.certificate = data.certificate_pc;
     }
 
-    if (data.password) {
-      console.log("password was set")
-    } else {
-      console.log("password was not set")
+    // if no password has been entered, don't send it to avoid rehashing the hash.
+    if (!data.password) {
+        delete data.password;
     }
 
     data.options = json_pc;
