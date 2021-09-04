@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -164,7 +165,8 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
-		spew.Dump(c)
+		body, _ := ioutil.ReadAll(c.Request.Body)
+		spew.Dump(body)
 
 		if c.Param("password") != "" {
 			fmt.Println("password was not updated")
