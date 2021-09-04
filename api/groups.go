@@ -165,7 +165,7 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
-		spew.Dump(c.Request.ParseForm())
+		spew.Dump(c.PostForm("password"))
 
 		if c.Param("password") != "" {
 			fmt.Println("password was not updated")
