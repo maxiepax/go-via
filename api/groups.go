@@ -164,11 +164,10 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
+		// to avoid re-hashing the password when no new password has been supplied, check if it was supplied
 		if form.Password != "" {
-			fmt.Println("password updated")
 			item.Password = secrets.Encrypt(item.Password, key)
 		}
-		fmt.Println("password was not updated")
 
 		// Save it
 		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
