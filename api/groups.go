@@ -162,7 +162,11 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		//remove whitespaces surrounding comma kickstart file breaks otherwise.
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
-		item.Password = secrets.Encrypt(item.Password, key)
+
+		if c.Param("password") != "" {
+			fmt.Println("password was not updated")
+			item.Password = secrets.Encrypt(item.Password, key)
+		}
 
 		// Save it
 		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
