@@ -58,7 +58,7 @@ type NoPWGroup struct {
 }
 
 func (NoPWGroup) TableName() string {
-	return "Group"
+	return "groups"
 }
 
 type GroupOptions struct {
