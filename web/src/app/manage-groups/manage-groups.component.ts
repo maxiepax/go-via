@@ -242,6 +242,12 @@ export class ManageGroupsComponent implements OnInit {
       json_pc.certificate = data.certificate_pc;
     }
 
+    if (data.password) {
+      console.log("password was set")
+    } else {
+      console.log("password was not set")
+    }
+
     data.options = json_pc;
     delete data.ssh_pc;
     delete data.ntp_pc;
