@@ -145,6 +145,8 @@ func UpdateGroup(key string) func(c *gin.Context) {
 			return
 		}
 
+		spew.Dump(form)
+
 		// Load the item
 		var item models.Group
 		if res := db.DB.First(&item, id); res.Error != nil {
@@ -164,9 +166,6 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		//remove whitespaces surrounding comma kickstart file breaks otherwise.
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
-
-		test := c.PostForm("password")
-		spew.Dump(test)
 
 		if c.Param("password") != "" {
 			fmt.Println("password was not updated")
