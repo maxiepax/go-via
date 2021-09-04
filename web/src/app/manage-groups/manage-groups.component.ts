@@ -256,6 +256,8 @@ export class ManageGroupsComponent implements OnInit {
     delete data.allowlegacycpu;
     delete data.certificate_pc;
 
+    console.log(data)
+
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
       if (resp.error) {
