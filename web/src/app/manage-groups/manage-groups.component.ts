@@ -264,6 +264,7 @@ export class ManageGroupsComponent implements OnInit {
       this.groups[resp.id] = resp;
       console.log("after update")
       console.log(this.groups)
+      return this.groups;
 
       if (resp.error) {
         this.errors = resp.error;
