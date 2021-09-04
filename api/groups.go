@@ -3,13 +3,13 @@ package api
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 
 	/*_ "github.com/GehirnInc/crypt/sha512_crypt"*/
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/imdario/mergo"
 	"github.com/maxiepax/go-via/db"
@@ -165,8 +165,7 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
 
-		body, _ := ioutil.ReadAll(c.Request.Body)
-		println(string(body))
+		spew.Dump(c.Request.Body)
 
 		if c.Param("password") != "" {
 			fmt.Println("password was not updated")
