@@ -57,6 +57,10 @@ type NoPWGroup struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
+func (NoPWGroup) TableName() string {
+	return "Group"
+}
+
 type GroupOptions struct {
 	Domain               bool   `json:"domain"`
 	NTP                  bool   `json:"ntp"`
