@@ -262,7 +262,7 @@ export class ManageGroupsComponent implements OnInit {
       console.log(this.groups)
       this.groups = this.groups.map(group => {
         if (group.id === resp.id) {
-            return resp;
+          return { ...group, ...resp };
         }
       return group;
       });
