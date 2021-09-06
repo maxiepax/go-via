@@ -104,8 +104,8 @@ func SearchAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// CreateAddress Create a new addresses or update an existing based on managed_reference
-// @Summary Create a new addresses or update an existing based on managed_reference
+// CreateAddress Create a new addresses
+// @Summary Create a new addresses
 // @Tags addresses
 // @Accept  json
 // @Produce  json
