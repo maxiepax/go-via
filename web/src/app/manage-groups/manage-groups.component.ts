@@ -171,7 +171,6 @@ export class ManageGroupsComponent implements OnInit {
       }
 
     });
-    console.log(data);
   }
 
   removeGroup(id) {
@@ -257,16 +256,13 @@ export class ManageGroupsComponent implements OnInit {
     delete data.certificate_pc;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
-      console.log(resp);
       delete resp.password;
-      console.log(this.groups)
       this.groups = this.groups.map(group => {
         if (group.id === resp.id) {
           return { ...group, ...resp };
         }
       return group;
       });
-      console.log(this.groups)
 
       if (resp.error) {
         this.errors = resp.error;
