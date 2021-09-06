@@ -114,6 +114,8 @@ export class ApiService {
     formData.append('hash', hash || "");
     formData.append('description', description || "");
 
+    console.log(formData)
+
     const req = new HttpRequest(
       'POST',
       'https://' + window.location.host + `/v1/images`,
