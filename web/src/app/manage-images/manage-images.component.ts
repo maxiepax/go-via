@@ -16,6 +16,7 @@ images;
 //file upload
 selectedFiles?: FileList;
 hash: string;
+description: string;
 currentFile?: File;
 progress = 0;
 message = '';
@@ -43,7 +44,7 @@ fileInfos?: Observable<any>;
       if (file) {
         this.currentFile = file;
 
-        this.apiService.addImage(this.currentFile, this.hash).subscribe(
+        this.apiService.addImage(this.currentFile, this.hash, this.description).subscribe(
           (event: any) => {
             if (event.type === HttpEventType.UploadProgress) {
               this.progress = Math.round(100 * event.loaded / event.total);
