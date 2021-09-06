@@ -33,7 +33,7 @@
           name="description"
           id="description"
           placeholder="optional" 
-          required>
+          >
         </textarea>
       </clr-textarea-container>
     </form>
@@ -83,11 +83,13 @@
 <clr-datagrid>
   <clr-dg-column>ISO Image</clr-dg-column>
   <clr-dg-column>Size(MB)</clr-dg-column>
+  <clr-dg-column>Description</clr-dg-column>
   <clr-dg-column>action</clr-dg-column>
 
   <clr-dg-row *ngFor="let image of images">
     <clr-dg-cell>{{ image.iso_image }}</clr-dg-cell>
     <clr-dg-cell>{{ image.size }}</clr-dg-cell>
+    <clr-dg-cell>{{ image.description }}</clr-dg-cell>
     <clr-dg-cell>
       <button class="btn btn-warning-outline btn-sm" (click)="remove(image.id)">
         remove
