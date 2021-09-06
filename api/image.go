@@ -194,10 +194,11 @@ func CreateImage(conf *config.Config) func(c *gin.Context) {
 				return
 			}
 			logrus.WithFields(logrus.Fields{
-				"id":    item.ID,
-				"image": item.ISOImage,
-				"path":  item.Path,
-				"size":  item.Size,
+				"id":          item.ID,
+				"image":       item.ISOImage,
+				"path":        item.Path,
+				"size":        item.Size,
+				"description": item.Description,
 			}).Info("image")
 			c.JSON(http.StatusOK, item) // 200
 		}

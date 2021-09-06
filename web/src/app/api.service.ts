@@ -112,7 +112,7 @@ export class ApiService {
 
     formData.append('file[]', file);
     formData.append('hash', hash || "");
-    formData.append('description', description || "")
+    formData.append('description', description || "");
 
     const req = new HttpRequest(
       'POST',
