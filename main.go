@@ -310,6 +310,8 @@ func main() {
 		}
 
 		v1.GET("log", logServer.Handle)
+
+		v1.GET("version", api.Version(version, commit, date))
 	}
 
 	/*	r.GET("postconfig", api.PostConfig) */
