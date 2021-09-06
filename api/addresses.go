@@ -159,8 +159,12 @@ func CreateAddress(c *gin.Context) {
 		Error(c, http.StatusBadRequest, fmt.Errorf("the ip address is not in the scope of the dhcp pool associated with the group")) // 400
 		return
 	}
-	// if ip address checks pas, continue to commit.
 
+	// ensure the mac address is properly formated.
+	mac, _ := net.ParseMAC(item.Mac)
+	item.Mac = mac.String()
+
+	// if ip address checks pas, continue to commit.
 	if item.ID != 0 { // Save if its an existing item
 		if res := db.DB.Save(&item); res.Error != nil {
 			Error(c, http.StatusInternalServerError, res.Error) // 500
