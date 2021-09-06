@@ -259,12 +259,12 @@ export class ManageGroupsComponent implements OnInit {
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       console.log(resp);
       delete resp.password;
-      console.log("before update")
-      console.log(this.groups)
-      this.groups[resp.id] = resp;
-      console.log("after update")
-      console.log(this.groups)
-      return this.groups;
+      this.groups = this.groups.map(group => {
+        if (group.id === resp.id) {
+            return resp;
+        }
+      return group;
+      });
 
       if (resp.error) {
         this.errors = resp.error;
