@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'manage-users', component: ManageUsersComponent },
   { path: 'help', component: HelpComponent },
   { path: 'logs', component: LogsComponent },
+  { path: '', component: ManageDhcpPoolsComponent },
 ];
 
 @NgModule({
