@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { startWith } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
+/*
 import { cloudIcon, ClarityIcons } from '@cds/core/icon';
 import '@cds/core/icon/register.js';
 import '@cds/core/accordion/register.js';
@@ -20,7 +22,7 @@ import '@cds/core/search/register.js';
 import '@cds/core/select/register.js';
 import '@cds/core/textarea/register.js';
 import '@cds/core/time/register.js';
-import '@cds/core/toggle/register.js';
+import '@cds/core/toggle/register.js'; */
 
 @Component({
   selector: 'app-root',
@@ -28,57 +30,17 @@ import '@cds/core/toggle/register.js';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'web';
-  show = false;
-  panel1Expanded = true;
+  version;
 
-  form: FormGroup;
-  formValue: Observable<{}>;
+  constructor(private apiService: ApiService) {
+    
+  }
 
-  constructor(private formBuilder: FormBuilder) {
-    ClarityIcons.addIcons(cloudIcon);
-
-    this.form = this.formBuilder.group({
-      name: ['', Validators.required],
-      select: ['Option One'],
-      datalist: [''],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      search: ['', Validators.minLength(5)],
-      time: [''],
-      inputGroupProtocol: ['http://'],
-      inputGroupPort: [''],
-      range: [75],
-      checkboxGroup1: [true],
-      checkboxGroup2: [''],
-      checkboxGroup3: [''],
-      radioGroup: ['south-america'],
-      toggle1: [true],
-      toggle2: [''],
-      file: [''],
-      selectMultiple: [''],
-      textarea: ['hello world'],
+  ngOnInit(): void {
+    this.apiService.getVersion().subscribe((data: any) => {
+      this.version = data;
+      console.log(this.version);
     });
 
-    this.formValue = this.form.valueChanges.pipe(startWith(this.form.value));
-  }
-
-  get nameInvalid() {
-    return this.form.controls.name.touched && this.form.controls.name.hasError('required');
-  }
-
-  get passwordRequired() {
-    return this.form.controls.password.touched && this.form.controls.password.hasError('required');
-  }
-
-  get passwordMinLength() {
-    return this.form.controls.password.touched && this.form.controls.password.hasError('minlength');
-  }
-
-  expandedChange(event): void {
-    this.panel1Expanded = event.detail;
-  }
-
-  submit() {
-    console.log(this.form.value);
   }
 }

@@ -160,4 +160,10 @@ export class ApiService {
       'https://' + window.location.host + `/v1/users/${id}`
     );
   }
+
+  public getVersion() {
+    return this.httpClient.get(
+      'https://' + window.location.host + '/v1/version'
+    );
+  }
 }
