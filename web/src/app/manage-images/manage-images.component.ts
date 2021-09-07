@@ -54,7 +54,6 @@ fileInfos?: Observable<any>;
             }
           },
           (err: any) => {
-            console.log(err);
             this.progress = 0;
   
             this.message = err?.error?.message || err?.error?.error_message || 'Could not upload the file!';

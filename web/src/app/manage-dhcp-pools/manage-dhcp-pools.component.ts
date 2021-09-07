@@ -88,7 +88,6 @@ export class ManageDhcpPoolsComponent implements OnInit {
     };
 
     this.apiService.updatePool(this.pool.id, data).subscribe((resp: any) => {
-      console.log(resp);
       if (resp.error) {
         this.errors = resp.error;
       }
