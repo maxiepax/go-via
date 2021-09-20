@@ -69,6 +69,15 @@ services:
     command: -file /go/config/config.json
 
 ```
+Example config file:
+``` json
+{
+    "network": {
+        "interfaces": ["ens224", "ens192"]
+    },
+    "port": 443
+}
+```
 
 now start the container
 
