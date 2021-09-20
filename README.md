@@ -69,7 +69,7 @@ services:
     command: -file /go/config/config.json
 
 ```
-Example config file:
+Example config file
 ``` json
 {
     "network": {
