@@ -146,7 +146,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info(item.IP)
 	}
 
-	if options.Domain {
+	if item.Domain != "" {
 		search := strings.Fields("network ip dns search add -d")
 		search = append(search, item.Domain)
 		_, err := e.Run(search)
@@ -175,7 +175,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info("postconfig")
 	}
 
-	if options.NTP {
+	if item.Group.NTP != "" {
 		//configure ntpd
 		cmd := strings.Fields("system ntp set")
 		for _, k := range strings.Split(item.Group.NTP, ",") {
@@ -232,7 +232,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info("postconfig")
 	}
 
-	if options.Syslog {
+	if item.Group.Syslog != "" {
 		//configure Syslog
 		cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
 		_, err := e.Run(cmd)
@@ -284,7 +284,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info("postconfig")
 	}
 
-	if options.SuppressShellWarning {
+	if options.SSH {
 		//Suppress any warnings that ESXi Console or SSH are enabled
 		cmd := strings.Fields("system settings advanced set -o /UserVars/SuppressShellWarning -i 1")
 		_, err := e.Run(cmd)
