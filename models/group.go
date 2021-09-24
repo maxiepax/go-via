@@ -64,13 +64,10 @@ func (NoPWGroup) TableName() string {
 }
 
 type GroupOptions struct {
-	Domain               bool   `json:"domain"`
-	NTP                  bool   `json:"ntp"`
 	SSH                  bool   `json:"ssh"`
 	SuppressShellWarning bool   `json:"suppressshellwarning"`
 	EraseDisks           bool   `json:"erasedisks"`
 	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
 	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
-	Syslog               bool   `json:"syslog"`
 	Certificate          bool   `json:"certificate"`
 }

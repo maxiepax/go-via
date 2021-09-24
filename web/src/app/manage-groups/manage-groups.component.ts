@@ -63,10 +63,7 @@ export class ManageGroupsComponent implements OnInit {
       erasedisks: [''],
       bootdisk: [''],
       allowlegacycpu: [''],
-      ntp_pc: [''],
-      syslog_pc: [''],
       ssh_pc: [''],
-      domain_pc: [''],
       certificate_pc: [''],
     });
     const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
@@ -126,15 +123,6 @@ export class ManageGroupsComponent implements OnInit {
     if (data.ssh_pc) {
       json_pc.ssh = true;
     }
-    if (data.ntp_pc) {
-      json_pc.ntp = true;
-    }
-    if (data.syslog_pc) {
-      json_pc.syslog = true;
-    }
-    if (data.domain_pc) {
-      json_pc.domain = true;
-    }
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
@@ -150,9 +138,6 @@ export class ManageGroupsComponent implements OnInit {
 
     data.options = json_pc;
     delete data.ssh_pc;
-    delete data.ntp_pc;
-    delete data.syslog_pc;
-    delete data.domain_pc;
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
@@ -192,10 +177,7 @@ export class ManageGroupsComponent implements OnInit {
       this.group = this.groups.find(group => group.id === id);
       this.Groupform.patchValue({
         ...this.group,
-        domain_pc: this.group.options.domain,
         ssh_pc: this.group.options.ssh,
-        ntp_pc: this.group.options.ntp,
-        syslog_pc: this.group.options.syslog,
         erasedisks: this.group.options.erasedisks,
         bootdisk: this.group.options.bootdisk,
         allowlegacycpu: this.group.options.allowlegacycpu,
@@ -219,15 +201,6 @@ export class ManageGroupsComponent implements OnInit {
     if (data.ssh_pc) {
       json_pc.ssh = true;
     }
-    if (data.ntp_pc) {
-      json_pc.ntp = true;
-    }
-    if (data.syslog_pc) {
-      json_pc.syslog = true;
-    }
-    if (data.domain_pc) {
-      json_pc.domain = true;
-    }
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
@@ -248,9 +221,6 @@ export class ManageGroupsComponent implements OnInit {
 
     data.options = json_pc;
     delete data.ssh_pc;
-    delete data.ntp_pc;
-    delete data.syslog_pc;
-    delete data.domain_pc;
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
