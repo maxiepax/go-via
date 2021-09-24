@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -302,15 +303,13 @@ func ProvisioningWorker(item models.Address, key string) {
 
 	if item.Group.Vlan != "" {
 		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
-		/*
-			cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
-			cmd = append(cmd, "-p")
-			cmd = append(cmd, "'VM Network'")
-			fmt.Println(cmd)
-			spew.Dump(cmd)
-		*/
-		cmd := strings.Fields("network vswitch standard portgroup list")
+
+		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
+		cmd = append(cmd, "-p")
+		cmd = append(cmd, "\"VM Network\"")
+		fmt.Println(cmd)
 		spew.Dump(cmd)
+
 		tst, err := e.Run(cmd)
 		spew.Dump(tst)
 		if err != nil {
