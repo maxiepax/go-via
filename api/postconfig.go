@@ -299,6 +299,21 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info("postconfig")
 	}
 
+	if item.Group.Vlan != "" {
+		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
+		cmd := strings.Fields("network vswitch standard portgroup set -p 'VM Network' --vlan-id " + item.Group.Vlan)
+		_, err := e.Run(cmd)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
+			"vlan": "VM Network vlan-id" + item.Group.Vlan,
+		}).Info("postconfig")
+	}
+
 	if options.Certificate {
 		//create directory
 		os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
