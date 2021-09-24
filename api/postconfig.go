@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -306,6 +307,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		cmd = append(cmd, "-p")
 		cmd = append(cmd, "'VM Network'")
 		fmt.Println(cmd)
+		spew.Dump(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
