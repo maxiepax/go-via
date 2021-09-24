@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -13,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -304,7 +304,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
 		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
 		cmd = append(cmd, " -p 'VM Network'")
-		spew.Dump(cmd)
+		fmt.Println(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
