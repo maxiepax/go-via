@@ -85,7 +85,7 @@ func Ks(key string) func(c *gin.Context) {
 			"via_server": laddrport,
 			"erasedisks": options.EraseDisks,
 			"bootdisk":   options.BootDisk,
-			"vlan":       options.Vlan,
+			"vlan":       item.Group.Vlan,
 		}
 
 		// check if default ks has been overridden.
