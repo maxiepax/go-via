@@ -73,4 +73,5 @@ type GroupOptions struct {
 	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
 	Syslog               bool   `json:"syslog"`
 	Certificate          bool   `json:"certificate"`
+	Vlan                 bool   `json:"vlan"`
 }
