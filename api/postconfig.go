@@ -312,6 +312,7 @@ func ProvisioningWorker(item models.Address, key string) {
 
 		tst, err := e.Run(cmd)
 		spew.Dump(tst)
+		spew.Dump(err)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
