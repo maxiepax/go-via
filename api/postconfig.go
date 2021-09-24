@@ -303,7 +303,8 @@ func ProvisioningWorker(item models.Address, key string) {
 	if item.Group.Vlan != "" {
 		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
 		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
-		cmd = append(cmd, "-p 'VM Network'")
+		cmd = append(cmd, "-p")
+		cmd = append(cmd, "'VM Network'")
 		fmt.Println(cmd)
 		_, err := e.Run(cmd)
 		if err != nil {
