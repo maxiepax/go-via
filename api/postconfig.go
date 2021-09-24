@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -302,7 +303,9 @@ func ProvisioningWorker(item models.Address, key string) {
 	if item.Group.Vlan != "" {
 		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
 		cmd := strings.Fields("network vswitch standard portgroup set -p 'VM Network' --vlan-id " + item.Group.Vlan)
-		_, err := e.Run(cmd)
+		spew.Dump(cmd)
+		tst, err := e.Run(cmd)
+		spew.Dump(tst)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
@@ -310,7 +313,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 		logrus.WithFields(logrus.Fields{
 			"IP":   item.IP,
-			"vlan": "VM Network vlan-id" + item.Group.Vlan,
+			"vlan": "VM Network vlan-id : " + item.Group.Vlan,
 		}).Info("postconfig")
 	}
 
