@@ -56,6 +56,7 @@ export class ManageGroupsComponent implements OnInit {
       dns: [''],
       ntp: [''],
       syslog: [''],
+      vlan: [''],
       password: ['', [Validators.required]],
       image_id: ['', [Validators.required]],
       pool_id: ['', [Validators.required]],
@@ -68,7 +69,7 @@ export class ManageGroupsComponent implements OnInit {
       domain_pc: [''],
       certificate_pc: [''],
     });
-    const ws = new WebSocket('wss://' +  window.location.host + '/v1/log')
+    const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       if (data.msg === "progress") {
@@ -185,22 +186,22 @@ export class ManageGroupsComponent implements OnInit {
     }
   }
 
-  showGroupModal(mode, id=null) {
+  showGroupModal(mode, id = null) {
     this.showGroupModalMode = mode;
     if (mode === "edit") {
-    this.group = this.groups.find(group => group.id === id);
-    this.Groupform.patchValue({
-      ...this.group,
-      domain_pc: this.group.options.domain,
-      ssh_pc: this.group.options.ssh,
-      ntp_pc: this.group.options.ntp,
-      syslog_pc: this.group.options.syslog,
-      erasedisks: this.group.options.erasedisks,
-      bootdisk: this.group.options.bootdisk,
-      allowlegacycpu: this.group.options.allowlegacycpu,
-      certificate_pc: this.group.options.certificate,
+      this.group = this.groups.find(group => group.id === id);
+      this.Groupform.patchValue({
+        ...this.group,
+        domain_pc: this.group.options.domain,
+        ssh_pc: this.group.options.ssh,
+        ntp_pc: this.group.options.ntp,
+        syslog_pc: this.group.options.syslog,
+        erasedisks: this.group.options.erasedisks,
+        bootdisk: this.group.options.bootdisk,
+        allowlegacycpu: this.group.options.allowlegacycpu,
+        certificate_pc: this.group.options.certificate,
 
-    });
+      });
     }
     if (mode === "add") {
       this.Groupform.reset();
@@ -242,7 +243,7 @@ export class ManageGroupsComponent implements OnInit {
 
     // if no password has been entered, don't send it to avoid rehashing the hash.
     if (!data.password) {
-        delete data.password;
+      delete data.password;
     }
 
     data.options = json_pc;
@@ -261,7 +262,7 @@ export class ManageGroupsComponent implements OnInit {
         if (group.id === resp.id) {
           return { ...group, ...resp };
         }
-      return group;
+        return group;
       });
 
       if (resp.error) {
@@ -294,7 +295,7 @@ export class ManageGroupsComponent implements OnInit {
 
       if (data.id) {
         const g = this.groups.find(group => group.id === data.group_id)
-        g.hosts = [...(g.hosts || []) ,data]
+        g.hosts = [...(g.hosts || []), data]
         this.Hostform.reset();
         this.addHostFormModal = false;
       }
@@ -325,9 +326,9 @@ export class ManageGroupsComponent implements OnInit {
       this.progress[id] = 0;
       this.progresstext[id] = "reimaging";
     },
-    error  => {
-      console.log("Error", error);
-    });
+      error => {
+        console.log("Error", error);
+      });
   }
 
   cancelImageHost(id) {
@@ -339,8 +340,8 @@ export class ManageGroupsComponent implements OnInit {
       this.progress[id] = 0;
       this.progresstext[id] = "reimaging canceled";
     },
-    error  => {
-      console.log("Error", error);
-    });
+      error => {
+        console.log("Error", error);
+      });
   }
 }

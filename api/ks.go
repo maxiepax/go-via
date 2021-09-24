@@ -34,7 +34,7 @@ install --overwritevmfs --novmfsondisk --firstdisk="localesx,usb,ahci,vmw_ahci,V
 {{ end }}
 
 # Set the network to static on the first network adapter
-network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0
+network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0 {{if .vlan}} --vlanid={{.vlan}} {{end}}
 
 reboot
 `
@@ -85,6 +85,7 @@ func Ks(key string) func(c *gin.Context) {
 			"via_server": laddrport,
 			"erasedisks": options.EraseDisks,
 			"bootdisk":   options.BootDisk,
+			"vlan":       options.Vlan,
 		}
 
 		// check if default ks has been overridden.

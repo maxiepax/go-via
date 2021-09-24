@@ -15,6 +15,7 @@ type GroupForm struct {
 	ImageID  int            `json:"image_id" gorm:"type:INT"`
 	Ks       string         `json:"ks" gorm:"type:text"`
 	Syslog   string         `json:"syslog" gorm:"type:varchar(255)"`
+	Vlan     string         `json:"vlan" gorm:"type:INT"`
 	Options  datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
@@ -26,6 +27,7 @@ type NoPWGroupForm struct {
 	ImageID int            `json:"image_id" gorm:"type:INT"`
 	Ks      string         `json:"ks" gorm:"type:text"`
 	Syslog  string         `json:"syslog" gorm:"type:varchar(255)"`
+	Vlan    string         `json:"vlan" gorm:"type:INT"`
 	Options datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 

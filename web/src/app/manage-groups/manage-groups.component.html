@@ -34,13 +34,15 @@
 			<clr-dg-cell>
 				<div class="progress top">
 					<progress value="{{ progress[host.id] }}" max="100"></progress>
-				  </div>
-				  	{{ progresstext[host.id] }}
+				</div>
+				{{ progresstext[host.id] }}
 			</clr-dg-cell>
 			<clr-dg-cell>
 				<button class="btn btn-warning-outline btn-sm" (click)="removeHost(host.id)">remove</button>
-				<button *ngIf="host.reimage === false" class="btn btn-warning-outline btn-sm" (click)="reImageHost(host.id)">re-image</button>
-				<button *ngIf="host.reimage === true" class="btn btn-warning-outline btn-sm" (click)="cancelImageHost(host.id)">cancel</button>
+				<button *ngIf="host.reimage === false" class="btn btn-warning-outline btn-sm"
+					(click)="reImageHost(host.id)">re-image</button>
+				<button *ngIf="host.reimage === true" class="btn btn-warning-outline btn-sm"
+					(click)="cancelImageHost(host.id)">cancel</button>
 			</clr-dg-cell>
 		</clr-dg-row>
 	</clr-datagrid>
@@ -62,7 +64,7 @@
 					<label class="clr-col-6 form-input">IP Address</label>
 					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip" />
 				</cds-input>
-				<cds-input>	
+				<cds-input>
 					<label class="clr-col-6 form-input">mac</label>
 					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
 				</cds-input>
@@ -103,15 +105,16 @@
 				</cds-input>
 				<cds-input>
 					<label class="clr-col-6 form-input">NTP</label>
-					<input  placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
+					<input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
 				</cds-input>
 				<cds-input>
 					<label class="clr-col-6 form-input">Syslog</label>
-					<input  placeholder="eg. tcp://172.16.0.2:514,ssl://172.16.0.3:1514" type="text" formControlName="syslog" name="syslog" />
+					<input placeholder="eg. tcp://172.16.0.2:514,ssl://172.16.0.3:1514" type="text"
+						formControlName="syslog" name="syslog" />
 				</cds-input>
 				<cds-input>
 					<label class="clr-col-6 form-input">Password</label>
-					<input  placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
+					<input placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
 				</cds-input>
 				<cds-select control-width="shrink">
 					<label class="clr-col-6 form-input">DHCP Pool</label>
@@ -129,42 +132,48 @@
 					<label class="clr-col-6 form-input">Boot drive (Optional)</label>
 					<input placeholder="mpx.vmhba1:C0:T0:L0" name="bootdisk" id="bootdisk" formControlName="bootdisk" />
 				</cds-input>
+				<cds-input>
+					<label class="clr-col-6 form-input">Management vlan</label>
+					<input placeholder="1611" type="text" formControlName="vlan" name="vlan" />
+				</cds-input>
 			</cds-form-group>
-		
+
 			<div class="postconfig"> Post config options </div>
 
-		<clr-control-helper>Select all options you wish to be included in post-conf</clr-control-helper>
-		<div class="clr-control-container clr-control-inline">
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="domain_pc" id="domain_pc" formControlName="domain_pc"/>
-				<label>DNS Suffix</label>
-			</clr-checkbox-wrapper>
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="ssh_pc" id="ssh_pc" formControlName="ssh_pc" />
-				<label>SSH</label>
-			</clr-checkbox-wrapper>
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="ntp_pc" id="ntp_pc" formControlName="ntp_pc" />
-				<label>NTP</label>
-			</clr-checkbox-wrapper>
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="syslog_pc" id="syslog_pc" formControlName="syslog_pc" />
-				<label>Syslog</label>
-			</clr-checkbox-wrapper>
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="erasedisks" id="erasedisks" formControlName="erasedisks" />
-				<label>Erase all disks</label>
-			</clr-checkbox-wrapper>	
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="allowlegacycpu" id="allowlegacycpu" formControlName="allowlegacycpu" />
-				<label>Allow Legacy CPU</label>
-			</clr-checkbox-wrapper>	
-			<clr-checkbox-wrapper>
-				<input type="checkbox" clrCheckbox name="certificate_pc" id="certificate_pc" formControlName="certificate_pc" />
-				<label>Generate Certificate</label>
-			</clr-checkbox-wrapper>	
-		</div>
-		
+			<clr-control-helper>Select all options you wish to be included in post-conf</clr-control-helper>
+			<div class="clr-control-container clr-control-inline">
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="domain_pc" id="domain_pc" formControlName="domain_pc" />
+					<label>DNS Suffix</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="ssh_pc" id="ssh_pc" formControlName="ssh_pc" />
+					<label>SSH</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="ntp_pc" id="ntp_pc" formControlName="ntp_pc" />
+					<label>NTP</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="syslog_pc" id="syslog_pc" formControlName="syslog_pc" />
+					<label>Syslog</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="erasedisks" id="erasedisks" formControlName="erasedisks" />
+					<label>Erase all disks</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="allowlegacycpu" id="allowlegacycpu"
+						formControlName="allowlegacycpu" />
+					<label>Allow Legacy CPU</label>
+				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="certificate_pc" id="certificate_pc"
+						formControlName="certificate_pc" />
+					<label>Generate Certificate</label>
+				</clr-checkbox-wrapper>
+			</div>
+
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
@@ -181,7 +190,9 @@
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
-		<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary" (click)="submit_group()">Add</button>
-		<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary" (click)="updateGroup()">Update</button>
+		<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary"
+			(click)="submit_group()">Add</button>
+		<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary"
+			(click)="updateGroup()">Update</button>
 	</div>
 </clr-modal>

@@ -38,8 +38,8 @@ func Init() string {
 		}
 
 		//convert key to string and write to file
-		key := hex.EncodeToString(bytes)
-		wr, err := file.WriteString(key)
+		hexkey := hex.EncodeToString(bytes)
+		wr, err := file.WriteString(hexkey)
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
@@ -48,6 +48,7 @@ func Init() string {
 			"bytes": wr,
 		}).Info("secrets")
 		file.Close()
+		key, _ = ioutil.ReadFile("secret/secret.key")
 	} else {
 		//Database exists, moving on.
 		logrus.WithFields(logrus.Fields{
