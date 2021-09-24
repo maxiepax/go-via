@@ -169,6 +169,12 @@ func UpdateGroup(key string) func(c *gin.Context) {
 			item.Password = secrets.Encrypt(item.Password, key)
 		}
 
+		//mergo wont overwrite values with empty space. To enable removal of ntp, dns, syslog, vlan, always overwrite.
+		item.GroupForm.Vlan = form.Vlan
+		item.GroupForm.DNS = form.DNS
+		item.GroupForm.NTP = form.NTP
+		item.GroupForm.Syslog = form.Syslog
+
 		// Save it
 		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {
 			Error(c, http.StatusInternalServerError, res.Error) // 500
