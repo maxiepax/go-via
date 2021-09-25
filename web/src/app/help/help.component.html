@@ -3,28 +3,44 @@
 <h2> Creating </h2>
 
 <h3> Create a pool </h3>
-First, create a pool of ips. Hosts will be able to request these ips via DHCP when you allow them to be re-imaged. If a host is not set to be re-imaged, the DHCP server will refuse to hand out addresses.
+First, create a pool of ips. Hosts will be able to request these ips via DHCP when you allow them to be re-imaged. If a
+host is not set to be re-imaged, the DHCP server will refuse to hand out addresses.
 
 <h3> Upload a ESXi ISO Image </h3>
-Second step is to upload an ESXi ISO. No other operating systems are currently supported since a lot of background crunching is done to ensure that files are in the right place,and that the boot.cfg and ks.cfg files look correct. Custom ISOs however with custom drivers etc shouldn't be a problem as long as they look similar to official builds.
+Second step is to upload an ESXi ISO. No other operating systems are currently supported since a lot of background
+crunching is done to ensure that files are in the right place,and that the boot.cfg and ks.cfg files look correct.
+Custom ISOs however with custom drivers etc shouldn't be a problem as long as they look similar to official builds.
 
 <h3> Create a group </h3>
-The group you create will have all the common configuration parameters for your hosts. e.g. ntp, dns, initial deployment password, ks config etc.
+The group you create will have all the common configuration parameters for your hosts. e.g. ntp, dns, initial deployment
+password, ks config etc.
 When you've created a group, start adding hosts to it.
-If you want to change something in the future, it's now very easy to just change this on the group level, instead of having to modify every single host.
-<br/>
-Options:<br/>
-- Boot Device: If you don't specify a boot device --firstdisk is used. If you're server doesn't comply with this, you can manually specify the mpx device to be uesd.<br/>
-- DNS Suffix: Will configure the dns suffix for the host. If you enter the FQDN of sfo-m01-esx01.rainpole.io , the suffix is rainpole.io.<br/>
-- SSH: Will enable the service SSH on the host, and silence the warning that ssh is enabled on the host.<br/>
-- NTP: Will configure the NTP settings enterd on the host.<br/>
-- (WARNING) Erase all disks: During deployment, this will erase all data and partitions on all disks connected to the host. This includes all LUNs that may be masked to the host!<br/>
-- Allow Legacy CPU: If your hardware is not on the CGP and you recieve "CPU is not supported by ESXi X.X.X", enabeling this option will bypass the security check, please note this is only inteded for lab purpose!<br/>
-- Generate Certificate: ESXi installer certificate uses localhost.localdomain insatead of a valid SAN. This causes security focused installers like Cloud Foundation -> Cloud Builder to fail. go-via will generate a valid certificate based on information from imaging and push the new certificate to the host. Sadly there is no way to restart process hostd without doing it via SSH, so this operation will generate a reboot.<br/>
+If you want to change something in the future, it's now very easy to just change this on the group level, instead of
+having to modify every single host.
+<br />
+Options:<br />
+- Boot Device: If you don't specify a boot device --firstdisk is used. If you're server doesn't comply with this, you
+can manually specify the mpx device to be uesd.<br />
+- Management vlan: Enter a vlan-id to configure vmk0 and 'VM Network' portgroup with a vlan-id.<br />
+- DNS Suffix: Will configure the dns suffix for the host. If you enter the FQDN of sfo-m01-esx01.rainpole.io , the
+suffix is rainpole.io.<br />
+- SSH: Will enable the service SSH on the host, and silence the warning that ssh is enabled on the host.<br />
+- NTP: Will configure the NTP settings enterd on the host.<br />
+- (WARNING) Erase all disks: During deployment, this will erase all data and partitions on all disks connected to the
+host. This includes all LUNs that may be masked to the host!<br />
+- Allow Legacy CPU: If your hardware is not on the CGP and you recieve "CPU is not supported by ESXi X.X.X", enabeling
+this option will bypass the security check, please note this is only inteded for lab purpose!<br />
+- Generate Certificate: ESXi installer certificate uses localhost.localdomain insatead of a valid SAN. This causes
+security focused installers like Cloud Foundation -> Cloud Builder to fail. go-via will generate a valid certificate
+based on information from imaging and push the new certificate to the host. Sadly there is no way to restart process
+hostd without doing it via SSH, so this operation will generate a reboot.<br />
 
 <h3> Start imaging </h3>
-To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to perform a fully unattended deployment.
-When the host has been fully imaged, the DHCP server will set the host object to not be imaged again, this ensures that you dont accidentally re-image your hosts, or get stuck in an image loop.
+To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is
+configured to network boot, the DHCP server will now offer the host an ip-address, and boot options to allow the host to
+perform a fully unattended deployment.
+When the host has been fully imaged, the DHCP server will set the host object to not be imaged again, this ensures that
+you dont accidentally re-image your hosts, or get stuck in an image loop.
 
 <h2> Editing </h2>
 
@@ -40,7 +56,8 @@ To edit a group, click Edit Group below the group.
 To delete a pool, ensure that no groups or hosts are using the pool first
 
 <h3> Deleting Images </h3>
-To delete an image, edit each group and select another image first, when no groups are using the image you can remove the image.
+To delete an image, edit each group and select another image first, when no groups are using the image you can remove
+the image.
 
 <h3> Deleting Groups </h3>
 To delete a group, first remove all the hosts in the group.
@@ -50,34 +67,38 @@ To remove a host, simply click remove next to the host and it will be removed.
 
 <h1> Backup </h1>
 <h3> Database </h3>
-Everything stateful is kept in the database/qslite-database.sql file. Please see sqlite recommended way of taking backup of database.
+Everything stateful is kept in the database/qslite-database.sql file. Please see sqlite recommended way of taking backup
+of database.
 
 <h3> Config file </h3>
 Config file is simply a static file, just back it up as a file.
 
 <h3> Secrets </h3>
-If no secrets file is found go-via will create one, and generate a SHA-256 hash. It is critical that this file is backed up to ensure that you can decrypt secrets.<br/>
-If you loose this file, a new file be generated with a new hash, and all secrets will be invalid and lost forever. Backup the secrets file as a regular file.
+If no secrets file is found go-via will create one, and generate a SHA-256 hash. It is critical that this file is backed
+up to ensure that you can decrypt secrets.<br />
+If you loose this file, a new file be generated with a new hash, and all secrets will be invalid and lost forever.
+Backup the secrets file as a regular file.
 
 <h3> Certificates </h3>
-If no custom certificates are placed in the certificates folder go-via will generate self-signed ones. It's not critical to backup these certificates but to avoid browsers getting annoyed you may as well back these up as regular files.
+If no custom certificates are placed in the certificates folder go-via will generate self-signed ones. It's not critical
+to backup these certificates but to avoid browsers getting annoyed you may as well back these up as regular files.
 
 <h1> Restore </h1>
-If the server is lost, just deploy the latest verison of go-via and place backed up database, config, certificate and secret in their corresponding folder and start go-via again.
+If the server is lost, just deploy the latest verison of go-via and place backed up database, config, certificate and
+secret in their corresponding folder and start go-via again.
 
 <h1> Other </h1>
 
 <h3> Cancel re-image </h3>
-If you no longer want to re-image a host, press cancel to remove the re-image flag. Please note this does not stop a imaging that is in progress and reboot your host, it simply tells the DHCPd service to stop serving a lease.
+If you no longer want to re-image a host, press cancel to remove the re-image flag. Please note this does not stop a
+imaging that is in progress and reboot your host, it simply tells the DHCPd service to stop serving a lease.
 
-<h3> Starting over </h3> 
-To start over, simply remove the sqlite-database.db file, when you start the application it will detect if the database is present, if it's not it will create it.
+<h3> Starting over </h3>
+To start over, simply remove the sqlite-database.db file, when you start the application it will detect if the database
+is present, if it's not it will create it.
 
 <h3> configuration file </h3>
 You can select what interface to listen to in the configuration file.
 
-<h3> custom kickstart file </h3>
-this is being worked on, you will be able to override kickstart at the levels of: Group -> Host
-
 <h3> HTTP-REST </h3>
-Everything is called via HTTP-REST, for documentation go to "/swagger" 
+Everything is called via HTTP-REST, for documentation go to "/swagger"

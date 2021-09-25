@@ -19,10 +19,9 @@ Why a new version of VMware Imaging Appliance?
 The old version of VIA had some things it didn't support which made it hard to run in enterprise environments. go-via brings added support for the following.
 1. IP-Helper , you can have the go-via binary running on any network you want and use [RFC 3046 IP-Helper](https://tools.ietf.org/html/rfc3046) to relay DHCP requests to the server.
 2. UEFI , go-via does not support BIOS, but does support UEFI and secure-boot. BIOS may be added in the future.
-3. Custom ks.cfg files, you can use the embedded default or override on Group or Host level.
-4. Virtual environments, it does not block nested esxi host deployment.
-5. HTTP-REST, everything you can do in the UI, you can do via automation also.
-6. Options to perform all prerequisites for VMware Cloud Foundation 4.x
+3. Virtual environments, it does not block nested esxi host deployment.
+4. HTTP-REST, everything you can do in the UI, you can do via automation also.
+5. Options to perform all prerequisites for VMware Cloud Foundation 4.x
 
 Installation / Running
 ----------------------
@@ -190,13 +189,4 @@ currently tracking no known issues! :D
 
 Todo
 -----
-- [x] HTTPS
-- [x] Authentication (basicAuth)
-- [x] post-config: regenerate self-signed certificate with correct hostname
-- [x] Fix progress bar when re-imaging hosts
-- [x] Fix re-image button so that it shows disabled once re-image has been initiated
-- [x] Fix log interface in UI so that logs can be viewed live
-- [x] Add post-deployment configuration
-- [x] Add support for custom ks.cfg based on Group and Host
-- [x] Add more backend protection to not being able to remove Image/Groups/Pools that are in use by objects.
-- [x] Enhance default ks.cfg more, while still being secureboot compatible. - note: ks.cfg is not really possible with secureboot, added option to do post-config via SOAP API instead.
+- Currently no requests have been made for features. Please submit any ideas you have.
