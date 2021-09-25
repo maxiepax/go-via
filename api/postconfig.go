@@ -306,13 +306,12 @@ func ProvisioningWorker(item models.Address, key string) {
 
 		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
 		cmd = append(cmd, "-p")
-		cmd = append(cmd, "\"VM Network\"")
+		cmd = append(cmd, "VM Network")
 		fmt.Println(cmd)
 		spew.Dump(cmd)
 
-		tst, err := e.Run(cmd)
-		spew.Dump(tst)
-		spew.Dump(err)
+		_, err := e.Run(cmd)
+
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
