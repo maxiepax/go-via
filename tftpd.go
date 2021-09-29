@@ -119,6 +119,13 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			o := re.Find(bc)
 			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
 
+			// if vlan is configured for the group, append the vlan to kernelopts
+			if address.Group.Vlan != "" {
+				re = regexp.MustCompile("kernelopt=.*")
+				o = re.Find(bc)
+				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" vlanid="+address.Group.Vlan)...))
+			}
+
 			options := models.GroupOptions{}
 			json.Unmarshal(address.Group.Options, &options)
 
