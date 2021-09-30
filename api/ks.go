@@ -36,7 +36,7 @@ install --overwritevmfs --novmfsondisk --firstdisk="localesx,usb,ahci,vmw_ahci,V
 # Set the network to static on the first network adapter
 network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0 {{if .vlan}} --vlanid={{.vlan}} {{end}}
 
-reboot
+#reboot
 `
 
 //func Ks(c *gin.Context) {

@@ -20,3 +20,5 @@ go-via
 database/sqlite-database*
 cert
 cert/*
+secret
+secret/*
