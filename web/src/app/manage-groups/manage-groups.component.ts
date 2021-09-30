@@ -187,7 +187,7 @@ export class ManageGroupsComponent implements OnInit {
         bootdisk: this.group.options.bootdisk,
         allowlegacycpu: this.group.options.allowlegacycpu,
         certificate: this.group.options.certificate,
-        autpart: this.group.options.autopart,
+        autopart: this.group.options.autopart,
 
       });
     }
