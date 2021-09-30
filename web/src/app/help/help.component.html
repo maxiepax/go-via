@@ -34,6 +34,7 @@ this option will bypass the security check, please note this is only inteded for
 security focused installers like Cloud Foundation -> Cloud Builder to fail. go-via will generate a valid certificate
 based on information from imaging and push the new certificate to the host. Sadly there is no way to restart process
 hostd without doing it via SSH, so this operation will generate a reboot.<br />
+- Auto Partition: Installer will automatically create 'datastore1' from the remaining space on the boot device.<br />
 
 <h3> Start imaging </h3>
 To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is
