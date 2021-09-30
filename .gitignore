@@ -22,3 +22,5 @@ cert
 cert/*
 secret
 secret/*
+docs
+docs/*
