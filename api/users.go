@@ -64,8 +64,8 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// SearchUser Search for an user
-// @Summary Search for an user
+// SearchUser Search for a user
+// @Summary Search for a user
 // @Tags users
 // @Accept  json
 // @Produce  json
