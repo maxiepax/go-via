@@ -15,14 +15,14 @@ import (
 	"gorm.io/gorm"
 )
 
-// ListUsers Get a list of all device classes
-// @Summary Get all device classes
-// @Tags device_classes
+// ListUsers Get a list of all users
+// @Summary Get all users
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Success 200 {array} models.User
 // @Failure 500 {object} models.APIError
-// @Router /device_classes [get]
+// @Router /users [get]
 func ListUsers(c *gin.Context) {
 	var items []models.User
 	if res := db.DB.Find(&items); res.Error != nil {
@@ -32,9 +32,9 @@ func ListUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, items) // 200
 }
 
-// GetUser Get an existing device class
-// @Summary Get an existing device class
-// @Tags device_classes
+// GetUser Get an existing user
+// @Summary Get an existing user
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Param  id path int true "User ID"
@@ -42,7 +42,7 @@ func ListUsers(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /device_classes/{id} [get]
+// @Router /users/{id} [get]
 func GetUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -64,9 +64,9 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// SearchUser Search for an device class
-// @Summary Search for an device class
-// @Tags device_classes
+// SearchUser Search for an user
+// @Summary Search for an user
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Param item body models.User true "Fields to search for"
@@ -74,7 +74,7 @@ func GetUser(c *gin.Context) {
 // @Failure 400 {object} models.APIError
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /device_classes/search [post]
+// @Router /users/search [post]
 func SearchUser(c *gin.Context) {
 	form := make(map[string]interface{})
 
@@ -103,16 +103,16 @@ func SearchUser(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// CreateUser Create a new device class
-// @Summary Create a new device class
-// @Tags device_classes
+// CreateUser Create a new user
+// @Summary Create a new user
+// @Tags users
 // @Accept  json
 // @Produce  json
-// @Param item body models.UserForm true "Add an device class"
+// @Param item body models.UserForm true "Add an user"
 // @Success 200 {object} models.User
 // @Failure 400 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /device_classes [post]
+// @Router /users [post]
 func CreateUser(c *gin.Context) {
 	var form models.UserForm
 
@@ -134,18 +134,18 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// UpdateUser Update an existing device class
-// @Summary Update an existing device class
-// @Tags device_classes
+// UpdateUser Update an existing user
+// @Summary Update an existing user
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Param  id path int true "User ID"
-// @Param  item body models.UserForm true "Update an ip device class"
+// @Param  item body models.UserForm true "Update a user"
 // @Success 200 {object} models.User
 // @Failure 400 {object} models.APIError
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /device_classes/{id} [patch]
+// @Router /users/{id} [patch]
 func UpdateUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -189,16 +189,16 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
-// DeleteUser Remove an existing device class
-// @Summary Remove an existing device class
-// @Tags device_classes
+// DeleteUser Remove an existing user
+// @Summary Remove an existing user
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Param  id path int true "User ID"
 // @Success 204
 // @Failure 404 {object} models.APIError
 // @Failure 500 {object} models.APIError
-// @Router /device_classes/{id} [delete]
+// @Router /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

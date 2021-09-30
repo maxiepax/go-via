@@ -130,7 +130,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			options := models.GroupOptions{}
 			json.Unmarshal(address.Group.Options, &options)
 
-			// if autopart is configured for the group, append autopart to kernelopts
+			// if autopart is configured for the group, append autopart to kernelopt - https://kb.vmware.com/s/article/77009
 			if options.AutoPart {
 				re = regexp.MustCompile("kernelopt=.*")
 				o = re.Find(bc)
