@@ -126,6 +126,13 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" vlanid="+address.Group.Vlan)...))
 			}
 
+			// if autopart is configured for the group, append autopart to kernelopts
+			if address.Group.Options.AutoPart {
+				re = regexp.MustCompile("kernelopt=.*")
+				o = re.Find(bc)
+				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartition=TRUE")...))
+			}
+
 			options := models.GroupOptions{}
 			json.Unmarshal(address.Group.Options, &options)
 

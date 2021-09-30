@@ -160,6 +160,10 @@
 						formControlName="certificate_pc" />
 					<label>Generate Certificate</label>
 				</clr-checkbox-wrapper>
+				<clr-checkbox-wrapper>
+					<input type="checkbox" clrCheckbox name="autopart" id="autopart" formControlName="autopart" />
+					<label>Auto Partition</label>
+				</clr-checkbox-wrapper>
 			</div>
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">

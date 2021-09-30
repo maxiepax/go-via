@@ -227,11 +227,3 @@ func DeleteGroup(c *gin.Context) {
 
 	c.JSON(http.StatusNoContent, gin.H{}) //204
 }
-
-/*
-func crypt_sha512(pass string) string {
-	crypt := crypt.SHA512.New()
-	ret, _ := crypt.Generate([]byte("secret"), []byte(""))
-	return ret
-}
-*/

@@ -63,8 +63,9 @@ export class ManageGroupsComponent implements OnInit {
       erasedisks: [''],
       bootdisk: [''],
       allowlegacycpu: [''],
-      ssh_pc: [''],
-      certificate_pc: [''],
+      ssh: [''],
+      certificate: [''],
+      autopart: [''],
     });
     const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
@@ -120,7 +121,7 @@ export class ManageGroupsComponent implements OnInit {
     }
 
     let json_pc: any = {}
-    if (data.ssh_pc) {
+    if (data.ssh) {
       json_pc.ssh = true;
     }
     if (data.erasedisks) {
@@ -132,16 +133,20 @@ export class ManageGroupsComponent implements OnInit {
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
-    if (data.certificate_pc) {
-      json_pc.certificate = data.certificate_pc;
+    if (data.certificate) {
+      json_pc.certificate = data.certificate;
+    }
+    if (data.autopart) {
+      json_pc.autopart = data.autopart;
     }
 
     data.options = json_pc;
-    delete data.ssh_pc;
+    delete data.ssh;
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
-    delete data.certificate_pc;
+    delete data.certificate;
+    delete data.autopart;
 
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
@@ -177,11 +182,12 @@ export class ManageGroupsComponent implements OnInit {
       this.group = this.groups.find(group => group.id === id);
       this.Groupform.patchValue({
         ...this.group,
-        ssh_pc: this.group.options.ssh,
+        ssh: this.group.options.ssh,
         erasedisks: this.group.options.erasedisks,
         bootdisk: this.group.options.bootdisk,
         allowlegacycpu: this.group.options.allowlegacycpu,
-        certificate_pc: this.group.options.certificate,
+        certificate: this.group.options.certificate,
+        autpart: this.group.options.autopart,
 
       });
     }
@@ -198,7 +204,7 @@ export class ManageGroupsComponent implements OnInit {
     };
 
     let json_pc: any = {}
-    if (data.ssh_pc) {
+    if (data.ssh) {
       json_pc.ssh = true;
     }
     if (data.erasedisks) {
@@ -210,8 +216,11 @@ export class ManageGroupsComponent implements OnInit {
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
-    if (data.certificate_pc) {
-      json_pc.certificate = data.certificate_pc;
+    if (data.certificate) {
+      json_pc.certificate = data.certificate;
+    }
+    if (data.autopart) {
+      json_pc.autopart = data.autopart;
     }
 
     // if no password has been entered, don't send it to avoid rehashing the hash.
@@ -220,11 +229,12 @@ export class ManageGroupsComponent implements OnInit {
     }
 
     data.options = json_pc;
-    delete data.ssh_pc;
+    delete data.ssh;
     delete data.erasedisks;
     delete data.bootdisk;
     delete data.allowlegacycpu;
-    delete data.certificate_pc;
+    delete data.certificate;
+    delete data.autopart;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       delete resp.password;
