@@ -127,7 +127,9 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			}
 
 			// if autopart is configured for the group, append autopart to kernelopts
-			if address.Group.Options.AutoPart {
+			options := models.GroupOptions{}
+			json.Unmarshal(address.Group.Options, &options)
+			if options.AutoPart {
 				re = regexp.MustCompile("kernelopt=.*")
 				o = re.Find(bc)
 				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartition=TRUE")...))
