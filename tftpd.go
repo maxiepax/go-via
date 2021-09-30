@@ -134,7 +134,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			if options.AutoPart {
 				re = regexp.MustCompile("kernelopt=.*")
 				o = re.Find(bc)
-				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartition=TRUE")...))
+				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartitionOnlyOnceAndSkipSsd=true")...))
 			}
 
 			// add allowLegacyCPU=true to kernelopt
