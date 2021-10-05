@@ -36,7 +36,6 @@ import (
 	"github.com/pin/tftp"
 )
 
-//func readHandler(filename string, rf io.ReaderFrom) error {
 func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 	return func(filename string, rf io.ReaderFrom) error {
 
@@ -63,8 +62,9 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			"addressid": address.ID,
 		}).Debug("tftpd")
 
-		//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build.
-		if filename == "mboot.efi" {
+		//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build
+		switch filename {
+		case "mboot.efi":
 			logrus.WithFields(logrus.Fields{
 				ip: "requesting mboot.efi",
 			}).Info("tftpd")
@@ -77,7 +77,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			address.Progress = 10
 			address.Progresstext = "mboot.efi"
 			db.DB.Save(&address)
-		} else if filename == "crypto64.efi" {
+		case "crypto64.efi":
 			logrus.WithFields(logrus.Fields{
 				ip: "requesting crypto64.efi",
 			}).Info("tftpd")
@@ -90,87 +90,12 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			address.Progress = 12
 			address.Progresstext = "crypto64.efi"
 			db.DB.Save(&address)
-		} else if (strings.ToLower(filename) == "boot.cfg") || (strings.ToLower(filename) == "/boot.cfg") {
-			//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
-			logrus.WithFields(logrus.Fields{
-				ip: "requesting boot.cfg",
-			}).Info("tftpd")
-			logrus.WithFields(logrus.Fields{
-				"id":           address.ID,
-				"percentage":   15,
-				"progresstext": "installation",
-			}).Info("progress")
-			address.Progress = 15
-			address.Progresstext = "installation"
-			db.DB.Save(&address)
-
-			bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
-			if err != nil {
-				logrus.Warn(err)
-				return err
-			}
-
-			// strip slashes from paths in file
-			re := regexp.MustCompile("/")
-			bc = re.ReplaceAllLiteral(bc, []byte(""))
-
-			// add kickstart path to kernelopt
-			re = regexp.MustCompile("kernelopt=.*")
-			o := re.Find(bc)
-			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
-
-			// if vlan is configured for the group, append the vlan to kernelopts
-			if address.Group.Vlan != "" {
-				re = regexp.MustCompile("kernelopt=.*")
-				o = re.Find(bc)
-				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" vlanid="+address.Group.Vlan)...))
-			}
-
-			// load options from the group
-			options := models.GroupOptions{}
-			json.Unmarshal(address.Group.Options, &options)
-
-			// if autopart is configured for the group, append autopart to kernelopt - https://kb.vmware.com/s/article/77009
-			if options.AutoPart {
-				re = regexp.MustCompile("kernelopt=.*")
-				o = re.Find(bc)
-				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartitionOnlyOnceAndSkipSsd=true")...))
-			}
-
-			// add allowLegacyCPU=true to kernelopt
-			if options.AllowLegacyCPU {
-				re = regexp.MustCompile("kernelopt=.*")
-				o = re.Find(bc)
-				bc = re.ReplaceAllLiteral(bc, append(o, []byte(" allowLegacyCPU=true")...))
-			}
-
-			// replace prefix with prefix=foldername
-			split := strings.Split(image.Path, "/")
-			re = regexp.MustCompile("prefix=")
-			o = re.Find(bc)
-			bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
-
-			// Make a buffer to read from
-			buff := bytes.NewBuffer(bc)
-
-			// Send the data from the buffer to the client
-			rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
-			n, err := rf.ReadFrom(buff)
-			if err != nil {
-				//fmt.Fprintf(os.Stderr, "%v\n", err)
-				logrus.WithFields(logrus.Fields{
-					"os.Stderr": err,
-				}).Debug("tftpd")
-				return err
-			}
-
-			logrus.WithFields(logrus.Fields{
-				"file":  filename,
-				"bytes": n,
-			}).Info("tftpd")
-			return nil
-		} else {
-			//chroot the rest
+		case "boot.cfg":
+			serveBootCfg(filename, address, image, rf, conf)
+		case "/boot.cfg":
+			serveBootCfg(filename, address, image, rf, conf)
+		default:
+			//if no case matches, chroot to /tftp
 			if _, err := os.Stat("tftp/" + filename); err == nil {
 				filename = "tftp/" + filename
 				logrus.WithFields(logrus.Fields{
@@ -192,6 +117,7 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 			return err
 		}
 
+		//set the filesize so that its advertized.
 		rf.(tftp.OutgoingTransfer).SetSize(fi.Size())
 
 		file, err := os.Open(filename)
@@ -257,4 +183,93 @@ func crypto64Path(imagePath string) (string, error) {
 	//couldn't find the file
 	return "", fmt.Errorf("could not locate a crypto64.efi")
 
+}
+
+func serveBootCfg(filename string, address models.Address, image models.Image, rf io.ReaderFrom, conf *config.Config) {
+	//if the filename is boot.cfg, or /boot.cfg, we serve the boot cfg that belongs to that build. unfortunately, it seems boot.cfg or /boot.cfg varies in builds.
+
+	// get the requesting ip-address and our source address
+	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
+	laddr := rf.(tftp.RequestPacketInfo).LocalIP()
+
+	//strip the port
+	ip, _, _ := net.SplitHostPort(raddr.String())
+
+	logrus.WithFields(logrus.Fields{
+		ip: "requesting boot.cfg",
+	}).Info("tftpd")
+	logrus.WithFields(logrus.Fields{
+		"id":           address.ID,
+		"percentage":   15,
+		"progresstext": "installation",
+	}).Info("progress")
+	address.Progress = 15
+	address.Progresstext = "installation"
+	db.DB.Save(&address)
+
+	bc, err := ioutil.ReadFile(image.Path + "/BOOT.CFG")
+	if err != nil {
+		logrus.Warn(err)
+		return
+	}
+
+	// strip slashes from paths in file
+	re := regexp.MustCompile("/")
+	bc = re.ReplaceAllLiteral(bc, []byte(""))
+
+	// add kickstart path to kernelopt
+	re = regexp.MustCompile("kernelopt=.*")
+	o := re.Find(bc)
+	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
+
+	// if vlan is configured for the group, append the vlan to kernelopts
+	if address.Group.Vlan != "" {
+		re = regexp.MustCompile("kernelopt=.*")
+		o = re.Find(bc)
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" vlanid="+address.Group.Vlan)...))
+	}
+
+	// load options from the group
+	options := models.GroupOptions{}
+	json.Unmarshal(address.Group.Options, &options)
+
+	// if autopart is configured for the group, append autopart to kernelopt - https://kb.vmware.com/s/article/77009
+	if options.AutoPart {
+		re = regexp.MustCompile("kernelopt=.*")
+		o = re.Find(bc)
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartitionOnlyOnceAndSkipSsd=true")...))
+	}
+
+	// add allowLegacyCPU=true to kernelopt
+	if options.AllowLegacyCPU {
+		re = regexp.MustCompile("kernelopt=.*")
+		o = re.Find(bc)
+		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" allowLegacyCPU=true")...))
+	}
+
+	// replace prefix with prefix=foldername
+	split := strings.Split(image.Path, "/")
+	re = regexp.MustCompile("prefix=")
+	o = re.Find(bc)
+	bc = re.ReplaceAllLiteral(bc, append(o, []byte(split[1])...))
+
+	// Make a buffer to read from
+	buff := bytes.NewBuffer(bc)
+
+	// Send the data from the buffer to the client
+	rf.(tftp.OutgoingTransfer).SetSize(int64(buff.Len()))
+	n, err := rf.ReadFrom(buff)
+	if err != nil {
+		//fmt.Fprintf(os.Stderr, "%v\n", err)
+		logrus.WithFields(logrus.Fields{
+			"os.Stderr": err,
+		}).Debug("tftpd")
+		return
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"file":  filename,
+		"bytes": n,
+	}).Info("tftpd")
+	//return nil
 }

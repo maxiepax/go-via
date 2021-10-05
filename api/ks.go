@@ -34,7 +34,7 @@ install --overwritevmfs --novmfsondisk --firstdisk="localesx,usb,ahci,vmw_ahci,V
 {{ end }}
 
 # Set the network to static on the first network adapter
-network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device=vmnic0 {{if .vlan}} --vlanid={{.vlan}} {{end}}
+network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device={{ .mac }} {{if .vlan}} --vlanid={{.vlan}} {{end}}
 
 reboot
 `
@@ -78,6 +78,7 @@ func Ks(key string) func(c *gin.Context) {
 		data := map[string]interface{}{
 			"password":   decryptedPassword,
 			"ip":         item.IP,
+			"mac":        item.Mac,
 			"gateway":    item.Pool.Gateway,
 			"dns":        item.Group.DNS,
 			"hostname":   item.Hostname,
