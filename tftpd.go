@@ -222,10 +222,13 @@ func serveBootCfg(filename string, address models.Address, image models.Image, r
 	o := re.Find(bc)
 	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
 
-	// append the mac address of the hardware interface to ensure ks.cfg request comes from the right interface.
+	// append the mac address of the hardware interface to ensure ks.cfg request comes from the right interface, along with ip, netmask and gateway.
+	nm := net.CIDRMask(address.Pool.Netmask, 32)
+	netmask := ipv4MaskString(nm)
+
 	re = regexp.MustCompile("kernelopt=.*")
 	o = re.Find(bc)
-	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" netdevice="+address.Mac)...))
+	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" netdevice="+address.Mac+" ip="+address.IP+" netmask="+netmask+" gateway="+address.Pool.Gateway)...))
 
 	// if vlan is configured for the group, append the vlan to kernelopts
 	if address.Group.Vlan != "" {
@@ -239,11 +242,12 @@ func serveBootCfg(filename string, address models.Address, image models.Image, r
 	json.Unmarshal(address.Group.Options, &options)
 
 	// if autopart is configured for the group, append autopart to kernelopt - https://kb.vmware.com/s/article/77009
-	if options.AutoPart {
-		re = regexp.MustCompile("kernelopt=.*")
-		o = re.Find(bc)
-		bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartitionOnlyOnceAndSkipSsd=true")...))
-	}
+	/*
+		if options.AutoPart {
+			re = regexp.MustCompile("kernelopt=.*")
+			o = re.Find(bc)
+			bc = re.ReplaceAllLiteral(bc, append(o, []byte(" autoPartitionOnlyOnceAndSkipSsd=true")...))
+		}*/
 
 	// add allowLegacyCPU=true to kernelopt
 	if options.AllowLegacyCPU {
@@ -277,4 +281,12 @@ func serveBootCfg(filename string, address models.Address, image models.Image, r
 		"bytes": n,
 	}).Info("tftpd")
 	//return nil
+}
+
+func ipv4MaskString(m []byte) string {
+	if len(m) != 4 {
+		panic("ipv4Mask: len must be 4 bytes")
+	}
+
+	return fmt.Sprintf("%d.%d.%d.%d", m[0], m[1], m[2], m[3])
 }
