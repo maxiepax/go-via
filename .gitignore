@@ -22,5 +22,6 @@ cert
 cert/*
 secret
 secret/*
-docs
 docs/*
+statik
+statik/statik.go

@@ -235,7 +235,7 @@ func ProvisioningWorker(item models.Address, key string) {
 	}
 
 	if item.Group.Syslog != "" {
-		//configure Syslog
+		//configure Syslog and modify firewall to allow syslog.
 		cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
 		_, err := e.Run(cmd)
 		if err != nil {
@@ -244,6 +244,18 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		}
 		_, err = e.Run(strings.Fields("system syslog reload"))
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		_, err = e.Run(strings.Fields("network firewall ruleset set --ruleset-id=syslog --enabled=true"))
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info(item.IP)
+		}
+		_, err = e.Run(strings.Fields("network firewall refresh"))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
