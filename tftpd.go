@@ -222,6 +222,11 @@ func serveBootCfg(filename string, address models.Address, image models.Image, r
 	o := re.Find(bc)
 	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" ks=https://"+laddr.String()+":"+strconv.Itoa(conf.Port)+"/ks.cfg")...))
 
+	// append the mac address of the hardware interface to ensure ks.cfg request comes from the right interface.
+	re = regexp.MustCompile("kernelopt=.*")
+	o = re.Find(bc)
+	bc = re.ReplaceAllLiteral(bc, append(o, []byte(" BOOTIF="+address.Mac)...))
+
 	// if vlan is configured for the group, append the vlan to kernelopts
 	if address.Group.Vlan != "" {
 		re = regexp.MustCompile("kernelopt=.*")
