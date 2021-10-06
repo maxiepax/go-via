@@ -140,13 +140,15 @@ func main() {
 	}
 
 	//create the device classes for x86 and arm
-	var vc models.DeviceClass
 	//64bit x86 UEFI
-	if res := db.DB.FirstOrCreate(&vc, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_x64", VendorClass: "PXEClient:Arch:00007"}}); res.Error != nil {
+	var x86_64 models.DeviceClass
+
+	if res := db.DB.FirstOrCreate(&x86_64, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_x64", VendorClass: "PXEClient:Arch:00007"}}); res.Error != nil {
 		logrus.Warning(res.Error)
 	}
 	//64bit ARM UEFI
-	if res := db.DB.FirstOrCreate(&vc, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_ARM64", VendorClass: "PXEClient:Arch:00011"}}); res.Error != nil {
+	var arm_64 models.DeviceClass
+	if res := db.DB.FirstOrCreate(&arm_64, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_ARM64", VendorClass: "PXEClient:Arch:00011"}}); res.Error != nil {
 		logrus.Warning(res.Error)
 	}
 
