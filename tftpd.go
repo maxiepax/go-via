@@ -159,7 +159,7 @@ func TFTPd(conf *config.Config) {
 
 func mbootPath(imagePath string) (string, error) {
 	//check these paths if the file exists.
-	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi"}
+	paths := []string{"/EFI/BOOT/BOOTX64.EFI", "/EFI/BOOT/BOOTAA64.EFI", "/MBOOT.EFI", "/mboot.efi", "/efi/boot/bootx64.efi", "/efi/boot/bootaa64.efi"}
 
 	for _, v := range paths {
 		if _, err := os.Stat(imagePath + v); err == nil {
