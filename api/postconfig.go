@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -14,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
@@ -319,8 +317,6 @@ func ProvisioningWorker(item models.Address, key string) {
 		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
 		cmd = append(cmd, "-p")
 		cmd = append(cmd, "VM Network")
-		fmt.Println(cmd)
-		spew.Dump(cmd)
 
 		_, err := e.Run(cmd)
 
