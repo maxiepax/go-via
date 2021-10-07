@@ -70,5 +70,5 @@ type GroupOptions struct {
 	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
 	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
 	Certificate          bool   `json:"certificate"`
-	AutoPart             bool   `json:"autopart"`
+	CreateVMFS           bool   `json:"createvmfs"`
 }

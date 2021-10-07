@@ -65,7 +65,7 @@ export class ManageGroupsComponent implements OnInit {
       allowlegacycpu: [''],
       ssh: [''],
       certificate: [''],
-      autopart: [''],
+      createvmfs: [''],
     });
     const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
@@ -136,8 +136,8 @@ export class ManageGroupsComponent implements OnInit {
     if (data.certificate) {
       json_pc.certificate = data.certificate;
     }
-    if (data.autopart) {
-      json_pc.autopart = data.autopart;
+    if (data.createvmfs) {
+      json_pc.createvmfs = data.createvmfs;
     }
 
     data.options = json_pc;
@@ -146,7 +146,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.bootdisk;
     delete data.allowlegacycpu;
     delete data.certificate;
-    delete data.autopart;
+    delete data.createvmfs;
 
     this.apiService.addGroup(data).subscribe((data: any) => {
       if (data.id) {
@@ -187,7 +187,7 @@ export class ManageGroupsComponent implements OnInit {
         bootdisk: this.group.options.bootdisk,
         allowlegacycpu: this.group.options.allowlegacycpu,
         certificate: this.group.options.certificate,
-        autopart: this.group.options.autopart,
+        createvmfs: this.group.options.createvmfs,
 
       });
     }
@@ -219,8 +219,8 @@ export class ManageGroupsComponent implements OnInit {
     if (data.certificate) {
       json_pc.certificate = data.certificate;
     }
-    if (data.autopart) {
-      json_pc.autopart = data.autopart;
+    if (data.createvmfs) {
+      json_pc.createvmfs = data.createvmfs;
     }
 
     // if no password has been entered, don't send it to avoid rehashing the hash.
@@ -234,7 +234,7 @@ export class ManageGroupsComponent implements OnInit {
     delete data.bootdisk;
     delete data.allowlegacycpu;
     delete data.certificate;
-    delete data.autopart;
+    delete data.createvmfs;
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       delete resp.password;

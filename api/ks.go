@@ -30,7 +30,7 @@ clearpart --overwritevmfs --alldrives {{ end }}
 install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs --novmfsondisk
 {{ else }}
 # Install on the first local disk available on machine
-install --overwritevmfs --novmfsondisk --firstdisk="localesx,usb,ahci,vmw_ahci,VMware"
+install --overwritevmfs {{ if not .createvmfs }} --novmfsondisk {{ end }} --firstdisk="localesx,usb,ahci,vmw_ahci,VMware"
 {{ end }}
 
 # Set the network to static on the first network adapter
@@ -87,6 +87,7 @@ func Ks(key string) func(c *gin.Context) {
 			"erasedisks": options.EraseDisks,
 			"bootdisk":   options.BootDisk,
 			"vlan":       item.Group.Vlan,
+			"createvmfs": options.CreateVMFS,
 		}
 
 		// check if default ks has been overridden.
