@@ -311,13 +311,22 @@ func DeletePool(c *gin.Context) {
 		return
 	}
 
-	// Save it
-	if res := db.DB.Delete(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
+	//check if a group is using the pool
+	var group models.Group
+	db.DB.First(&group, "pool_id = ?", item.ID)
+
+	if group.Name != "" {
+		c.JSON(http.StatusConflict, "the pool is being used by groups, please re-assign the groups to another pool and then delete the pool")
+	} else {
+		// Delete it
+		if res := db.DB.Delete(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		c.JSON(http.StatusNoContent, gin.H{}) //204
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{}) //204
 }
 
 func FindPool(ip string) (*models.PoolWithAddresses, error) {

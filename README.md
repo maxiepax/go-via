@@ -5,7 +5,7 @@ Credits
 -------
 
 Massive credits go to one of my best friends, and mentor [Jonathan "Stamp" Grimmtjärn](https://www.github.com/stamp) for all the help, coaching and lessons during this project.
-Without your support this project would never been a reality.
+Without your support this project would never have been a reality.
 
 VMware #clarity-ui channel for being super helpful with newbie questions about clarity!
 
@@ -23,12 +23,21 @@ The old version of VIA had some things it didn't support which made it hard to r
 4. HTTP-REST, everything you can do in the UI, you can do via automation also.
 5. Options to perform all prerequisites for VMware Cloud Foundation 4.x
 
+Supported Architectures
+-----------------------
+UEFI x86_64 INTEL/AMD architecture
+UEFI arm_64 ARM architecture (including Project Monetery/SmartNICs)
+
 Installation / Running
 ----------------------
 <h3> Option 1: docker container </h3>
 To run this container on a ubuntu 21.04 server, do the following:<br>
 
-install docker-ce, instructions found here: https://docs.docker.com/engine/install/ubuntu/
+install docker-ce (https://docs.docker.com/engine/install/ubuntu/)
+``` bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
 
 install latest docker-compose,  
 ``` bash
@@ -179,6 +188,22 @@ npm install
 ng serve
 # to allow anyone access to gui:
 ng serve --host 0.0.0.0
+```
+
+Troubleshooting
+---------------
+To troubleshoot, enable debugging.
+
+Option 1: Docker Container. Append -debug to command.
+``` bash
+command: -debug
+or
+command: -file /go/config/config.json -debug
+```
+
+Option 2: Source or Binary. Append -debug to command
+``` bash
+./go-via -debug
 ```
 
 Known issues

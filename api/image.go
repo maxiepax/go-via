@@ -308,20 +308,30 @@ func DeleteImage(c *gin.Context) {
 		return
 	}
 
-	//remove the entire directory and all files in it
-	err = os.RemoveAll(item.Path)
-	if err != nil {
-		log.Fatal(err)
-		Error(c, http.StatusInternalServerError, err) // 500
+	//check if any group is using the image
+	var group models.Group
+	db.DB.First(&group, "image_id = ?", item.ID)
+
+	if group.Name != "" {
+		c.JSON(http.StatusConflict, "the image is being used by groups, please re-assign the groups to another image and then delete the image")
+	} else {
+		// Delete it
+		//remove the entire directory and all files in it
+		err = os.RemoveAll(item.Path)
+		if err != nil {
+			log.Fatal(err)
+			Error(c, http.StatusInternalServerError, err) // 500
+		}
+
+		// remove record from database
+		if res := db.DB.Delete(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+
+		c.JSON(http.StatusNoContent, gin.H{}) //204
 	}
 
-	// remove record from database
-	if res := db.DB.Delete(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
-	}
-
-	c.JSON(http.StatusNoContent, gin.H{}) //204
 }
 
 func WriteToFile(filename string, data string) error {

@@ -11,19 +11,19 @@ import { Observable } from 'rxjs';
   styleUrls: ['./manage-images.component.scss']
 })
 export class ManageImagesComponent implements OnInit {
-images;
+  images;
 
-//file upload
-selectedFiles?: FileList;
-hash: string;
-description: string;
-currentFile?: File;
-progress = 0;
-message = '';
-fileInfos?: Observable<any>;
+  //file upload
+  selectedFiles?: FileList;
+  hash: string;
+  description: string;
+  currentFile?: File;
+  progress = 0;
+  message = '';
+  fileInfos?: Observable<any>;
 
-  constructor(private apiService: ApiService) { 
- 
+  constructor(private apiService: ApiService) {
+
   }
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ fileInfos?: Observable<any>;
     this.progress = 0;
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
-  
+
       if (file) {
         this.currentFile = file;
 
@@ -55,13 +55,13 @@ fileInfos?: Observable<any>;
           },
           (err: any) => {
             this.progress = 0;
-  
+
             this.message = err?.error?.message || err?.error?.error_message || 'Could not upload the file!';
-  
+
             this.currentFile = undefined;
           });
       }
-  
+
       this.selectedFiles = undefined;
     }
   }
@@ -69,6 +69,10 @@ fileInfos?: Observable<any>;
   remove(id) {
     this.apiService.deleteImage(id).subscribe((data: any) => {
       this.images = this.images.filter(item => item.id !== id);
+    }, (data: any) => {
+      if (data.error) {
+        this.message = data.error;
+      }
     });
   }
 

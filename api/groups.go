@@ -210,7 +210,7 @@ func DeleteGroup(c *gin.Context) {
 
 	// Load the item
 	var item models.Group
-	if res := db.DB.First(&item, id); res.Error != nil {
+	if res := db.DB.Preload("Address").First(&item, id); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
 		} else {
@@ -219,11 +219,16 @@ func DeleteGroup(c *gin.Context) {
 		return
 	}
 
-	// Save it
-	if res := db.DB.Delete(&item); res.Error != nil {
-		Error(c, http.StatusInternalServerError, res.Error) // 500
-		return
+	// check if the group is empty, if it's not, deny the delete.
+	if len(item.Address) < 1 {
+		// Delete it
+		if res := db.DB.Delete(&item); res.Error != nil {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+			return
+		}
+		c.JSON(http.StatusNoContent, gin.H{}) //204
+	} else {
+		c.JSON(http.StatusConflict, "the group is not empty, please delete all hosts first.")
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{}) //204
 }

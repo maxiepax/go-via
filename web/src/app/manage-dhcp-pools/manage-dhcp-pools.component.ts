@@ -41,13 +41,13 @@ export class ManageDhcpPoolsComponent implements OnInit {
   }
 
 
-  showPoolModal(mode, id=null) {
+  showPoolModal(mode, id = null) {
     this.showPoolModalMode = mode;
     if (mode === "edit") {
-    this.pool = this.pools.find(pool => pool.id === id);
-    this.form.patchValue({
-      ...this.pool,
-    });
+      this.pool = this.pools.find(pool => pool.id === id);
+      this.form.patchValue({
+        ...this.pool,
+      });
     }
     if (mode === "add") {
       this.form.reset();
@@ -77,6 +77,10 @@ export class ManageDhcpPoolsComponent implements OnInit {
   remove(id) {
     this.apiService.deletePool(id).subscribe((data: any) => {
       this.pools = this.pools.filter(item => item.id !== id);
+    }, (data: any) => {
+      if (data.error) {
+        this.errors = [data.error];
+      }
     });
   }
 
