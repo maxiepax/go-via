@@ -4,7 +4,7 @@ Custom deployment tool for VMware ESXi Hypervisor
 Credits
 -------
 
-Massive credits go to one of my best friends, and mentor [Jonathan "Stamp" G](https://www.github.com/stamp) for all the help, coaching and lessons during this project.
+Massive credits go to one of my best friends, and mentor [Jonathan "stamp" G](https://www.github.com/stamp) for all the help, coaching and lessons during this project.
 Without your support this project would never have been a reality.
 
 VMware #clarity-ui channel for being super helpful with newbie questions about clarity!
