@@ -110,6 +110,22 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info("postconfig")
 			return
 		}
+
+		if res := db.DB.First(&item, item.ID); res.Error != nil {
+			logrus.WithFields(logrus.Fields{
+				"IP":  item.IP,
+				"err": res.Error,
+			}).Error("postconfig failed to read state")
+			return
+		}
+
+		if !item.Reimage {
+			logrus.WithFields(logrus.Fields{
+				"IP": item.IP,
+			}).Error("postconfig terminated")
+			return
+		}
+
 		c, err = govmomi.NewClient(ctx, url, true)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
