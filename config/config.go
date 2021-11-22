@@ -5,6 +5,7 @@ type Config struct {
 	Port    int `default:"8443"`
 	File    string
 	Network Network
+	DisableDhcp bool
 }
 
 type Network struct {

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"unicode"
 
 	/*_ "github.com/GehirnInc/crypt/sha512_crypt"*/
 
@@ -89,9 +90,16 @@ func CreateGroup(key string) func(c *gin.Context) {
 
 		item := models.Group{GroupForm: form}
 
-		//remove whitespaces surrounding comma kickstart file breaks otherwise.
+		//remove whitespaces surrounding comma kickstart file breaks otherwise
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
+		item.Syslog = strings.Join(strings.Fields(item.Syslog), "")
+
+		//validate that password fullfills the password complexity requirements
+		if err := verifyPassword(form.Password); err != nil {
+			Error(c, http.StatusBadRequest, err) // 400
+			return
+		}
 		item.Password = secrets.Encrypt(item.Password, key)
 
 		if res := db.DB.Create(&item); res.Error != nil {
@@ -163,9 +171,16 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		//remove whitespaces surrounding comma kickstart file breaks otherwise.
 		item.DNS = strings.Join(strings.Fields(item.DNS), "")
 		item.NTP = strings.Join(strings.Fields(item.NTP), "")
+		item.Syslog = strings.Join(strings.Fields(item.Syslog), "")
 
 		// to avoid re-hashing the password when no new password has been supplied, check if it was supplied
+		//validate that password fullfills the password complexity requirements
 		if form.Password != "" {
+			if err := verifyPassword(form.Password); err != nil {
+				Error(c, http.StatusBadRequest, err) // 400
+				return
+			}
+
 			item.Password = secrets.Encrypt(item.Password, key)
 		}
 
@@ -231,4 +246,35 @@ func DeleteGroup(c *gin.Context) {
 		c.JSON(http.StatusConflict, "the group is not empty, please delete all hosts first.")
 	}
 
+}
+
+func verifyPassword(s string) error {
+	number := false
+	upper := false
+	special := false
+	lower := false
+	for _, c := range s {
+		switch {
+		case unicode.IsNumber(c):
+			number = true
+		case unicode.IsUpper(c):
+			upper = true
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			special = true
+		case unicode.IsLetter(c) || c == ' ':
+			lower = true
+		}
+	}
+	var b2i = map[bool]int8{false: 0, true: 1}
+	classes := b2i[number] + b2i[upper] + b2i[special] + b2i[lower]
+
+	if classes < 3 {
+		return fmt.Errorf("You need to use at least 3 character classes (lowercase, uppercase, special and numbers)")
+	}
+
+	if len(s) < 7 {
+		return fmt.Errorf("Too short, should be at least 7 characters")
+	}
+
+	return nil
 }

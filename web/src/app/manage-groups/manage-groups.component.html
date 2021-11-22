@@ -171,6 +171,8 @@
 				</clr-checkbox-wrapper>
 			</div>
 		</form>
+	</div>
+	<div class="modal-footer">
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
 				<div class="alert-item static" *ngFor="let error of errors | keyvalue">
@@ -183,12 +185,12 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="modal-footer">
-		<button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
-		<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary"
-			(click)="submit_group()">Add</button>
-		<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary"
-			(click)="updateGroup()">Update</button>
+		<div class="modal-buttons">
+			<button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
+			<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary"
+				(click)="submit_group()">Add</button>
+			<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary"
+				(click)="updateGroup()">Update</button>
+		</div>
 	</div>
 </clr-modal>

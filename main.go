@@ -160,8 +160,10 @@ func main() {
 	}
 
 	// DHCPd
-	for _, v := range conf.Network.Interfaces {
-		go serve(v)
+	if !conf.DisableDhcp {
+		for _, v := range conf.Network.Interfaces {
+			go serve(v)
+		}
 	}
 
 	// TFTPd

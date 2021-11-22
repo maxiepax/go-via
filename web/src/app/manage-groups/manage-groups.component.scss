@@ -10,3 +10,15 @@
 .postconfig-subtext {
     margin-top: -25px;
 }
+
+.modal-footer {
+    flex-direction: column;
+    .alert {
+        margin-bottom: 12px;
+    }
+}
+
+.modal-buttons {
+    display:flex;
+    justify-content: flex-end;
+}
