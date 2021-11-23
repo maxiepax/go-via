@@ -119,7 +119,7 @@ func ProvisioningWorker(item models.Address, key string) {
 			return
 		}
 
-		if !item.Reimage {
+		if item.Progress == 0 {
 			logrus.WithFields(logrus.Fields{
 				"IP": item.IP,
 			}).Error("postconfig terminated")
