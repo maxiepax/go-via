@@ -153,6 +153,7 @@ export class ManageGroupsComponent implements OnInit {
         this.groups.push(data);
         this.Groupform.reset();
         this.showGroupModalMode = '';
+        this.errors = null;
       }
     }, (data: any) => {
       if (data.status) {
@@ -249,6 +250,7 @@ export class ManageGroupsComponent implements OnInit {
         this.errors = resp.error;
       }
       if (resp) {
+        this.errors = null;
         this.showGroupModalMode = '';
       }
     });
