@@ -237,7 +237,9 @@ func UpdateAddress(c *gin.Context) {
 		Error(c, http.StatusInternalServerError, err) // 500
 	}
 
+	// Mergo doesn't overwrite 0 or false values, force set
 	item.AddressForm.Reimage = form.Reimage
+	item.AddressForm.Progress = form.Progress
 
 	// Save it
 	if res := db.DB.Save(&item); res.Error != nil {
