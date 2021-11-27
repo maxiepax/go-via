@@ -172,7 +172,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigDomain(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-domain": err,
 			}).Error(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
@@ -187,7 +187,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigNTP(e, item, host, ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-ntp": err,
 			}).Error(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
@@ -202,7 +202,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigSyslog(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-syslog": err,
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
@@ -217,7 +217,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigSSH(e, item, host, ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-ssh": err,
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
@@ -231,7 +231,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigVlan(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-vlan": err,
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
@@ -246,7 +246,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		err := PostConfigCertificate(e, item, decryptedPassword, ctx, timeout, i, c, url)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
+				"postconfig-certificate": err,
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
