@@ -7,28 +7,30 @@ import (
 )
 
 type GroupForm struct {
-	PoolID   int            `json:"pool_id" gorm:"type:BIGINT"`
-	Name     string         `json:"name" gorm:"type:varchar(255)"`
-	DNS      string         `json:"dns" gorm:"type:varchar(255)"`
-	NTP      string         `json:"ntp" gorm:"type:varchar(255)"`
-	Password string         `json:"password" gorm:"type:varchar(255)"`
-	ImageID  int            `json:"image_id" gorm:"type:INT"`
-	Ks       string         `json:"ks" gorm:"type:text"`
-	Syslog   string         `json:"syslog" gorm:"type:varchar(255)"`
-	Vlan     string         `json:"vlan" gorm:"type:INT"`
-	Options  datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
+	PoolID      int            `json:"pool_id" gorm:"type:BIGINT"`
+	Name        string         `json:"name" gorm:"type:varchar(255)"`
+	DNS         string         `json:"dns" gorm:"type:varchar(255)"`
+	NTP         string         `json:"ntp" gorm:"type:varchar(255)"`
+	Password    string         `json:"password" gorm:"type:varchar(255)"`
+	ImageID     int            `json:"image_id" gorm:"type:INT"`
+	Ks          string         `json:"ks" gorm:"type:text"`
+	Syslog      string         `json:"syslog" gorm:"type:varchar(255)"`
+	Vlan        string         `json:"vlan" gorm:"type:INT"`
+	CallbackURL string         `json:"callbackurl"`
+	Options     datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
 type NoPWGroupForm struct {
-	PoolID  int            `json:"pool_id" gorm:"type:BIGINT"`
-	Name    string         `json:"name" gorm:"type:varchar(255)"`
-	DNS     string         `json:"dns" gorm:"type:varchar(255)"`
-	NTP     string         `json:"ntp" gorm:"type:varchar(255)"`
-	ImageID int            `json:"image_id" gorm:"type:INT"`
-	Ks      string         `json:"ks" gorm:"type:text"`
-	Syslog  string         `json:"syslog" gorm:"type:varchar(255)"`
-	Vlan    string         `json:"vlan" gorm:"type:INT"`
-	Options datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
+	PoolID      int            `json:"pool_id" gorm:"type:BIGINT"`
+	Name        string         `json:"name" gorm:"type:varchar(255)"`
+	DNS         string         `json:"dns" gorm:"type:varchar(255)"`
+	NTP         string         `json:"ntp" gorm:"type:varchar(255)"`
+	ImageID     int            `json:"image_id" gorm:"type:INT"`
+	Ks          string         `json:"ks" gorm:"type:text"`
+	Syslog      string         `json:"syslog" gorm:"type:varchar(255)"`
+	Vlan        string         `json:"vlan" gorm:"type:INT"`
+	CallbackURL string         `json:"callbackurl"`
+	Options     datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
 type Group struct {

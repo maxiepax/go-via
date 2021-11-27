@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -22,6 +23,7 @@ import (
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/find"
 	"github.com/vmware/govmomi/govc/host/esxcli"
+	"github.com/vmware/govmomi/object"
 	"github.com/vmware/govmomi/vim25/types"
 	"gorm.io/gorm/clause"
 )
@@ -102,6 +104,9 @@ func ProvisioningWorker(item models.Address, key string) {
 	ctx := context.Background()
 	i := 1
 	timeout := 360
+	if string(item.Group.Options.MarshalJSON()) != "{}" {
+		return
+	}
 	for {
 		if i > timeout {
 			logrus.WithFields(logrus.Fields{
@@ -162,312 +167,92 @@ func ProvisioningWorker(item models.Address, key string) {
 		}).Info(item.IP)
 	}
 
+	//domain
 	if item.Domain != "" {
-		search := strings.Fields("network ip dns search add -d")
-		search = append(search, item.Domain)
-		_, err := e.Run(search)
+		err := PostConfigDomain(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":            item.IP,
-			"search domain": item.Domain,
-		}).Info("postconfig")
-
-		hd := string(item.Hostname + "." + item.Domain)
-		fqdn := strings.Fields("system hostname set --fqdn")
-		fqdn = append(fqdn, hd)
-		_, err = e.Run(fqdn)
-		if err != nil {
+			}).Error(item.IP)
+		} else {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
+				"IP":   item.IP,
+				"ntpd": "domain configured",
+			}).Info("postconfig")
 		}
-		logrus.WithFields(logrus.Fields{
-			"IP":   item.IP,
-			"fqdn": hd,
-		}).Info("postconfig")
 	}
 
+	//ntpd
 	if item.Group.NTP != "" {
-		//configure ntpd
-		cmd := strings.Fields("system ntp set")
-		for _, k := range strings.Split(item.Group.NTP, ",") {
-			cmd = append(cmd, "--server", string(k))
-		}
-		_, err := e.Run(cmd)
+		err := PostConfigNTP(e, item, host, ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"ntpd": item.Group.NTP,
-		}).Info(item.IP)
-		//enable ntpd
-		_, err = e.Run(strings.Fields("system ntp set --enabled true"))
-		if err != nil {
+			}).Error(item.IP)
+		} else {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
+				"IP":   item.IP,
+				"ntpd": "ntpd configured",
+			}).Info("postconfig")
 		}
-		logrus.WithFields(logrus.Fields{
-			"IP":   item.IP,
-			"ntpd": "Service enabled",
-		}).Info("postconfig")
-
-		s, err := host.ConfigManager().ServiceSystem(ctx)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-
-		err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":   item.IP,
-			"ntpd": "Startup Policy -> Start and stop with host",
-		}).Info("postconfig")
-
-		err = s.Start(ctx, "ntpd")
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":   item.IP,
-			"ntpd": "Service started",
-		}).Info("postconfig")
 	}
 
+	//syslog
 	if item.Group.Syslog != "" {
-		//configure Syslog and modify firewall to allow syslog.
-		cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
-		_, err := e.Run(cmd)
+		err := PostConfigSyslog(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
-		}
-		_, err = e.Run(strings.Fields("system syslog reload"))
-		if err != nil {
+		} else {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
+				"IP":     item.IP,
+				"syslog": "syslog configured",
+			}).Info("postconfig")
 		}
-		_, err = e.Run(strings.Fields("network firewall ruleset set --ruleset-id=syslog --enabled=true"))
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		_, err = e.Run(strings.Fields("network firewall refresh"))
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":     item.IP,
-			"syslog": "syslog configured",
-		}).Info("postconfig")
 	}
 
+	//ssh
 	if options.SSH {
-		s, err := host.ConfigManager().ServiceSystem(ctx)
+		err := PostConfigSSH(e, item, host, ctx)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
-		}
-
-		err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
-		if err != nil {
+		} else {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
+				"IP":     item.IP,
+				"syslog": "syslog configured",
+			}).Info("postconfig")
 		}
-		logrus.WithFields(logrus.Fields{
-			"IP":  item.IP,
-			"ssh": "Startup Policy -> Start and stop with host",
-		}).Info("postconfig")
-
-		err = s.Start(ctx, "TSM-SSH")
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":  item.IP,
-			"ssh": "Service started",
-		}).Info("postconfig")
-	}
-
-	if options.SSH {
-		//Suppress any warnings that ESXi Console or SSH are enabled
-		cmd := strings.Fields("system settings advanced set -o /UserVars/SuppressShellWarning -i 1")
-		_, err := e.Run(cmd)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":  item.IP,
-			"ssh": "suppressing shell warnings",
-		}).Info("postconfig")
 	}
 
 	if item.Group.Vlan != "" {
-		//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
-
-		cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
-		cmd = append(cmd, "-p")
-		cmd = append(cmd, "VM Network")
-
-		_, err := e.Run(cmd)
-
+		err := PostConfigVlan(e, item)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
+		} else {
+			logrus.WithFields(logrus.Fields{
+				"IP":   item.IP,
+				"vlan": "vlan configured",
+			}).Info("postconfig")
 		}
-		logrus.WithFields(logrus.Fields{
-			"IP":   item.IP,
-			"vlan": "VM Network vlan-id : " + item.Group.Vlan,
-		}).Info("postconfig")
 	}
 
 	if options.Certificate {
-		//create directory
-		os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
-		//create certificate
-		ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui", item.Hostname+"."+item.Domain)
-
-		//post to esxi host https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.security.doc/GUID-43B7B817-C58F-4C6F-AF3D-9F1D52B116A0.html
-		crt, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.crt")
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": "couldn't find the .crt file",
-			}).Info(item.IP)
-		}
-		defer crt.Close()
-
-		key, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.key")
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": "couldn't find the .key file",
-			}).Info(item.IP)
-		}
-		defer key.Close()
-
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
-		putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
-
-		// set the host into maintenanace mode
-		cmd := strings.Fields("system maintenanceMode set -e true")
-		_, err = e.Run(cmd)
+		err := PostConfigCertificate(e, item, decryptedPassword)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
 			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":          item.IP,
-			"certificate": "set host into maintenance mode",
-		}).Info("postconfig")
-
-		// reboot the host
-		cmd = strings.Fields("system shutdown reboot -r certificate")
-		_, err = e.Run(cmd)
-		if err != nil {
+		} else {
 			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
+				"IP":   item.IP,
+				"certificate": "certificates configured",
+			}).Info("postconfig")
 		}
-		logrus.WithFields(logrus.Fields{
-			"IP":          item.IP,
-			"certificate": "rebooting host to activate new certificates",
-		}).Info("postconfig")
-
-		logrus.WithFields(logrus.Fields{
-			"id":           item.ID,
-			"percentage":   90,
-			"progresstext": "rebooting host",
-		}).Info("progress")
-		item.Progress = 90
-		item.Progresstext = "rebooting host"
-		db.DB.Save(&item)
-
-		// wait for the SOAP API to come back
-		time.Sleep(15 * time.Second)
-		for {
-			if i > timeout {
-				logrus.WithFields(logrus.Fields{
-					"IP":     item.IP,
-					"status": "timeout exceeded, failing postconfig",
-				}).Info("postconfig")
-				return
-			}
-			c, err = govmomi.NewClient(ctx, url, true)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"IP":        item.IP,
-					"status":    "Hosts SOAP API not ready yet, retrying",
-					"retry":     i,
-					"retry max": timeout,
-				}).Info("postconfig")
-				logrus.WithFields(logrus.Fields{
-					"IP":        item.IP,
-					"status":    "Hosts SOAP API not ready yet, retrying",
-					"retry":     i,
-					"retry max": timeout,
-					"err":       err,
-				}).Debug("postconfig")
-				i += 1
-				<-time.After(time.Second * 10)
-				continue
-			}
-			break
-		}
-
-		// re-authenticate and create new session since last reboot.
-		host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		e, err := esxcli.NewExecutor(c.Client, host)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-
-		// bring host out of maintenanace mode
-		cmd = strings.Fields("system maintenanceMode set -e false")
-		_, err = e.Run(cmd)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"postconfig": err,
-			}).Info(item.IP)
-		}
-		logrus.WithFields(logrus.Fields{
-			"IP":          item.IP,
-			"certificate": "remove host from maintenance mode",
-		}).Info("postconfig")
-
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -483,6 +268,17 @@ func ProvisioningWorker(item models.Address, key string) {
 	item.Progresstext = "completed"
 	db.DB.Save(&item)
 
+	//send callback if set
+	if item.Group.CallbackURL != "" {
+		err := callback(item.Group.CallbackURL, item)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": err,
+			}).Info("")
+			return
+		}
+	}
+
 }
 
 func putRequest(url string, data io.Reader, username string, password string) {
@@ -493,11 +289,304 @@ func putRequest(url string, data io.Reader, username string, password string) {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info("")
+		return
 	}
 	_, err = client.Do(req)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info("")
+		return
 	}
+}
+
+func callback(url string, data models.Address) error {
+	//remove password
+	data.Group.Password = ""
+	//convert model to json
+	json_data, err := json.Marshal(data)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info("")
+		return err
+	}
+	//convert json string to io.reader
+	reader := bytes.NewReader(json_data)
+
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPost, url, reader)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info("")
+		return err
+	}
+	_, err = client.Do(req)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info("")
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":       data.IP,
+		"callback": data.Group.CallbackURL,
+	}).Info("progress")
+	return nil
+}
+
+func PostConfigSyslog(e *esxcli.Executor, item models.Address) error {
+	//configure Syslog and modify firewall to allow syslog.
+	cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
+	_, err := e.Run(cmd)
+	if err != nil {
+		return err
+	}
+	_, err = e.Run(strings.Fields("system syslog reload"))
+	if err != nil {
+		return err
+	}
+	_, err = e.Run(strings.Fields("network firewall ruleset set --ruleset-id=syslog --enabled=true"))
+	if err != nil {
+		return err
+	}
+	_, err = e.Run(strings.Fields("network firewall refresh"))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PostConfigNTP(e *esxcli.Executor, item models.Address, host *object.HostSystem, ctx context.Context) error {
+	cmd := strings.Fields("system ntp set")
+	for _, k := range strings.Split(item.Group.NTP, ",") {
+		cmd = append(cmd, "--server", string(k))
+	}
+
+	//configure ntp servers
+	_, err := e.Run(cmd)
+	if err != nil {
+		return err
+	}
+
+	//enable ntpd service
+	_, err = e.Run(strings.Fields("system ntp set --enabled true"))
+	if err != nil {
+		return err
+	}
+
+	s, err := host.ConfigManager().ServiceSystem(ctx)
+	if err != nil {
+		return err
+	}
+
+	//change ntpd startup policy
+	err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
+	if err != nil {
+		return err
+	}
+
+	//start ntpd service
+	err = s.Start(ctx, "ntpd")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PostConfigDomain(e *esxcli.Executor, item models.Address) error {
+	//add search domains
+	search := strings.Fields("network ip dns search add -d")
+	search = append(search, item.Domain)
+	_, err := e.Run(search)
+	if err != nil {
+		return err
+	}
+
+	//set fqdn
+	hd := string(item.Hostname + "." + item.Domain)
+	fqdn := strings.Fields("system hostname set --fqdn")
+	fqdn = append(fqdn, hd)
+	_, err = e.Run(fqdn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PostConfigSSH(e *esxcli.Executor, item models.Address, host *object.HostSystem, ctx context.Context) error {
+	s, err := host.ConfigManager().ServiceSystem(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":  item.IP,
+		"ssh": "Startup Policy -> Start and stop with host",
+	}).Debug("postconfig")
+
+	err = s.Start(ctx, "TSM-SSH")
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":  item.IP,
+		"ssh": "Service started",
+	}).Debug("postconfig")
+
+	//Suppress any warnings that ESXi Console or SSH are enabled
+	cmd := strings.Fields("system settings advanced set -o /UserVars/SuppressShellWarning -i 1")
+	_, err = e.Run(cmd)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info(item.IP)
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":  item.IP,
+		"ssh": "suppressing shell warnings",
+	}).Info("postconfig")
+
+	return nil
+}
+
+func PostConfigVlan(e *esxcli.Executor, item models.Address) error {
+	//if vlan is set, configure the "VM Network" portgroup with the same vlanid.
+
+	cmd := strings.Fields("network vswitch standard portgroup set --vlan-id " + item.Group.Vlan)
+	cmd = append(cmd, "-p")
+	cmd = append(cmd, "VM Network")
+
+	_, err := e.Run(cmd)
+
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": err,
+		}).Info(item.IP)
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":   item.IP,
+		"vlan": "VM Network vlan-id : " + item.Group.Vlan,
+	}).Info("postconfig")
+
+	return nil
+}
+
+func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPassword,) error {
+	//create directory
+	os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
+	//create certificate
+	ca.CreateCert("./cert/"+item.Hostname+"."+item.Domain, "rui", item.Hostname+"."+item.Domain)
+
+	//post to esxi host https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.security.doc/GUID-43B7B817-C58F-4C6F-AF3D-9F1D52B116A0.html
+	crt, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.crt")
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": "couldn't find the .crt file",
+		}).Debug(item.IP)
+	}
+	defer crt.Close()
+
+	key, err := os.Open("./cert/" + item.Hostname + "." + item.Domain + "/rui.key")
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"postconfig": "couldn't find the .key file",
+		}).Debug(item.IP)
+	}
+	defer key.Close()
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	putRequest("https://"+item.IP+"/host/ssl_cert", crt, "root", decryptedPassword)
+	putRequest("https://"+item.IP+"/host/ssl_key", key, "root", decryptedPassword)
+
+	// set the host into maintenanace mode
+	cmd := strings.Fields("system maintenanceMode set -e true")
+	_, err = e.Run(cmd)
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":          item.IP,
+		"certificate": "set host into maintenance mode",
+	}).Debug("postconfig")
+
+	// reboot the host
+	cmd = strings.Fields("system shutdown reboot -r certificate")
+	_, err = e.Run(cmd)
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":          item.IP,
+		"certificate": "rebooting host to activate new certificates",
+	}).Debug("postconfig")
+
+	logrus.WithFields(logrus.Fields{
+		"id":           item.ID,
+		"percentage":   90,
+		"progresstext": "rebooting host",
+	}).Debug("progress")
+	item.Progress = 90
+	item.Progresstext = "rebooting host"
+	db.DB.Save(&item)
+
+	// wait for the SOAP API to come back
+	time.Sleep(15 * time.Second)
+	for {
+		if i > timeout {
+			logrus.WithFields(logrus.Fields{
+				"IP":     item.IP,
+				"status": "timeout exceeded, failing postconfig",
+			}).Info("postconfig")
+			return
+		}
+		c, err = govmomi.NewClient(ctx, url, true)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"IP":        item.IP,
+				"status":    "Hosts SOAP API not ready yet, retrying",
+				"retry":     i,
+				"retry max": timeout,
+			}).Info("postconfig")
+			logrus.WithFields(logrus.Fields{
+				"IP":        item.IP,
+				"status":    "Hosts SOAP API not ready yet, retrying",
+				"retry":     i,
+				"retry max": timeout,
+				"err":       err,
+			}).Debug("postconfig")
+			i += 1
+			<-time.After(time.Second * 10)
+			continue
+		}
+		break
+	}
+
+	// re-authenticate and create new session since last reboot.
+	host, err := find.NewFinder(c.Client).DefaultHostSystem(ctx)
+	if err != nil {
+		return err
+	}
+	e, err := esxcli.NewExecutor(c.Client, host)
+	if err != nil {
+		return err
+	}
+
+	// bring host out of maintenanace mode
+	cmd = strings.Fields("system maintenanceMode set -e false")
+	_, err = e.Run(cmd)
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"IP":          item.IP,
+		"certificate": "remove host from maintenance mode",
+	}).Debug("postconfig")
+
+	return nil
 }

@@ -66,6 +66,7 @@ export class ManageGroupsComponent implements OnInit {
       ssh: [''],
       certificate: [''],
       createvmfs: [''],
+      callbackurl: [''],
     });
     const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
