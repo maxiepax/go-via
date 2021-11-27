@@ -104,9 +104,9 @@ func ProvisioningWorker(item models.Address, key string) {
 	ctx := context.Background()
 	i := 1
 	timeout := 360
-	if string(item.Group.Options.MarshalJSON()) != "{}" {
+	/*if string(item.Group.Options.MarshalJSON()) != "{}" {
 		return
-	}
+	}*/
 	for {
 		if i > timeout {
 			logrus.WithFields(logrus.Fields{
@@ -241,8 +241,9 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 	}
 
+	//certificate
 	if options.Certificate {
-		err := PostConfigCertificate(e, item, decryptedPassword)
+		err := PostConfigCertificate(e, item, decryptedPassword, ctx, timeout, i, c, url)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"postconfig": err,
@@ -255,6 +256,7 @@ func ProvisioningWorker(item models.Address, key string) {
 		}
 	}
 
+	//postconfig completed
 	logrus.WithFields(logrus.Fields{
 		"postconfig": "postconfig completed",
 	}).Info(item.IP)
@@ -477,7 +479,7 @@ func PostConfigVlan(e *esxcli.Executor, item models.Address) error {
 	return nil
 }
 
-func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPassword string) error {
+func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPassword string, ctx context.Context, timeout int, i int, c *govmomi.Client, url *url.URL) error {
 	//create directory
 	os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
 	//create certificate
@@ -537,13 +539,14 @@ func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPas
 
 	// wait for the SOAP API to come back
 	time.Sleep(15 * time.Second)
+
 	for {
 		if i > timeout {
 			logrus.WithFields(logrus.Fields{
 				"IP":     item.IP,
 				"status": "timeout exceeded, failing postconfig",
 			}).Info("postconfig")
-			return
+			return nil
 		}
 		c, err = govmomi.NewClient(ctx, url, true)
 		if err != nil {
@@ -572,7 +575,7 @@ func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPas
 	if err != nil {
 		return err
 	}
-	e, err := esxcli.NewExecutor(c.Client, host)
+	e, err = esxcli.NewExecutor(c.Client, host)
 	if err != nil {
 		return err
 	}
