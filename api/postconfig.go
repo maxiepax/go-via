@@ -221,8 +221,8 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
-				"IP":     item.IP,
-				"syslog": "syslog configured",
+				"IP":  item.IP,
+				"ssh": "ssh configured",
 			}).Info("postconfig")
 		}
 	}
@@ -343,18 +343,34 @@ func PostConfigSyslog(e *esxcli.Executor, item models.Address) error {
 	cmd := strings.Fields("system syslog config set --loghost=" + item.Group.Syslog)
 	_, err := e.Run(cmd)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"syslog": "setting syslog targets",
+		}).Debug("postconfig")
 		return err
 	}
 	_, err = e.Run(strings.Fields("system syslog reload"))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"syslog": "reloading syslog daemon",
+		}).Debug("postconfig")
 		return err
 	}
 	_, err = e.Run(strings.Fields("network firewall ruleset set --ruleset-id=syslog --enabled=true"))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"syslog": "updating firewall rule for syslog",
+		}).Debug("postconfig")
 		return err
 	}
 	_, err = e.Run(strings.Fields("network firewall refresh"))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"syslog": "loading firewall rules",
+		}).Debug("postconfig")
 		return err
 	}
 	return nil
