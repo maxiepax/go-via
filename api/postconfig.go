@@ -249,7 +249,7 @@ func ProvisioningWorker(item models.Address, key string) {
 			}).Info(item.IP)
 		} else {
 			logrus.WithFields(logrus.Fields{
-				"IP":   item.IP,
+				"IP":          item.IP,
 				"certificate": "certificates configured",
 			}).Info("postconfig")
 		}
@@ -477,7 +477,7 @@ func PostConfigVlan(e *esxcli.Executor, item models.Address) error {
 	return nil
 }
 
-func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPassword,) error {
+func PostConfigCertificate(e *esxcli.Executor, item models.Address, decryptedPassword string) error {
 	//create directory
 	os.MkdirAll("./cert/"+item.Hostname+"."+item.Domain, os.ModePerm)
 	//create certificate
