@@ -2049,6 +2049,9 @@ var doc = `{
                         "$ref": "#/definitions/models.Address"
                     }
                 },
+                "callbackurl": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2108,6 +2111,9 @@ var doc = `{
         "models.GroupForm": {
             "type": "object",
             "properties": {
+                "callbackurl": {
+                    "type": "string"
+                },
                 "dns": {
                     "type": "string"
                 },

@@ -98,15 +98,13 @@ func ProvisioningWorker(item models.Address, key string) {
 	item.Progresstext = "customization"
 	db.DB.Save(&item)
 
-	// ensure that host has enough time to boot, and for SOAP API to respond.
+	// ensure that host has enough time to boot, and for SOAP API to respond
 	var c *govmomi.Client
 	var err error
 	ctx := context.Background()
 	i := 1
 	timeout := 360
-	/*if string(item.Group.Options.MarshalJSON()) != "{}" {
-		return
-	}*/
+
 	for {
 		if i > timeout {
 			logrus.WithFields(logrus.Fields{
@@ -258,8 +256,9 @@ func ProvisioningWorker(item models.Address, key string) {
 
 	//postconfig completed
 	logrus.WithFields(logrus.Fields{
+		"IP":         item.IP,
 		"postconfig": "postconfig completed",
-	}).Info(item.IP)
+	}).Info("postconfig")
 
 	logrus.WithFields(logrus.Fields{
 		"id":           item.ID,
@@ -385,12 +384,20 @@ func PostConfigNTP(e *esxcli.Executor, item models.Address, host *object.HostSys
 	//configure ntp servers
 	_, err := e.Run(cmd)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
+			"ntpd": "set ntpd servers",
+		}).Debug("postconfig")
 		return err
 	}
 
 	//enable ntpd service
 	_, err = e.Run(strings.Fields("system ntp set --enabled true"))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
+			"ntpd": "enable ntpd service",
+		}).Debug("postconfig")
 		return err
 	}
 
@@ -402,12 +409,20 @@ func PostConfigNTP(e *esxcli.Executor, item models.Address, host *object.HostSys
 	//change ntpd startup policy
 	err = s.UpdatePolicy(ctx, "ntpd", string(types.HostServicePolicyOn))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
+			"ntpd": "changing startup policy to start with host",
+		}).Debug("postconfig")
 		return err
 	}
 
 	//start ntpd service
 	err = s.Start(ctx, "ntpd")
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":   item.IP,
+			"ntpd": "start ntpd service",
+		}).Debug("postconfig")
 		return err
 	}
 	return nil
@@ -419,6 +434,10 @@ func PostConfigDomain(e *esxcli.Executor, item models.Address) error {
 	search = append(search, item.Domain)
 	_, err := e.Run(search)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"domain": "add dns servers",
+		}).Debug("postconfig")
 		return err
 	}
 
@@ -428,6 +447,10 @@ func PostConfigDomain(e *esxcli.Executor, item models.Address) error {
 	fqdn = append(fqdn, hd)
 	_, err = e.Run(fqdn)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":     item.IP,
+			"domain": "set the fqdn",
+		}).Debug("postconfig")
 		return err
 	}
 	return nil
@@ -441,6 +464,10 @@ func PostConfigSSH(e *esxcli.Executor, item models.Address, host *object.HostSys
 
 	err = s.UpdatePolicy(ctx, "TSM-SSH", string(types.HostServicePolicyOn))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":  item.IP,
+			"ssh": "changing startup policy to start with host",
+		}).Debug("postconfig")
 		return err
 	}
 	logrus.WithFields(logrus.Fields{
@@ -450,6 +477,10 @@ func PostConfigSSH(e *esxcli.Executor, item models.Address, host *object.HostSys
 
 	err = s.Start(ctx, "TSM-SSH")
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"IP":  item.IP,
+			"ssh": "starting ssh service",
+		}).Debug("postconfig")
 		return err
 	}
 	logrus.WithFields(logrus.Fields{
@@ -464,6 +495,7 @@ func PostConfigSSH(e *esxcli.Executor, item models.Address, host *object.HostSys
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info(item.IP)
+		return err
 	}
 	logrus.WithFields(logrus.Fields{
 		"IP":  item.IP,
@@ -486,6 +518,7 @@ func PostConfigVlan(e *esxcli.Executor, item models.Address) error {
 		logrus.WithFields(logrus.Fields{
 			"postconfig": err,
 		}).Info(item.IP)
+		return err
 	}
 	logrus.WithFields(logrus.Fields{
 		"IP":   item.IP,

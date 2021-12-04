@@ -2034,6 +2034,9 @@
                         "$ref": "#/definitions/models.Address"
                     }
                 },
+                "callbackurl": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2093,6 +2096,9 @@
         "models.GroupForm": {
             "type": "object",
             "properties": {
+                "callbackurl": {
+                    "type": "string"
+                },
                 "dns": {
                     "type": "string"
                 },

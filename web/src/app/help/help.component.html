@@ -22,6 +22,9 @@ Options:<br />
 - Boot Device: If you don't specify a boot device --firstdisk is used. If you're server doesn't comply with this, you
 can manually specify the mpx device to be uesd.<br />
 - Management vlan: Enter a vlan-id to configure vmk0 and 'VM Network' portgroup with a vlan-id.<br />
+- Calback URL: when the host has been installed/upgraded and all configuration options have been applied, a http-post
+will be performed to the specified URL. The post is a json string with information about the host, group and pool, with
+sensitive information removed.<br />
 - DNS Suffix: Will configure the dns suffix for the host. If you enter the FQDN of sfo-m01-esx01.rainpole.io , the
 suffix is rainpole.io.<br />
 - SSH: Will enable the service SSH on the host, and silence the warning that ssh is enabled on the host.<br />
