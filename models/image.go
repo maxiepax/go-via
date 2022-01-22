@@ -8,7 +8,7 @@ type ImageForm struct {
 	ISOImage    string `json:"iso_image" gorm:"type:varchar(255)"`
 	Path        string `json:"path" gorm:"type:varchar(255)"`
 	Size        int64  `json:"size" gorm:"type:BIGINT"`
-	Hash        string `json:"hash" gorm:"-"`
+	Hash        string `json:"hash" gorm:"type:varchar(255)"`
 	Description string `json:"description" gorm:"type:text"`
 }
 

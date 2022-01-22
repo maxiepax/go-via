@@ -128,9 +128,6 @@ export class ManageGroupsComponent implements OnInit {
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
-    if (data.bootdisk) {
-      json_pc.bootdisk = data.bootdisk;
-    }
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
@@ -144,7 +141,6 @@ export class ManageGroupsComponent implements OnInit {
     data.options = json_pc;
     delete data.ssh;
     delete data.erasedisks;
-    delete data.bootdisk;
     delete data.allowlegacycpu;
     delete data.certificate;
     delete data.createvmfs;
@@ -182,14 +178,15 @@ export class ManageGroupsComponent implements OnInit {
     this.showGroupModalMode = mode;
     if (mode === "edit") {
       this.group = this.groups.find(group => group.id === id);
+      const { ssh, erasedisks, allowlegacycpu, certificate, createvmfs } = (this.group.options || {});
+      console.log(this.group)
       this.Groupform.patchValue({
         ...this.group,
-        ssh: this.group.options.ssh,
-        erasedisks: this.group.options.erasedisks,
-        bootdisk: this.group.options.bootdisk,
-        allowlegacycpu: this.group.options.allowlegacycpu,
-        certificate: this.group.options.certificate,
-        createvmfs: this.group.options.createvmfs,
+        ssh,
+        erasedisks,
+        allowlegacycpu,
+        certificate,
+        createvmfs,
 
       });
     }
@@ -212,9 +209,6 @@ export class ManageGroupsComponent implements OnInit {
     if (data.erasedisks) {
       json_pc.erasedisks = true;
     }
-    if (data.bootdisk) {
-      json_pc.bootdisk = data.bootdisk;
-    }
     if (data.allowlegacycpu) {
       json_pc.allowlegacycpu = data.allowlegacycpu;
     }
@@ -233,7 +227,6 @@ export class ManageGroupsComponent implements OnInit {
     data.options = json_pc;
     delete data.ssh;
     delete data.erasedisks;
-    delete data.bootdisk;
     delete data.allowlegacycpu;
     delete data.certificate;
     delete data.createvmfs;

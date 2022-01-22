@@ -2049,6 +2049,9 @@ var doc = `{
                         "$ref": "#/definitions/models.Address"
                     }
                 },
+                "bootdisk": {
+                    "type": "string"
+                },
                 "callbackurl": {
                     "type": "string"
                 },
@@ -2111,6 +2114,9 @@ var doc = `{
         "models.GroupForm": {
             "type": "object",
             "properties": {
+                "bootdisk": {
+                    "type": "string"
+                },
                 "callbackurl": {
                     "type": "string"
                 },

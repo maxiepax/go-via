@@ -24,11 +24,9 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
-	github.com/swaggo/swag v1.7.6
+	github.com/swaggo/swag v1.7.8
 	github.com/vmware/govmomi v0.24.1
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
-	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/sqlite v1.1.4

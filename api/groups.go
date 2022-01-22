@@ -189,6 +189,7 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		item.GroupForm.DNS = form.DNS
 		item.GroupForm.NTP = form.NTP
 		item.GroupForm.Syslog = form.Syslog
+		item.GroupForm.BootDisk = form.BootDisk
 
 		// Save it
 		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {

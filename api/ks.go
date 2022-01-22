@@ -85,7 +85,7 @@ func Ks(key string) func(c *gin.Context) {
 			"netmask":    netmask,
 			"via_server": laddrport,
 			"erasedisks": options.EraseDisks,
-			"bootdisk":   options.BootDisk,
+			"bootdisk":   item.Group.BootDisk,
 			"vlan":       item.Group.Vlan,
 			"createvmfs": options.CreateVMFS,
 		}

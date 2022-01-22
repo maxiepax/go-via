@@ -17,6 +17,7 @@ type GroupForm struct {
 	Syslog      string         `json:"syslog" gorm:"type:varchar(255)"`
 	Vlan        string         `json:"vlan" gorm:"type:INT"`
 	CallbackURL string         `json:"callbackurl"`
+	BootDisk    string         `json:"bootdisk" gorm:"type:varchar(255)"`
 	Options     datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
@@ -30,6 +31,7 @@ type NoPWGroupForm struct {
 	Syslog      string         `json:"syslog" gorm:"type:varchar(255)"`
 	Vlan        string         `json:"vlan" gorm:"type:INT"`
 	CallbackURL string         `json:"callbackurl"`
+	BootDisk    string         `json:"bootdisk" gorm:"type:varchar(255)"`
 	Options     datatypes.JSON `json:"options" sql:"type:JSONB" swaggertype:"object,string"`
 }
 
@@ -66,11 +68,10 @@ func (NoPWGroup) TableName() string {
 }
 
 type GroupOptions struct {
-	SSH                  bool   `json:"ssh"`
-	SuppressShellWarning bool   `json:"suppressshellwarning"`
-	EraseDisks           bool   `json:"erasedisks"`
-	BootDisk             string `json:"bootdisk" gorm:"type:varchar(255)"`
-	AllowLegacyCPU       bool   `json:"allowlegacycpu"`
-	Certificate          bool   `json:"certificate"`
-	CreateVMFS           bool   `json:"createvmfs"`
+	SSH                  bool `json:"ssh"`
+	SuppressShellWarning bool `json:"suppressshellwarning"`
+	EraseDisks           bool `json:"erasedisks"`
+	AllowLegacyCPU       bool `json:"allowlegacycpu"`
+	Certificate          bool `json:"certificate"`
+	CreateVMFS           bool `json:"createvmfs"`
 }
