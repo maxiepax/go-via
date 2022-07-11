@@ -74,6 +74,17 @@
 					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
 				</cds-input>
 			</cds-form-group>
+			<div id="host_ks">
+				<cds-toggle>
+					<label>Show advanced options</label>
+					<input type="checkbox" [(ngModel)]="advanced" [ngModelOptions]="{standalone: true}"/>
+				</cds-toggle>
+				<cds-textarea layout="vertical" *ngIf="advanced" id="ks_textarea">
+					<label>ks.cfg</label>
+					<textarea formControlName="ks" name="ks"></textarea>
+					<cds-control-message>Modify the default ks.cfg file</cds-control-message>
+				</cds-textarea>
+			</div>
 		</form>
 		<div class="alert alert-danger" role="alert" *ngIf="errors">
 			<div class="alert-items">
@@ -174,6 +185,17 @@
 					<input type="checkbox" clrCheckbox name="createvmfs" id="createvmfs" formControlName="createvmfs" />
 					<label>Create VMFS</label>
 				</clr-checkbox-wrapper>
+			</div>
+			<div>
+				<cds-toggle>
+					<label>Show advanced options</label>
+					<input type="checkbox" [(ngModel)]="advanced" [ngModelOptions]="{standalone: true}"/>
+				</cds-toggle>
+				<cds-textarea layout="vertical" *ngIf="advanced" id="ks_textarea">
+					<label>ks.cfg</label>
+					<textarea formControlName="ks" name="ks"></textarea>
+					<cds-control-message>Modify the default ks.cfg file</cds-control-message>
+				</cds-textarea>
 			</div>
 		</form>
 	</div>

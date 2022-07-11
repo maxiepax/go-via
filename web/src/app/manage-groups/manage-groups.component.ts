@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { cloudIcon, ClarityIcons } from '@cds/core/icon';
+import { cloudIcon, ClarityIcons, atomIconName } from '@cds/core/icon';
 import '@cds/core/icon/register.js';
 import '@cds/core/accordion/register.js';
 import '@cds/core/alert/register.js';
@@ -35,6 +35,7 @@ export class ManageGroupsComponent implements OnInit {
   groups;
   group;
   pools;
+  advanced;
   Hostform: FormGroup;
   Groupform: FormGroup;
   groupid = null;
@@ -50,6 +51,7 @@ export class ManageGroupsComponent implements OnInit {
       ip: ['', [Validators.required]],
       mac: ['', [Validators.required]],
       group_id: ['', [Validators.required]],
+      ks: [''],
     });
     this.Groupform = this.GroupformBuilder.group({
       name: ['', [Validators.required]],
@@ -67,6 +69,7 @@ export class ManageGroupsComponent implements OnInit {
       certificate: [''],
       createvmfs: [''],
       callbackurl: [''],
+      ks: [''],
     });
     const ws = new WebSocket('wss://' + window.location.host + '/v1/log')
     ws.addEventListener('message', event => {
@@ -97,6 +100,7 @@ export class ManageGroupsComponent implements OnInit {
     this.apiService.getGroups().subscribe((groups: any) => {
       this.apiService.getHosts().subscribe((hosts: any) => {
         this.groups = groups.map(item => {
+          item.ks = atob(item.ks)
           item.hosts = hosts.filter(host => host.group_id === item.id)
           return item
         });
@@ -136,6 +140,10 @@ export class ManageGroupsComponent implements OnInit {
     }
     if (data.createvmfs) {
       json_pc.createvmfs = data.createvmfs;
+    }
+    if (data.ks) {
+      data.ks = btoa(data.ks)
+      console.log(data.ks)
     }
 
     data.options = json_pc;
@@ -219,6 +227,10 @@ export class ManageGroupsComponent implements OnInit {
       json_pc.createvmfs = data.createvmfs;
     }
 
+    if (data.ks) {
+      data.ks = btoa(data.ks)
+    }
+
     // if no password has been entered, don't send it to avoid rehashing the hash.
     if (!data.password) {
       delete data.password;
@@ -233,6 +245,7 @@ export class ManageGroupsComponent implements OnInit {
 
     this.apiService.updateGroup(this.group.id, data).subscribe((resp: any) => {
       delete resp.password;
+      resp.ks = atob(resp.ks)
       this.groups = this.groups.map(group => {
         if (group.id === resp.id) {
           return { ...group, ...resp };
@@ -267,6 +280,10 @@ export class ManageGroupsComponent implements OnInit {
       pool_id: parseInt(this.poolid),
     }
 
+    if (data.ks) {
+      data.ks = btoa(data.ks)
+    }
+
     this.apiService.addHost(data).subscribe((data: any) => {
 
       if (data.id) {
@@ -274,6 +291,7 @@ export class ManageGroupsComponent implements OnInit {
         g.hosts = [...(g.hosts || []), data]
         this.Hostform.reset();
         this.addHostFormModal = false;
+        atob(data.ks)
       }
     }, (data: any) => {
       if (data.status) {

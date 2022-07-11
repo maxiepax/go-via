@@ -14,6 +14,7 @@ type AddressForm struct {
 	GroupID      NullInt32 `json:"group_id" gorm:"type:BIGINT" swaggertype:"integer"`
 	Progress     int       `json:"progress" gorm:"type:INT"`
 	Progresstext string    `json:"progresstext" gorm:"type:varchar(255)"`
+	Ks           string    `json:"ks" gorm:"type:text"`
 }
 
 type Address struct {

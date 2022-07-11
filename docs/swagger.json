@@ -1926,6 +1926,9 @@
                 "ip": {
                     "type": "string"
                 },
+                "ks": {
+                    "type": "string"
+                },
                 "last_seen": {
                     "type": "string"
                 },
@@ -1972,6 +1975,9 @@
                     "type": "string"
                 },
                 "ip": {
+                    "type": "string"
+                },
+                "ks": {
                     "type": "string"
                 },
                 "mac": {

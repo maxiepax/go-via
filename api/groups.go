@@ -270,11 +270,11 @@ func verifyPassword(s string) error {
 	classes := b2i[number] + b2i[upper] + b2i[special] + b2i[lower]
 
 	if classes < 3 {
-		return fmt.Errorf("You need to use at least 3 character classes (lowercase, uppercase, special and numbers)")
+		return fmt.Errorf("you need to use at least 3 character classes (lowercase, uppercase, special and numbers)")
 	}
 
 	if len(s) < 7 {
-		return fmt.Errorf("Too short, should be at least 7 characters")
+		return fmt.Errorf("too short, should be at least 7 characters")
 	}
 
 	return nil

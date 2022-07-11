@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"text/template"
 
+	"encoding/base64"
+
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
 	"github.com/maxiepax/go-via/models"
@@ -90,10 +92,21 @@ func Ks(key string) func(c *gin.Context) {
 			"createvmfs": options.CreateVMFS,
 		}
 
-		// check if default ks has been overridden.
 		ks := defaultks
-		if item.Group.Ks != "" {
-			ks = item.Group.Ks
+
+		// check if default ks has been overridden.
+		if item.Ks != "" {
+			dec, _ := base64.StdEncoding.DecodeString(item.Ks)
+			ks = string(dec)
+			logrus.WithFields(logrus.Fields{
+				"custom host ks": ks,
+			}).Debug("ks")
+		} else if item.Group.Ks != "" {
+			dec, _ := base64.StdEncoding.DecodeString(item.Group.Ks)
+			ks = string(dec)
+			logrus.WithFields(logrus.Fields{
+				"custom group ks": ks,
+			}).Debug("ks")
 		}
 
 		t, err := template.New("").Parse(ks)
