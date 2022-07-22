@@ -21,6 +21,13 @@ export class ApiService {
     );
   }
 
+  public updateHost(id, data) {
+    return this.httpClient.patch(
+      `https://${window.location.host}/v1/addresses/${id}`,
+      data
+    );
+  }
+
   public reimageHost(id) {
     return this.httpClient.patch(
       'https://' + window.location.host + `/v1/addresses/${id}`,

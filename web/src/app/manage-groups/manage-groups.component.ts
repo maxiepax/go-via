@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ɵɵtrustConstantResourceUrl } from '@angular/core';
 import { ApiService } from '../api.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,6 +30,7 @@ import { id } from '@cds/core/internal';
 })
 export class ManageGroupsComponent implements OnInit {
   hosts;
+  host;
   images;
   errors;
   groups;
@@ -41,6 +42,7 @@ export class ManageGroupsComponent implements OnInit {
   groupid = null;
   poolid = null;
   showGroupModalMode = "";
+  showHostModalMode = "";
   addHostFormModal = false;
   progress = {};
   progresstext = {};
@@ -203,6 +205,24 @@ export class ManageGroupsComponent implements OnInit {
     }
   }
 
+  showHostModal(mode, gid = null, hid = null) {
+    this.showHostModalMode = mode;
+    if (mode === "edit") {
+      this.group = this.groups.find(group => group.id === gid);
+      console.log(this.group)
+      this.host = this.group.hosts.find(hosts => hosts.id === hid);
+      console.log(this.host)
+      var fqdn = this.host.hostname+"."+this.host.domain
+      this.Hostform.patchValue({
+        ...this.host,
+        fqdn
+      });
+    }
+    if (mode === "add") {
+      this.Hostform.reset();
+    }
+  }
+
   updateGroup() {
     const data = {
       ...this.Groupform.value,
@@ -261,6 +281,39 @@ export class ManageGroupsComponent implements OnInit {
         this.showGroupModalMode = '';
       }
     });
+  }
+
+  updateHost() {
+    const data = {
+      ...this.Hostform.value,
+      hostname: this.Hostform.value.fqdn.split(".")[0],
+      domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
+    };
+
+    this.apiService.updateHost(this.host.id, data).subscribe((resp: any) => {
+      resp.ks = atob(resp.ks)
+      
+      
+    this.groups = this.groups.map(group => {
+       if (group.id === resp.group_id) {
+        this.host = group.hosts.find(hosts => hosts.id === resp.id);
+        return { ...this.host, ...resp}
+        //return { ...group, ...resp };
+       }
+       return group;
+    });
+      
+      
+      console.log('resp:'+resp)
+      if (resp.error) {
+        this.errors = resp.error;
+      }
+      if (resp) {
+        this.errors = null;
+        this.showHostModalMode = '';
+      }
+    });
+    
   }
 
   addHostToGroup(group_id, pool_id) {

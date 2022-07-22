@@ -3,6 +3,7 @@ module github.com/maxiepax/go-via
 go 1.15
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.3.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/camelcase v1.0.0 // indirect
@@ -18,15 +19,16 @@ require (
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065
+	github.com/otiai10/copy v1.7.0 // indirect
 	github.com/pin/tftp v0.0.0-20210325153949-b0a0cac76b6a
 	github.com/rakyll/statik v0.1.7
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
-	github.com/swaggo/swag v1.8.1
+	github.com/swaggo/swag v1.8.4
 	github.com/vmware/govmomi v0.24.1
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/sqlite v1.1.4
