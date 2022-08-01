@@ -38,6 +38,14 @@ security focused installers like Cloud Foundation -> Cloud Builder to fail. go-v
 based on information from imaging and push the new certificate to the host. Sadly there is no way to restart process
 hostd without doing it via SSH, so this operation will generate a reboot.<br />
 - Create VMFS: Installer will automatically create a datastore from the remaining space on the boot device.<br />
+- Advanced Options: <br />
+  - ks.cfg: this field allows you to override the default kickstart configuration file for the entire group.
+
+<h3> Create a host </h3>
+Create hosts by defining a FQDN, ip address and mac-address. <br />
+- Advanced Options: <br />
+  - ks.cfg: this field allows you to override the default kickstart configuration file for this specific host. This will override any Group level ks.cfg.
+
 
 <h3> Start imaging </h3>
 To initiate a host imaging/re-imaging, simply press the re-image button next to the host, and reboot it. If the host is
@@ -51,8 +59,11 @@ you dont accidentally re-image your hosts, or get stuck in an image loop.
 <h3> Edit a pool </h3>
 To edit a pool, simply click Edit Scope next to the scope you wish to edit.
 
-<h3> Edit a Group </h3>
+<h3> Edit a group </h3>
 To edit a group, click Edit Group below the group.
+
+<h3> Edit a host</h3>
+To edit a host, click Edit next to the host.
 
 <h2> Deleting </h2>
 
@@ -106,3 +117,31 @@ You can select what interface to listen to in the configuration file.
 
 <h3> HTTP-REST </h3>
 Everything is called via HTTP-REST, for documentation go to "/swagger/index.html"
+
+<h3> Kickstart Config </h3>
+You can edit the kickstart config file either at group, or host level. The order is Host->Group->Default. <br />
+Syntax is Go template engine (https://pkg.go.dev/text/template)<br />
+Default kickstart file:
+<div ngNonBindable>
+<p><i># Accept the VMware End User License Agreement<br/>
+vmaccepteula <br/>
+<br/>
+# Set the root password for the DCUI and Tech Support Mode <br/>
+rootpw {{ .password }} <br/>
+<br/>
+{{ if .erasedisks }} <br/>
+# Remove ALL partitions <br/>
+clearpart --overwritevmfs --alldrives {{ end }} <br/>
+<br/>
+{{ if .bootdisk }} <br/>
+install --disk=/vmfs/devices/disks/{{.bootdisk}} --overwritevmfs --novmfsondisk <br/>
+{{ else }} <br/>
+# Install on the first local disk available on machine <br/>
+install --overwritevmfs {{ if not .createvmfs }} --novmfsondisk {{ end }} --firstdisk="localesx,usb,ahci,vmw_ahci,VMware" <br/>
+{{ end }} <br/>
+<br/>
+# Set the network to static on the first network adapter <br/>
+network --bootproto=static --ip={{ .ip }} --gateway={{ .gateway }} --netmask={{ .netmask }} --nameserver={{ .dns }} --hostname={{ .hostname }} --device={{ .mac }} {{if .vlan}} --vlanid={{.vlan}} {{end}} <br/>
+<br/>
+reboot</i></p>
+</div>

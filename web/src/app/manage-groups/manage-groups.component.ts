@@ -120,7 +120,7 @@ export class ManageGroupsComponent implements OnInit {
     });
   }
 
-  submit_group() {
+  submitGroup() {
     const data = {
       ...this.Groupform.value,
       image_id: parseInt(this.Groupform.value.image_id),
@@ -145,7 +145,6 @@ export class ManageGroupsComponent implements OnInit {
     }
     if (data.ks) {
       data.ks = btoa(data.ks)
-      console.log(data.ks)
     }
 
     data.options = json_pc;
@@ -189,7 +188,6 @@ export class ManageGroupsComponent implements OnInit {
     if (mode === "edit") {
       this.group = this.groups.find(group => group.id === id);
       const { ssh, erasedisks, allowlegacycpu, certificate, createvmfs } = (this.group.options || {});
-      console.log(this.group)
       this.Groupform.patchValue({
         ...this.group,
         ssh,
@@ -209,9 +207,7 @@ export class ManageGroupsComponent implements OnInit {
     this.showHostModalMode = mode;
     if (mode === "edit") {
       this.group = this.groups.find(group => group.id === gid);
-      console.log(this.group)
       this.host = this.group.hosts.find(hosts => hosts.id === hid);
-      console.log(this.host)
       var fqdn = this.host.hostname+"."+this.host.domain
       this.Hostform.patchValue({
         ...this.host,
@@ -290,21 +286,28 @@ export class ManageGroupsComponent implements OnInit {
       domain: this.Hostform.value.fqdn.split(".").slice(1).join('.'),
     };
 
+    if (data.ks) {
+      data.ks = btoa(data.ks)
+    }
+
     this.apiService.updateHost(this.host.id, data).subscribe((resp: any) => {
       resp.ks = atob(resp.ks)
-      
-      
-    this.groups = this.groups.map(group => {
-       if (group.id === resp.group_id) {
-        this.host = group.hosts.find(hosts => hosts.id === resp.id);
-        return { ...this.host, ...resp}
-        //return { ...group, ...resp };
-       }
-       return group;
-    });
-      
-      
-      console.log('resp:'+resp)
+
+      this.groups = this.groups.map(group => {
+        if (group.id === resp.group_id) {
+          
+          group.hosts = group.hosts.map(host => {
+            if (host.id === resp.id) {
+              host = resp;
+            }
+            return host;
+          });
+
+          return group;
+        }
+        return group;
+      });
+        
       if (resp.error) {
         this.errors = resp.error;
       }
@@ -313,11 +316,10 @@ export class ManageGroupsComponent implements OnInit {
         this.showHostModalMode = '';
       }
     });
-    
   }
 
   addHostToGroup(group_id, pool_id) {
-    this.addHostFormModal = true;
+    this.showHostModalMode = "add";
     this.groupid = group_id;
     this.poolid = pool_id;
   }
@@ -343,7 +345,7 @@ export class ManageGroupsComponent implements OnInit {
         const g = this.groups.find(group => group.id === data.group_id)
         g.hosts = [...(g.hosts || []), data]
         this.Hostform.reset();
-        this.addHostFormModal = false;
+        this.showHostModalMode = '';
         atob(data.ks)
       }
     }, (data: any) => {

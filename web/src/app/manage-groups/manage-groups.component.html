@@ -57,8 +57,6 @@
 	<button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
 </div>
 
-<!-- NEW-->
-
 <clr-modal [(clrModalOpen)]="showHostModalMode">
 	<h3 *ngIf="showHostModalMode === 'add'" class="modal-title">Add Host</h3>
 	<h3 *ngIf="showHostModalMode === 'edit'" class="modal-title">Edit Host</h3>
@@ -114,62 +112,11 @@
 	</div>
 </clr-modal>
 
-<!-- OLD-->
-
-<clr-modal [(clrModalOpen)]="addHostFormModal">
-	<h3 class="modal-title">Add Host</h3>
-	<div class="modal-body">
-		<form clrForm [formGroup]="Hostform" (ngSubmit)="submitHost()">
-			<cds-form-group layout="vertical">
-				<cds-input>
-					<label class="clr-col-6 form-input">FQDN</label>
-					<input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn" />
-				</cds-input>
-				<cds-input>
-					<label class="clr-col-6 form-input">IP Address</label>
-					<input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip" />
-				</cds-input>
-				<cds-input>
-					<label class="clr-col-6 form-input">mac</label>
-					<input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
-				</cds-input>
-			</cds-form-group>
-			<div id="host_ks">
-				<cds-toggle>
-					<label>Show advanced options</label>
-					<input type="checkbox" [(ngModel)]="advanced" [ngModelOptions]="{standalone: true}"/>
-				</cds-toggle>
-				<cds-textarea layout="vertical" *ngIf="advanced" id="ks_textarea">
-					<label>ks.cfg</label>
-					<textarea formControlName="ks" name="ks"></textarea>
-					<cds-control-message>Modify the default ks.cfg file</cds-control-message>
-				</cds-textarea>
-			</div>
-		</form>
-		<div class="alert alert-danger" role="alert" *ngIf="errors">
-			<div class="alert-items">
-				<div class="alert-item static" *ngFor="let error of errors | keyvalue">
-					<div class="alert-icon-wrapper">
-						<clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
-					</div>
-					<span class="alert-text">
-						{{error.value}}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="modal-footer">
-		<button type="button" class="btn btn-outline" (click)="addHostFormModal = false">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="submitHost()">Add</button>
-	</div>
-</clr-modal>
-
 <clr-modal [(clrModalOpen)]="showGroupModalMode">
 	<h3 *ngIf="showGroupModalMode === 'add'" class="modal-title">Add Group</h3>
 	<h3 *ngIf="showGroupModalMode === 'edit'" class="modal-title">Edit Group</h3>
 	<div class="modal-body">
-		<form clrForm [formGroup]="Groupform" (ngSubmit)="submit_group()">
+		<form clrForm [formGroup]="Groupform" (ngSubmit)="submitGroup()">
 			<cds-form-group layout="vertical">
 				<cds-input>
 					<label class="clr-col-6 form-input">Group name</label>
@@ -275,7 +222,7 @@
 		<div class="modal-buttons">
 			<button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
 			<button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary"
-				(click)="submit_group()">Add</button>
+				(click)="submitGroup()">Add</button>
 			<button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary"
 				(click)="updateGroup()">Update</button>
 		</div>
