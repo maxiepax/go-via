@@ -26,7 +26,7 @@ The old version of VIA had some things it didn't support which made it hard to r
 Supported Architectures
 -----------------------
 UEFI x86_64 INTEL/AMD architecture
-UEFI arm_64 ARM architecture (including Project Monetery/SmartNICs)
+UEFI arm_64 ARM architecture (including Project Monterey/SmartNICs)
 
 Installation / Running
 ----------------------
