@@ -28,9 +28,11 @@ Supported Architectures
 UEFI x86_64 INTEL/AMD architecture
 UEFI arm_64 ARM architecture (including Project Monterey/SmartNICs)
 
-Default username / password
+Default username / password / port
 ----------------------
-admin / VMware1!
+username: admin
+password: VMware1!
+port: 8443
 
 Installation / Running
 ----------------------
