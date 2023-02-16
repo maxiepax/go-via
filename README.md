@@ -30,9 +30,9 @@ UEFI arm_64 ARM architecture (including Project Monterey/SmartNICs)
 
 Default username / password / port
 ----------------------
-username: admin
-password: VMware1!
-port: 8443
+username: admin <br>
+password: VMware1!<br>
+port: 8443<br>
 
 Installation / Running
 ----------------------
