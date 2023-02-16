@@ -28,6 +28,10 @@ Supported Architectures
 UEFI x86_64 INTEL/AMD architecture
 UEFI arm_64 ARM architecture (including Project Monterey/SmartNICs)
 
+Default username / password
+----------------------
+admin / VMware1!
+
 Installation / Running
 ----------------------
 <h3> Option 1: docker container </h3>
