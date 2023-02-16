@@ -155,9 +155,6 @@ INFO[0000] Starting dhcp server                          int=docker0 ip=172.17.0
 INFO[0000] cert                                          server.crt="server.crt found"
 INFO[0000] Webserver                                     port=":8443"
 ```
-You can now browse to the web-frontend on the ip of the interface you specified, and the port 8080.
-
-The default username/password is admin/VMware1!
 
 <h3> Option 3: Download source and compile with go 1.16 and Angular 11 </h3>
 
