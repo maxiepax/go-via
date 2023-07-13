@@ -21,7 +21,7 @@ The old version of VIA had some things it didn't support which made it hard to r
 2. UEFI , go-via does not support BIOS, but does support UEFI and secure-boot. BIOS may be added in the future.
 3. Virtual environments, it does not block nested esxi host deployment.
 4. HTTP-REST, everything you can do in the UI, you can do via automation also.
-5. Options to perform all prerequisites for VMware Cloud Foundation 4.x
+5. Options to perform all prerequisites for VMware Cloud Foundation 4.x/5.x
 
 Supported Architectures
 -----------------------
