@@ -135,7 +135,7 @@ Single interface, default port 8443
 
 Now start the binary as super user, (optionally: pointing to the config file.)
 ``` bash
-#start teh application with default settings
+#start the application with default settings
 sudo ./go-via
 
 #start the application with normal debug level
@@ -144,6 +144,25 @@ sudo ./go-via -file config.json
 #start the application with verbose debug level
 sudo ./go-via -file config.json -debug
 ```
+
+Example systemd.service config file
+``` json
+[Unit]
+Description=go-via
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/home/govia/go-via
+WorkingDirectory=/home/govia/go-via
+
+[Install]
+WantedBy=multi-user.target
+```
+
 You should be greeted with the following output.
 ``` bash
 INFO[0000] Startup                                       commit=none date=unknown version=dev
