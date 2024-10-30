@@ -146,7 +146,7 @@ sudo ./go-via -file config.json -debug
 ```
 
 Example systemd.service config file
-``` json
+```
 [Unit]
 Description=go-via
 After=network.target
