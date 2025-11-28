@@ -20,3 +20,8 @@ type User struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
+
+type UserLogin struct {
+	Username string `json:"username" gorm:"type:varchar(255)"`
+	Password string `json:"password" gorm:"type:varchar(255)"`
+}

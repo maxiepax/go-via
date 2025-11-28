@@ -1,0 +1,57 @@
+<div class="login-wrapper">
+  <form class="login" (ngSubmit)="login()">
+    <div class="login-header">
+      <div class="logo"></div>
+    </div>
+    <div class="login-body">
+      <section class="title">
+        <div class="welcome">Welcome to</div>
+        go-via 2.0
+        <div class="hint">by soulTec</div>
+      </section>
+      <div class="login-group">
+        <clr-select-container>
+          <label>User Role</label>
+          <select clrSelect name="type" [(ngModel)]="form.type">
+            <option value="local">Local Users</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </clr-select-container>
+        <clr-input-container>
+          <label class="clr-sr-only">Username</label>
+          <input
+            type="text"
+            autocomplete="username"
+            name="username"
+            clrInput
+            placeholder="Enter username"
+            [(ngModel)]="form.username"
+          />
+        </clr-input-container>
+        <clr-password-container>
+          <label class="clr-sr-only">Password</label>
+          <input
+            type="password"
+            autocomplete="current-password"
+            name="password"
+            clrPassword
+            placeholder="Enter password"
+            [(ngModel)]="form.password"
+          />
+        </clr-password-container>
+        <clr-checkbox-wrapper>
+          <label>Remember me</label>
+          <input type="checkbox" name="rememberMe" clrCheckbox [(ngModel)]="form.rememberMe" />
+        </clr-checkbox-wrapper>
+        <div *ngIf="errorMessage" class="error active">{{ errorMessage }}</div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </div>
+    </div>
+    <div class="login-footer">
+      <span class="copyright">
+        Copyright © 2025 soulTec. All Rights Reserved. The term "soulTec" refers to Soultec AG.
+        and/or its subsidiaries.
+      </span>
+    </div>
+  </form>
+</div>

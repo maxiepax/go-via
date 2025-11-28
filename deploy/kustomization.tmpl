@@ -1,0 +1,20 @@
+namespace: souldeploy
+resources:
+  - pvc.yaml
+  - k8s-deployment.yaml
+  - svc.yaml
+  - ns.yaml
+
+
+images:
+  - name: ghcr.io/lba-soultec/go-via
+    newTag: ${VERSION}
+
+configMapGenerator:
+  - name: souldeploy-config
+    files:
+      - app-config.yaml    
+      
+generatorOptions:
+      disableNameSuffixHash: true
+       

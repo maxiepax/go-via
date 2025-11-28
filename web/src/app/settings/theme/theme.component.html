@@ -1,0 +1,14 @@
+<h2>Theme Settings</h2>
+<div>
+  <form (ngSubmit)="onSubmit()" #themeForm="ngForm">
+    <label for="bgImage">Upload Background Image (JPG/PNG, max 5MB):</label>
+    <input type="file" id="bgImage" (change)="onFileSelected($event)" accept="image/png, image/jpeg" />
+    <div *ngIf="previewUrl">
+      <p>Preview:</p>
+      <img [src]="previewUrl" alt="Background Preview" style="max-width: 100%; max-height: 300px;" />
+    </div>
+    <button type="submit" [disabled]="!selectedFile">Save</button>
+  </form>
+  <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>

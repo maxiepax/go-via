@@ -1,0 +1,5 @@
+iloIpAddr,fqdn,username,password
+127.0.0.1,machine1.io.usz.ch,machine1,80:3f:5d:00:0c:65
+192.168.1.13,hodor1.io.usz.ch,hodor1,16:34:c3:14:11:90
+192.168.1.14,chasperli1.io.usz.ch,chasperli1,76:34:c3:13:11:90
+192.168.1.15,sennehund24.io.usz.ch,sennehund24,80:3f:5d:00:14:65

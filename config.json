@@ -1,0 +1,6 @@
+{
+    "debug": true,
+    "network": {
+    },
+    "disabledhcp": true
+}

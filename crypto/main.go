@@ -45,8 +45,18 @@ func CreateCA() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: ca_b})
-	certOut.Close()
+	err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: ca_b})
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not encode certificate file")
+	}
+	err = certOut.Close()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not close certificate file")
+	}
 	logrus.WithFields(logrus.Fields{
 		"cert": "ca.pem created",
 	}).Info("cert")
@@ -56,8 +66,18 @@ func CreateCA() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
-	keyOut.Close()
+	err = pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not encode private key file")
+	}
+	err = keyOut.Close()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not close private key file")
+	}
 	logrus.WithFields(logrus.Fields{
 		"cert": "ca.key created",
 	}).Info("cert")
@@ -109,8 +129,18 @@ func CreateCert(path string, name string, cn string) {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: cert_b})
-	certOut.Close()
+	err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: cert_b})
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not encode certificate file")
+	}
+	err = certOut.Close()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not close certificate file")
+	}
 	logrus.WithFields(logrus.Fields{
 		"cert": path + "/" + name + ".crt created",
 	}).Info("cert")
@@ -120,8 +150,18 @@ func CreateCert(path string, name string, cn string) {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
-	keyOut.Close()
+	err = pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not encode private key file")
+	}
+	err = keyOut.Close()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not close private key file")
+	}
 	logrus.WithFields(logrus.Fields{
 		"cert": path + "/" + name + ".key created",
 	}).Info("cert")

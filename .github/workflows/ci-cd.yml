@@ -1,0 +1,304 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ['**']        # all branches so feature branches trigger build jobs
+    tags: ['*']             # still allowed, but tag-triggered runs are no longer required for release
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  packages: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Run semantic-release first to determine if a new version will be published.
+  # This job publishes the tag and GitHub release (notes + changelog commit) in the SAME workflow run.
+  semantic-release:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.semrel.outputs.new_release_published }}
+      version: ${{ steps.semrel.outputs.new_release_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Create semantic-release config
+        run: |
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": ["main"],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              "@semantic-release/changelog",
+              "@semantic-release/github",
+              [
+                "@semantic-release/git",
+                {
+                  "assets": ["CHANGELOG.md"],
+                  "message": "chore(release): ${nextRelease.version} \n\n${nextRelease.notes}"
+                }
+              ]
+            ]
+          }
+          EOF
+
+      - name: Run semantic-release
+        id: semrel
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+            @semantic-release/github
+
+      - name: Show release result
+        run: |
+          echo "New release published: ${{ steps.semrel.outputs.new_release_published }}"
+          echo "Version: ${{ steps.semrel.outputs.new_release_version || 'n/a' }}"
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      
+      - name: Install statik
+        run: go install github.com/rakyll/statik@latest
+      
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+      
+      - name: Download Go dependencies
+        run: go mod download
+      
+      - name: Verify Go dependencies
+        run: go mod verify
+      
+      - name: Update vendor directory
+        run: go mod vendor
+      
+      - name: build npm module
+        run: |
+          cd web
+            npm install --legacy-peer-deps
+            npm run build
+          cd ..
+        
+      - name: Generate statik files
+        run: |
+          rm -rf statik
+          statik -src ./web/dist/web -f
+      
+      - name: Build Go project
+        run: go build ./...
+      
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.3.1
+          install-mode: goinstall
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: [semantic-release, code-quality]
+    env:
+      RELEASED: ${{ needs.semantic-release.outputs.released }}
+      VERSION: ${{ needs.semantic-release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract base metadata (branch / PR / SHA tags)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=${{ github.ref_name || 'dev' }}-
+            type=ref,event=branch,enable=${{ !endsWith(github.ref, github.event.repository.default_branch) }}
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+      
+      - name: Compose final tag list (add release + latest if published)
+        id: tags
+        run: |
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          # base tags from metadata-action
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
+          if [ "${RELEASED}" = "true" ] && [ -n "${VERSION}" ]; then
+            echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}" >> $GITHUB_OUTPUT
+            echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_OUTPUT
+          fi
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            CI_COMMIT_TAG=${{ env.VERSION || github.sha }}
+
+  build-go-cli:
+    runs-on: ubuntu-latest
+    needs: [semantic-release]   # so we know if a release happened when naming assets (optional)
+    env:
+      VERSION: ${{ needs.semantic-release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      
+      - name: Build CLI binaries
+        run: |
+          cd ilomapi/cli
+          go mod tidy
+          mkdir -p binaries
+          env GOOS=darwin GOARCH=arm64 go build -o binaries/redfish-cli.darwin
+          env GOOS=linux GOARCH=amd64 go build -o binaries/redfish-cli
+          env GOOS=windows GOARCH=amd64 go build -o binaries/redfish-cli.exe
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: ilomapi/cli/binaries/
+          retention-days: 365
+
+  # Attach built CLI binaries to the GitHub release if a new release was published
+  release:
+    runs-on: ubuntu-latest
+    needs: [semantic-release, build-go-cli]
+    if: needs.semantic-release.outputs.released == 'true'
+    env:
+      VERSION: ${{ needs.semantic-release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download CLI artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-binaries
+          path: ilomapi/cli/binaries/
+      
+      - name: Upload binaries to existing GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.VERSION }}
+          files: ilomapi/cli/binaries/*
+          # generate_release_notes omitted because semantic-release already created notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-staging:
+    runs-on: arc-runner-set
+    needs: [build-docker, semantic-release]
+    if: needs.semantic-release.outputs.released == 'true'
+    env:
+      VERSION: ${{ needs.semantic-release.outputs.version }}
+    steps:
+    - name: Debug released output
+      run: |
+        echo "needs.semantic-release.outputs.released: ${{ needs.semantic-release.outputs.released }}"
+        echo "needs.semantic-release.outputs.version: ${{ needs.semantic-release.outputs.version }}"
+    - uses: actions/checkout@v4
+    - uses: azure/setup-kubectl@v4
+    - uses: Azure/k8s-set-context@v4
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - uses: Azure/k8s-create-secret@v4
+      with:
+        container-registry-url: ${{ env.REGISTRY }}
+        container-registry-username: ${{ github.actor }}
+        container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+        # Ensure REGISTRY_USERNAME and REGISTRY_PASSWORD are set in your repository/organization secrets.
+        secret-name: demo-k8s-secret
+    - uses: danielr1996/envsubst-action@1.0.0
+      env:
+          VERSION: ${{ env.VERSION }}
+      with:
+        input: deploy/kustomization.tmpl
+        output: deploy/kustomization.yaml
+    - name: Verify kustomization.yaml
+      run: cat ./deploy/kustomization.yaml
+    # Runs Kustomize to create manifest files
+    - name: Bake deployment
+      uses: azure/k8s-bake@v2
+      with:
+        renderEngine: "kustomize"
+        kustomizationPath: ./deploy
+        kubectl-version: latest
+      id: bake        
+    - uses: Azure/k8s-deploy@v4
+      with:
+        action: deploy
+        manifests: ${{ steps.bake.outputs.manifestsBundle }}
+        namespace: souldeploy
+        imagepullsecrets: |
+            demo-k8s-secret
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'

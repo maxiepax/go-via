@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
 	"net"
 	"os"
 	"path"
@@ -54,11 +55,11 @@ func readHandler(conf *config.Config) func(string, io.ReaderFrom) error {
 		db.DB.First(&image, "id = ?", host.Group.ImageID)
 
 		logrus.WithFields(logrus.Fields{
-			"raddr":     raddr,
-			"laddr":     laddr,
-			"filename":  filename,
-			"imageid":   image.ID,
-			"hostid": host.ID,
+			"raddr":    raddr,
+			"laddr":    laddr,
+			"filename": filename,
+			"imageid":  image.ID,
+			"hostid":   host.ID,
 		}).Debug("tftpd")
 
 		//if the filename is mboot.efi, we hijack it and serve the mboot.efi file that is part of that specific image, this guarantees that you always get an mboot file that works for the build
@@ -189,6 +190,7 @@ func serveBootCfg(filename string, host models.Host, image models.Image, rf io.R
 
 	// get the requesting ip-address and our source address
 	raddr := rf.(tftp.OutgoingTransfer).RemoteAddr()
+
 	laddr := rf.(tftp.RequestPacketInfo).LocalIP()
 
 	//strip the port
@@ -238,7 +240,13 @@ func serveBootCfg(filename string, host models.Host, image models.Image, rf io.R
 
 	// load options from the group
 	options := models.GroupOptions{}
-	json.Unmarshal(host.Group.Options, &options)
+	err = json.Unmarshal(host.Group.Options, &options)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not unmarshal group options")
+		return
+	}
 
 	// if autopart is configured for the group, append autopart to kernelopt - https://kb.vmware.com/s/article/77009
 	/*

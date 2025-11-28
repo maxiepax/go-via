@@ -1,0 +1,47 @@
+<div class="content-area">
+<div id="wrapper">
+  <!-- <div class="limit-height"> 
+   <clr-datagrid>
+    <clr-dg-column>Timestamp</clr-dg-column>
+    <clr-dg-column>Log Level</clr-dg-column>
+    <clr-dg-column>Message</clr-dg-column>
+    <clr-dg-column>Payload</clr-dg-column>
+  
+    <clr-dg-row *ngFor="let row of data" >
+      <clr-dg-cell>{{ row.time }}</clr-dg-cell>
+      <clr-dg-cell [ngClass]="{'info': row.level == 'info', 'debug': row.level == 'debug', 'warning': row.level == 'warning'}" class="level">{{ row.level }}</clr-dg-cell>
+      <clr-dg-cell>{{ row.msg }}</clr-dg-cell>
+      <clr-dg-cell>{{ payload.key }}: {{ payload.value }}</clr-dg-cell>
+    </clr-dg-row>
+  
+    <clr-dg-footer>{{ data.length }} lines</clr-dg-footer>
+  </clr-datagrid>
+</div> -->
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Level</th>
+          <th>Service</th>
+          <th>Payload</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of data" class="row">
+          <td class="time" class="left"> {{ row.time }} </td>
+          <td [ngClass]="{'info': row.level == 'info', 'debug': row.level == 'debug', 'warning': row.level == 'warning'}" class="level" class="left"> 
+            {{ row.level }} 
+          </td>
+          <td class="service" class="left"> {{ row.msg }} </td>
+          <td class="payload" class="left">
+          <span *ngFor="let payload of row.payload | keyvalue">
+            {{ payload.key }}: {{ payload.value }}<br>
+          </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>

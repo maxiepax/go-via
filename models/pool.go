@@ -14,11 +14,15 @@ import (
 type PoolForm struct {
 	Name             string `json:"name" gorm:"type:varchar(255);not null" binding:"required" `
 	Netmask          int    `json:"netmask" gorm:"type:integer;not null" binding:"required" `
-	NetAddress 		 string `json:"net_address" gorm:"type:varchar(15);not null"`
-
-	LeaseTime        int    `json:"lease_time" gorm:"type:bigint" `
+	StartAddress     string `json:"start_address" gorm:"type:varchar(15);not null" binding:"required" `
+	EndAddress       string `json:"end_address" gorm:"type:varchar(15);not null" binding:"required" `
+	NetAddress       string `json:"net_address" gorm:"type:varchar(15);not null"`
+	LeaseTime        int    `json:"lease_time" gorm:"type:bigint" binding:"required" `
 	Gateway          string `json:"gateway" gorm:"type:varchar(15)" binding:"required" `
 	OnlyServeReimage bool   `json:"only_serve_reimage" gorm:"type:boolean"`
+
+	AuthorizedVlan int    `json:"authorized_vlan" gorm:"type:bigint"`
+	ManagedRef     string `json:"managed_reference"`
 }
 
 type Pool struct {
@@ -46,29 +50,29 @@ func (p *Pool) BeforeSave(tx *gorm.DB) error {
 	}
 
 	/*
-	cidrMask := "/" + strconv.Itoa(p.Netmask)
-	_, startNet, err := net.ParseCIDR(p.StartAddress + cidrMask)
-	if err != nil {
-		return err
-	}
+		cidrMask := "/" + strconv.Itoa(p.Netmask)
+		_, startNet, err := net.ParseCIDR(p.StartAddress + cidrMask)
+		if err != nil {
+			return err
+		}
 
-	_, endNet, err := net.ParseCIDR(p.EndAddress + cidrMask)
-	if err != nil {
-		return err
-	}
+		_, endNet, err := net.ParseCIDR(p.EndAddress + cidrMask)
+		if err != nil {
+			return err
+		}
 
-	if !startNet.IP.Equal(endNet.IP) {
-		return fmt.Errorf("start and end address do not belong to the same network")
-	}
+		if !startNet.IP.Equal(endNet.IP) {
+			return fmt.Errorf("start and end address do not belong to the same network")
+		}
 
-	p.NetAddress = startNet.IP.String()
+		p.NetAddress = startNet.IP.String()
 	*/
 
 	return nil
 }
 
 // Next returns the next free address in the pool (that is not reserved nor already leased)
-/*
+
 func (p *PoolWithHosts) Next() (ip net.IP, err error) {
 	cidrMask := "/" + strconv.Itoa(p.Netmask)
 	startIP, startNet, err := net.ParseCIDR(p.StartAddress + cidrMask)
@@ -101,7 +105,6 @@ func (p *PoolWithHosts) Next() (ip net.IP, err error) {
 
 	return nil, fmt.Errorf("could not find a free address")
 }
-*/
 
 func (p *PoolWithHosts) IsAvailable(ip net.IP) error {
 	return p.IsAvailableExcept(ip, "")

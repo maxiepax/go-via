@@ -1,0 +1,67 @@
+<!-- <main cds-text="body" cds-layout="vertical gap:lg p:lg"> -->
+
+<div class="main-container">
+  <header class="header-6">
+    <img src="assets/soultec_logo_web.png" alt="SoulTec Logo" class="logo" />
+    <div class="branding">
+      <span class="title">go-via 2.0</span>
+    </div>
+    <div *ngIf="router.url !== '/login'" class="header-actions">
+      <clr-dropdown>
+        <button class="nav-text" clrDropdownTrigger aria-label="open user profile">
+          {{ username }} &nbsp;
+          <cds-icon shape="angle" direction="down"></cds-icon>
+        </button>
+        <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+          <a class="btn btn-outline btn-sm" (click)="showAboutModel('true')" clrDropdownItem>About</a>
+          <a class="btn btn-primary" (click)="logout()" clrDropdownItem>Logout</a>
+        </clr-dropdown-menu>
+      </clr-dropdown>
+    </div>
+  </header>
+
+
+
+
+
+  <ng-container *ngIf="router.url !== '/login'">
+
+    <nav class="subnav">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="./deployments" routerLinkActive="active">Deployments</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="./health-checks" routerLinkActive="active">Health Checks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="./settings" routerLinkActive="active">Settings</a>
+        </li>
+ 
+      </ul>
+    </nav>
+    <clr-modal [(clrModalOpen)]="showAbout">
+      <h3 *ngIf="showAbout === true" class="modal-title">About</h3>
+      <div class="modal-body">
+
+        <label class="clr-col-8 form-input">go-via 2.0 - version {{ version?.Commit}}<br /> 
+          by <a href="mailto:maxiepax&#64;gmail.com">Kim Johansson</a>, <a href="mailto:github@stamp.se">Jonathan G</a> and <a href="mailto:louis.baumann@soultec.ch">Louis Baumann</a>
+        </label>
+
+      </div>
+    </clr-modal>
+    <div class="content-container">
+
+
+      <router-outlet></router-outlet>
+
+    </div>
+  </ng-container>
+
+
+  <ng-container *ngIf="router.url === '/login'">
+    <router-outlet></router-outlet>
+  </ng-container>
+</div>
+
+<!-- </main> -->

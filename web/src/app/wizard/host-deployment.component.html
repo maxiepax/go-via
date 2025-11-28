@@ -1,0 +1,351 @@
+<div class="deployment-wizard-intro">
+  <h2>Guided Host Deployment</h2>
+  <p class="description">
+    Use this wizard to streamline your server deployment process. Configure DHCP pools, 
+    manage OS images, create host groups, and deploy multiple hosts through an intuitive 
+    step-by-step workflow.
+  </p>
+  <button class="btn btn-primary" (click)="wizard.open()">Start Guided Host Deployment</button>
+</div>
+
+<clr-wizard #wizard [(clrWizardOpen)]="open" [clrWizardSize]="'xl'" (clrWizardOnCancel)="doCancel()">
+  <clr-wizard-title>
+    <!-- {{ model.forceReset ? 'Wizard resets' : "Wizard doesn't reset" }} -->
+    Guided Host Deployment
+  </clr-wizard-title>
+
+  <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
+  <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
+  <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'">Finish</clr-wizard-button>
+
+  <clr-wizard-page>
+    <ng-template clrPageTitle>Add DHCP Pool</ng-template>
+    <app-dhcp-pool-manager [(pools)]="pools"></app-dhcp-pool-manager>
+    <button class="btn btn-outline btn-sm" (click)="this.poolManager.showPoolModal('add')">Add Pool</button>
+  </clr-wizard-page>
+
+
+  <clr-wizard-page>
+    <ng-template clrPageTitle>Manage Images</ng-template>
+    <app-image-manager [(images)]="images"></app-image-manager>
+  </clr-wizard-page>  
+
+  <clr-wizard-page (clrWizardPageOnCommit)="onGroupAdded()" (clrWizardPageOnCancel)="doCancel()"
+    (clrWizardPagePrevious)="goBack()" [clrWizardPagePreventDefault]="true">
+    <ng-template clrPageTitle>Manage Groups</ng-template>
+    <button *ngIf="!showAddGroupForm" type="button" class="btn btn-primary" (click)="showAddGroupForm = true">Add Group</button>
+    <app-group-manager
+      *ngIf="showAddGroupForm"
+      [mode]="'add'"
+      [pools]="pools"
+      [images]="images"
+      (cancel)="showAddGroupForm = false">
+    </app-group-manager>
+  </clr-wizard-page>  
+
+  <clr-wizard-page (clrWizardPageOnCommit)="onCommit()" (clrWizardPageOnCancel)="doCancel()"
+    (clrWizardPagePrevious)="goBack()" [clrWizardPagePreventDefault]="true">
+    <ng-template clrPageTitle>Add Hosts</ng-template>
+
+    <!-- Handle loading and error states here -->
+
+
+    <clr-alert [clrAlertType]="'alert-info'" [clrAlertClosable]="true" [clrCloseButtonAriaLabel]="'Close Wiki alert'">
+      <clr-alert-item>
+        This&nbsp;
+        <a href="settings/help" target="_blank">
+          help page
+        </a>
+        &nbsp;might help you.
+      </clr-alert-item>
+    </clr-alert>
+    <clr-alert *ngIf="errorFlag" [clrAlertType]="'alert-danger'" [clrCloseButtonAriaLabel]="'Close Answer alert'">
+      <div *ngFor="let error of model.errors">
+        <clr-alert-item>{{ error.subject }}: {{ error.message }}</clr-alert-item>
+      </div>
+
+    </clr-alert>
+
+    <!-- select Vendor using Dropdown -->
+
+
+    <clr-dropdown>
+      <button class="btn btn-outline btn-sm" clrDropdownTrigger>
+        Vendor: {{ model.selectedVendor || 'Select Vendor' }} &nbsp;
+        <cds-icon shape="angle" direction="down"></cds-icon>
+      </button>
+      <clr-dropdown-menu clrPosition="bottom-left" *clrIfOpen>
+        <label class="dropdown-header" aria-hidden="true">Select Host Vendor</label>
+        <div aria-label="HPE" clrDropdownItem (click)="selectVendor('HPE')">HPE</div>
+        <div aria-label="Lenovo" clrDropdownItem (click)="selectVendor('Lenovo')">Lenovo</div>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+
+
+
+    <clr-checkbox-wrapper>
+      <input #useSameCreds type="checkbox" clrCheckbox name="useSameCreds" [(ngModel)]="model.useSameCreds" />
+      <label>Use the same credentials for all Hosts</label>
+    </clr-checkbox-wrapper>
+    <div *ngIf="model.useSameCreds" class="credentials-container">
+      <clr-input-container>
+        <label>Username</label>
+        <input clrInput placeholder="Enter username" [(ngModel)]="model.username" />
+      </clr-input-container>
+      <clr-password-container>
+        <label>Password</label>
+        <input clrPassword placeholder="Enter password" [(ngModel)]="model.password" />
+      </clr-password-container>
+    </div>
+
+    <!-- Datagrid to show already added hosts -->
+    <clr-datagrid>
+      <clr-dg-column>ILO IP Address</clr-dg-column>
+      <clr-dg-column>ILO FQDN</clr-dg-column>
+      <clr-dg-column>Username</clr-dg-column>
+      <clr-dg-column>Password</clr-dg-column>
+      <clr-dg-column>Actions</clr-dg-column>
+      <clr-dg-row *clrDgItems="let host of model.hosts; let i = index">
+        <clr-dg-cell>{{host.iloIpAddr}}</clr-dg-cell>
+        <clr-dg-cell>{{host.iloFqdn}}</clr-dg-cell>
+        <clr-dg-cell *ngIf="!model.useSameCreds">{{host.username}}</clr-dg-cell>
+        <clr-dg-cell *ngIf="model.useSameCreds">{{model.username }}</clr-dg-cell>
+        <clr-dg-cell *ngIf="!model.useSameCreds">{{ '*'.repeat(host.password.length) }}</clr-dg-cell>
+        <clr-dg-cell *ngIf="model.useSameCreds">{{ '*'.repeat(model.password.length) }}</clr-dg-cell>
+        <clr-dg-cell>
+          <button class="btn btn-sm btn-outline" (click)="editHost(i)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="removeHost(i)">Remove</button>
+        </clr-dg-cell>
+      </clr-dg-row>
+      <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="4">
+          {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+          {{ (model.hosts ?? []).length }} Hosts
+        </clr-dg-pagination>
+      </clr-dg-footer>
+
+    </clr-datagrid>
+
+    <!-- Input line for adding a new host -->
+    <div class="credentials-container">
+      <clr-input-container>
+        <label>ILO IP address</label>
+        <input clrInput placeholder="Enter ILO IP address" [(ngModel)]="newHostInput.iloIpAddr" />
+      </clr-input-container>
+      <clr-input-container>
+        <label>ILO FQDN</label>
+        <input clrInput placeholder="Enter ILO FQDN" [(ngModel)]="newHostInput.iloFqdn" />
+      </clr-input-container>
+      <clr-input-container *ngIf="!model.useSameCreds">
+        <label>Username</label>
+        <input clrInput placeholder="Enter username" [(ngModel)]="newHostInput.username" />
+      </clr-input-container>
+      <clr-password-container *ngIf="!model.useSameCreds">
+        <label>Password</label>
+        <input clrPassword placeholder="Enter password" [(ngModel)]="newHostInput.password" />
+      </clr-password-container>
+    </div>
+
+    <!-- Button to add the new host -->
+    <button class="btn btn-outline btn-sm" (click)="addHostVoid()">Add host</button>
+
+    <!-- Button to add bulk import new hosts -->
+    <button class="btn btn-outline btn-sm" (click)="triggerFileInput()">Import Hosts</button>
+    <input type="file" #fileInput accept=".csv" (change)="importHostsFromCSVToGroup($event)" style="display: none;" />
+    <input #fileInput type="file" style="display: none;" (change)="importHostsFromCSVToGroup($event)" />
+
+    <!-- mandatory -->
+    <clr-checkbox-wrapper>
+      <input #setIloPort type="checkbox" clrCheckbox name="setIloPort" [(ngModel)]="model.setIloPort"
+        (ngModelChange)="onIloPortToggle($event)" />
+      <label>Use another ILO Port than 443</label>
+    </clr-checkbox-wrapper>
+    <div *ngIf="model.setIloPort" class="credentials-container">
+      <clr-input-container>
+        <label>Port</label>
+        <input clrInput placeholder="Enter Port" [(ngModel)]="model.iloPort" />
+      </clr-input-container>
+    </div>
+
+
+
+    <clr-spinner *ngIf="loadingFlag">Loading</clr-spinner>
+  </clr-wizard-page>
+
+  <clr-wizard-page>
+
+    <ng-template clrPageTitle>Select Hosts</ng-template>
+    <clr-alert *ngIf="errorFlag" [clrAlertType]="'alert-danger'" [clrCloseButtonAriaLabel]="'Close Error Alert'">
+      <clr-alert-item *ngFor="let error of model.errors">
+        {{ error.subject }}: {{ error.message }}
+      </clr-alert-item>
+    </clr-alert>
+    <!-- Separate success alert -->
+    <clr-alert *ngIf="configRetrievalSuccessFlag" [clrAlertType]="'alert-success'" [clrAlertClosable]="true" [clrCloseButtonAriaLabel]="'Close Success Alert'">
+      <clr-alert-item>
+        Configuration retrieved successfully! You can now proceed to the next step.
+      </clr-alert-item>
+    </clr-alert>
+    <p>Select the Hosts you want to continue with</p>
+    <!-- Datagrid to show already added hosts -->
+    <clr-datagrid>
+      <clr-dg-column>
+        <input type="checkbox" (change)="toggleSelectAll($event)" />
+      </clr-dg-column>
+      <clr-dg-column>Hostname</clr-dg-column>
+      <clr-dg-column>Health State</clr-dg-column>
+      <clr-dg-row *clrDgItems="let host of model.hosts; let i = index">
+        <clr-dg-cell>
+          <input type="checkbox" [checked]="host.selected" (change)="toggleHostSelection(host, $event)" />
+        </clr-dg-cell>
+        <clr-dg-cell>{{ host.iloIpAddr }}</clr-dg-cell>
+        <clr-dg-cell>Reachable</clr-dg-cell>
+      </clr-dg-row>
+      <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="4">
+          {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+          {{ (model.hosts ?? []).length }} Hosts
+        </clr-dg-pagination>
+      </clr-dg-footer>
+    </clr-datagrid>
+
+    <!-- Button to trigger API calls for selected hosts -->
+    <button class="btn btn-primary" (click)="processSelectedHosts()">Retrieve Host Config</button>
+    <clr-spinner *ngIf="loadingFlag">Loading</clr-spinner>
+  </clr-wizard-page>
+
+  <clr-wizard-page>
+    <ng-template clrPageTitle>Adapter Config</ng-template>
+    <clr-alert *ngIf="errorFlag" [clrAlertType]="'alert-danger'" [clrCloseButtonAriaLabel]="'Close Error Alert'">
+      <clr-alert-item *ngFor="let error of model.errors">
+        {{ error.subject }}: {{ error.message }}
+      </clr-alert-item>
+    </clr-alert>
+    <p>Select the adapters you want to continue with. Expand a host to set its FQDN and pick an adapter.</p>
+
+    <clr-datagrid>
+      <clr-dg-column>Host IP</clr-dg-column>
+      <clr-dg-column>Hostname (FQDN)</clr-dg-column>
+      <clr-dg-column>Selected Adapter</clr-dg-column>
+      <clr-dg-row *clrDgItems="let host of model.hosts">
+        <clr-dg-cell>{{ host.iloIpAddr }}</clr-dg-cell>
+        <clr-dg-cell>{{ host.fqdn || 'Not set' }}</clr-dg-cell>
+        <clr-dg-cell>
+          <span *ngIf="host.selectedIface">
+            {{ host.selectedIface.ifaceName }} ({{ host.selectedIface.ipAddress }})
+          </span>
+          <span *ngIf="!host.selectedIface">No adapter selected</span>
+        </clr-dg-cell>
+        <clr-dg-row-detail *clrIfExpanded>
+          <form class="clr-form clr-form-horizontal">
+            <clr-input-container>
+              <label>Hostname (FQDN)</label>
+              <input clrInput [(ngModel)]="host.fqdn" name="fqdn_{{host.iloIpAddr}}" placeholder="Enter Host FQDN" required />
+            </clr-input-container>
+            <div>
+              <label><strong>Available Adapters:</strong></label>
+              <div *ngFor="let iface of host.ifaceConfig">
+                <clr-radio-wrapper>
+                  <input type="radio"
+                         clrRadio
+                         name="selectedIface_{{host.iloIpAddr}}"
+                         [value]="iface"
+                         [(ngModel)]="host.selectedIface"
+                         (change)="onIfaceSelectionChange(host, iface)"
+                         [checked]="host.selectedIface === iface" />
+                  <label clrRadioLabel>
+                    {{ iface.ifaceName }} | {{ iface.ipAddress }} | {{ iface.macAddress }} | {{ iface.speed }} | {{ iface.status }}
+                  </label>
+                </clr-radio-wrapper>
+              </div>
+            </div>
+          </form>
+        </clr-dg-row-detail>
+      </clr-dg-row>
+      <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="4">
+          {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+          {{ (model.hosts ?? []).length }} Hosts
+        </clr-dg-pagination>
+      </clr-dg-footer>
+    </clr-datagrid>
+  </clr-wizard-page>
+
+  <clr-wizard-page (clrWizardPageOnCommit)="onGroupCommit()" >
+    <ng-template clrPageTitle>Select a Group</ng-template>
+    <p>Select a group from the dropdown below:</p>
+    <clr-select-container>
+      <label>Select Group</label>
+      <select clrSelect name="groups" [(ngModel)]="selectedGroup" (change)="onGroupSelectionChange($event)">
+        <option *ngFor="let group of groups" [value]="group.id">{{ group.name }} </option>
+      </select>
+    </clr-select-container>
+  </clr-wizard-page>
+
+  <clr-wizard-page (clrWizardPageOnCommit)="addToGroup()" (clrWizardPageOnCancel)="doCancel()"
+    (clrWizardPagePrevious)="goBack()" [clrWizardPagePreventDefault]="true">
+    <ng-template clrPageTitle>Summary</ng-template>
+    <clr-alert *ngIf="errorFlag" [clrAlertType]="'alert-danger'" [clrCloseButtonAriaLabel]="'Close Answer alert'">
+      <div *ngFor="let error of model.errors">
+        <clr-alert-item>{{ error.subject }}: {{ error.message }}</clr-alert-item>
+      </div>
+
+    </clr-alert>
+    <p>Review the selected group and hosts before proceeding:</p>
+
+    <!-- Display selected group -->
+    <clr-alert *ngIf="!selectedGroup" [clrAlertType]="'alert-warning'" [clrAlertClosable]="false">
+      <clr-alert-item>
+        <span>No group selected. Please go back and select a group.</span>
+      </clr-alert-item>
+    </clr-alert>
+    <div *ngIf="selectedGroup">
+      <p><strong>Selected Group: </strong>{{ model.selectedGroup.name }}</p>
+    </div>
+
+    <!-- Display selected hosts -->
+    <clr-datagrid *ngIf="selectedHosts.length > 0">
+      <clr-dg-column>Host IP</clr-dg-column>
+      <clr-dg-column>FQDN</clr-dg-column>
+      <clr-dg-column>MAC Address</clr-dg-column>
+      <clr-dg-column>Selected Interface</clr-dg-column>
+
+      <clr-dg-row *clrDgItems="let host of selectedHosts">
+        <clr-dg-cell>{{ host.iloIpAddr }}</clr-dg-cell>
+        <clr-dg-cell>{{ host.fqdn }}</clr-dg-cell>
+        <clr-dg-cell>
+          <span *ngIf="host.selectedIface">
+            {{ host.selectedIface.macAddress }}
+          </span>
+          <span *ngIf="!host.selectedIface">No interface selected</span>
+        </clr-dg-cell>
+        <clr-dg-cell>
+          <span *ngIf="host.selectedIface">
+            {{ host.selectedIface.ifaceName }} ({{ host.selectedIface.ipAddress }})
+          </span>
+          <span *ngIf="!host.selectedIface">No interface selected</span>
+        </clr-dg-cell>
+      </clr-dg-row>
+    </clr-datagrid>
+
+    <clr-alert *ngIf="selectedHosts.length === 0" [clrAlertType]="'alert-warning'" [clrAlertClosable]="false">
+      <clr-alert-item>
+        <span>No hosts selected. Please go back and select hosts.</span>
+      </clr-alert-item>
+    </clr-alert>
+  </clr-wizard-page>
+
+  <clr-wizard-page>
+    <ng-template clrPageTitle>Finish</ng-template>
+    <p>Click "Finish" to complete the guided host deployment.</p>
+    <clr-alert *ngIf="errorFlag" [clrAlertType]="'alert-danger'" [clrCloseButtonAriaLabel]="'Close Answer alert'">
+      <div *ngFor="let error of model.errors">
+        <clr-alert-item>{{ error.subject }}: {{ error.message }}</clr-alert-item>
+      </div>
+
+    </clr-alert>
+  </clr-wizard-page>
+
+
+</clr-wizard>

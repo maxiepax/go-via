@@ -185,11 +185,11 @@ func UpdateGroup(key string) func(c *gin.Context) {
 		}
 
 		//mergo wont overwrite values with empty space. To enable removal of ntp, dns, syslog, vlan, always overwrite.
-		item.GroupForm.Vlan = form.Vlan
-		item.GroupForm.DNS = form.DNS
-		item.GroupForm.NTP = form.NTP
-		item.GroupForm.Syslog = form.Syslog
-		item.GroupForm.BootDisk = form.BootDisk
+		item.Vlan = form.Vlan
+		item.DNS = form.DNS
+		item.NTP = form.NTP
+		item.Syslog = form.Syslog
+		item.BootDisk = form.BootDisk
 
 		// Save it
 		if res := db.DB.Preload("Pool").Save(&item); res.Error != nil {

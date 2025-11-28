@@ -1,0 +1,72 @@
+.form-input {
+    padding-left: 0px;
+}
+
+.postconfig {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.postconfig-subtext {
+    margin-top: -25px;
+}
+
+.modal-vertical {
+    flex-direction: column;
+    .alert {
+        margin-bottom: 12px;
+    }
+}
+
+.modal-buttons {
+    display:flex;
+    justify-content: flex-end;
+}
+
+#ks_textarea {
+    padding-top:7px;
+}
+
+#host_ks {
+    padding-top: 10px;
+}
+
+
+clr-datagrid {
+    max-height: 100%; // Allow the datagrid to grow dynamically
+    overflow: visible; // Ensure dropdowns are not clipped
+    position: relative; 
+}
+
+clr-dg-row {
+    min-height: 50px; // Set a minimum height for rows
+    align-items: center; // Center-align content in rows
+}
+
+.power-state {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    min-height: 24px; // Ensure consistent height
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+    
+    clr-spinner {
+        --clr-spinner-color: var(--clr-color-action-600);
+        
+        &[clrSmall] {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+.progress {
+    margin-bottom: 5px;
+}
+
+

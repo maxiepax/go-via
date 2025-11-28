@@ -1,23 +1,23 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
-	"text/template"
 	"strings"
-	"os"
-	"encoding/base64"
+
+	"text/template"
 
 	"github.com/gin-gonic/gin"
 	"github.com/maxiepax/go-via/db"
+
 	"github.com/maxiepax/go-via/models"
 	"github.com/maxiepax/go-via/secrets"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 	//"github.com/davecgh/go-spew/spew"
-
 )
 
 var defaultks = `
@@ -49,6 +49,7 @@ reboot
 {{ if .ntp }}
 esxcli system ntp set -e true -s {{ .ntp }}
 {{ end }}
+
 
 # Configure Domain Search
 {{ if .domain }}
@@ -83,6 +84,7 @@ esxcli network vswitch standard portgroup set --vlan-id {{.vlan}}
 /etc/init.d/hostd restart && /etc/init.d/vpxa restart && /etc/init.d/rhttpproxy restart
 `
 
+// func Ks(c *gin.Context) {
 func Ks(key string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var item models.Host
@@ -94,7 +96,14 @@ func Ks(key string) func(c *gin.Context) {
 		}
 
 		options := models.GroupOptions{}
-		json.Unmarshal(item.Group.Options, &options)
+		err := json.Unmarshal(item.Group.Options, &options)
+
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"postconfig": "couldn't unmarshal group options",
+			}).Debug(item.IP)
+			return
+		}
 
 		if reimage := db.DB.Model(&item).Where("ip = ?", host).Update("reimage", false); reimage.Error != nil {
 			Error(c, http.StatusInternalServerError, reimage.Error) // 500
@@ -130,15 +139,15 @@ func Ks(key string) func(c *gin.Context) {
 			"mac":        item.Mac,
 			"gateway":    item.Pool.Gateway,
 			"dns":        item.Group.DNS,
-			"ntp":		  ntp,
+			"ntp":        ntp,
 			"hostname":   item.Hostname,
-			"domain":	  item.Domain,
-			"fqdn":		  item.Hostname+"."+item.Domain,
+			"domain":     item.Domain,
+			"fqdn":       item.Hostname + "." + item.Domain,
 			"netmask":    netmask,
 			"via_server": laddrport,
 			"erasedisks": options.EraseDisks,
-			"ssh":		  options.SSH,
-			"syslog":	  item.Group.Syslog,
+			"ssh":        options.SSH,
+			"syslog":     item.Group.Syslog,
 			"bootdisk":   item.Group.BootDisk,
 			"vlan":       item.Group.Vlan,
 			"createvmfs": options.CreateVMFS,

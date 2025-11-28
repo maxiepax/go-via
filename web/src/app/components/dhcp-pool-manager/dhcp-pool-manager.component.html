@@ -1,0 +1,38 @@
+
+<clr-modal [(clrModalOpen)]="showPoolModalMode">
+  <h3 class="modal-title">{{ editIndex !== null ? 'Edit' : 'Add' }} DHCP Pool</h3>
+  <div class="modal-body">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="clr-form-control">
+        <label>Network</label>
+        <input clrInput formControlName="net_address" placeholder="192.168.0.0" />
+      </div>
+      <div class="clr-form-control">
+        <label>Mask</label>
+        <input clrInput formControlName="netmask" placeholder="24" type="number" />
+      </div>
+      <div class="clr-form-control">
+        <label>Name</label>
+        <input clrInput formControlName="name" placeholder="eg. mgmt network" />
+      </div>
+      <div class="clr-form-control">
+        <label>Start Address</label>
+        <input clrInput formControlName="start_address" placeholder="eg. 172.16.13.10" />
+      </div>
+      <div class="clr-form-control">
+        <label>End Address</label>
+        <input clrInput formControlName="end_address" placeholder="eg. 172.16.13.110" />
+      </div>      
+      <div class="clr-form-control">
+        <label>Gateway</label>
+        <input clrInput formControlName="gateway" placeholder="eg. 172.16.13.1" />
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          {{ editIndex !== null ? 'Update' : 'Add' }}
+        </button>
+        <button type="button" class="btn btn-outline" (click)="showPoolModalMode = false">Cancel</button>
+      </div>
+    </form>
+  </div>
+</clr-modal>

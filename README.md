@@ -56,7 +56,7 @@ Option A: create the following docker-compose.yaml file to not specify a config 
 version: "3.9"
 services:
   go-via:
-    image: maxiepax/go-via:latest
+    image: tribock/go-via:latest
     network_mode: host
     volumes:
       - ./tftp:/go/tftp
@@ -72,7 +72,7 @@ Option B: or create this docker-compose.yaml to specify a config file, and place
 version: "3.9"
 services:
   go-via:
-    image: maxiepax/go-via:latest
+    image: tribock/go-via:latest
     network_mode: host
     volumes:
       - ./tftp:/go/tftp
@@ -233,6 +233,39 @@ Known issues
 Please note that go-via is still under heavy development, and there may be bugs. Following is the list of known issues.
 
 currently tracking no known issues! :D
+
+
+## Build
+
+```bash
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+go install github.com/rakyll/statik@latest
+go install github.com/swaggo/swag/cmd/swag@latest
+go install github.com/goreleaser/goreleaser@latest
+
+
+docker buildx build --platform linux/amd64 --tag ghcr.io/tribock/go-via:latest --load .
+
+docker run -p 8443:8443 ghcr.io/tribock/go-via:latest
+
+
+go run -ldflags "-X main.commit=1.9 -X main.date=Heute"  *.go
+
+# test auth
+curl -X POST https://localhost:8443/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "VMware1!"}' -ivk
+
+```
+
+
+## Architecture
+
+![Architecture](architecture/govia-overview.png)
+
 
 Todo
 -----

@@ -1,0 +1,55 @@
+<h3>Pools</h3>
+<p>
+  Please configure an ip-scope that the VIA service will offer bare metal
+  provisioning to.
+</p>
+<button class="btn btn-outline btn-sm" (click)="this.poolManager.showPoolModal('add')">Add Pool</button>
+<button class="btn btn-outline btn-sm" (click)="triggerFileInput()">Import CSV</button>
+<input type="file" #fileInput accept=".csv" (change)="handleFileUpload($event)" style="display: none;" />
+
+<div class="alert alert-danger" role="alert" *ngIf="errors">
+  <div class="alert-items">
+    <div class="alert-item static" *ngFor="let error of (errors | keyvalue)">
+      <div class="alert-icon-wrapper">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="alert-icon">
+          <path d="M18,6A12,12,0,1,0,30,18,12,12,0,0,0,18,6Zm0,22A10,10,0,1,1,28,18,10,10,0,0,1,18,28Z">
+          </path>
+          <path d="M18,20.07a1.3,1.3,0,0,1-1.3-1.3v-6a1.3,1.3,0,1,1,2.6,0v6A1.3,1.3,0,0,1,18,20.07Z"></path>
+          <circle cx="17.95" cy="23.02" r="1.5"></circle>
+        </svg>
+      </div>
+      <span class="alert-text">
+        {{ error.value }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<h3>DHCP Scopes</h3>
+<clr-datagrid>
+  <clr-dg-column>Network</clr-dg-column>
+  <clr-dg-column>Name</clr-dg-column>
+  <clr-dg-column>Start Address</clr-dg-column>
+  <clr-dg-column>End Address</clr-dg-column>  
+  <clr-dg-column>Gateway</clr-dg-column>
+  <clr-dg-column>Action</clr-dg-column>
+
+  <clr-dg-row *ngFor="let pool of pools">
+    <clr-dg-cell>{{ pool.net_address }}/{{ pool.netmask }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.name }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.start_address }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.end_address }}</clr-dg-cell>
+    <clr-dg-cell>{{ pool.gateway }}</clr-dg-cell>
+    <clr-dg-cell>
+      <button class="btn btn-primary btn-sm" (click)="poolManager.showPoolModal('edit', pool.id)">
+        edit scope
+      </button>
+      <button class="btn btn-warning-outline btn-sm" (click)="remove(pool.id)">
+        remove
+      </button>
+    </clr-dg-cell>
+  </clr-dg-row>
+  <clr-dg-footer>{{ (pools ?? []).length }}Pools</clr-dg-footer>
+</clr-datagrid>
+
+<app-dhcp-pool-manager [(pools)]="pools"></app-dhcp-pool-manager>

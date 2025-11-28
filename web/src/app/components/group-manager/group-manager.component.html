@@ -1,0 +1,89 @@
+<form clrForm [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+    <cds-form-group layout="vertical">
+        <cds-input>
+            <label class="clr-col-6 form-input">Group name</label>
+            <input placeholder="eg. sfo-m01" type="text" formControlName="name" name="name" />
+        </cds-input>
+        <cds-select control-width="shrink">
+            <label class="clr-col-6 form-input">DHCP Pool</label>
+            <select name="pool_id" formControlName="pool_id">
+                <option *ngFor="let pool of pools" [value]=pool.id>{{pool.name}}</option>
+            </select>
+        </cds-select>
+        <cds-select control-width="shrink">
+            <label class="clr-col-6 form-input">Image</label>
+            <select name="image_id" formControlName="image_id">
+                <option *ngFor="let image of images" [value]=image.id>{{image.iso_image}}</option>
+            </select>
+        </cds-select>
+        <cds-input>
+            <label class="clr-col-6 form-input">Password</label>
+            <input placeholder="eg. VMware1!" type="password" formControlName="password" name="password" />
+        </cds-input>
+        <cds-input style="margin-top:0.5em;">
+            <label class="clr-col-6 form-input">Boot drive (Optional)</label>
+            <input placeholder="mpx.vmhba1:C0:T0:L0" name="bootdisk" id="bootdisk" formControlName="bootdisk" />
+        </cds-input>
+        <cds-input>
+            <label class="clr-col-6 form-input">Management vlan (Optional)</label>
+            <input placeholder="1611" type="text" formControlName="vlan" name="vlan" />
+        </cds-input>
+        <cds-input>
+            <label class="clr-col-6 form-input">Callback URL (Optional)</label>
+            <input placeholder="https://url/callbacks" type="text" formControlName="callbackurl"
+                name="callbackurl" />
+        </cds-input>
+        <div class="postconfig"> Post config options </div>
+        <clr-control-helper class="postconfig-subtext">Enter all options you wish to be included in post-config
+        </clr-control-helper>
+        <cds-input>
+            <label class="clr-col-6 form-input">DNS</label>
+            <input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="dns" name="dns" />
+        </cds-input>
+        <cds-input>
+            <label class="clr-col-6 form-input">NTP</label>
+            <input placeholder="eg. 172.16.0.2,172.16.0.3" type="text" formControlName="ntp" name="ntp" />
+        </cds-input>
+        <cds-input>
+            <label class="clr-col-6 form-input">Syslog</label>
+            <input placeholder="eg. tcp://172.16.0.2:514,ssl://172.16.0.3:1514" type="text"
+                formControlName="syslog" name="syslog" />
+        </cds-input>
+    </cds-form-group>
+    <br />
+    <div class="clr-control-container clr-control-inline">
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox name="ssh" id="ssh" formControlName="ssh" />
+            <label>SSH</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox name="erasedisks" id="erasedisks" formControlName="erasedisks" />
+            <label>Erase all disks</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox name="allowlegacycpu" id="allowlegacycpu"
+                formControlName="allowlegacycpu" />
+            <label>Allow Legacy CPU</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox name="certificate" id="certificate"
+                formControlName="certificate" />
+            <label>Generate Certificate</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox name="createvmfs" id="createvmfs" formControlName="createvmfs" />
+            <label>Create VMFS</label>
+        </clr-checkbox-wrapper>
+    </div>
+    <div>
+        <cds-toggle>
+            <label>Show advanced options</label>
+            <input type="checkbox" [(ngModel)]="advanced" [ngModelOptions]="{standalone: true}"/>
+        </cds-toggle>
+        <cds-textarea layout="vertical" *ngIf="advanced" id="ks_textarea">
+            <label>ks.cfg</label>
+            <textarea formControlName="ks" name="ks"></textarea>
+            <cds-control-message>Modify the default ks.cfg file</cds-control-message>
+        </cds-textarea>
+    </div>
+</form>

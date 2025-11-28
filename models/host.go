@@ -5,16 +5,23 @@ import (
 )
 
 type HostForm struct {
-	IP           string    `json:"ip" gorm:"type:varchar(15);not null;index:uniqIp,unique"`
-	Mac          string    `json:"mac" gorm:"type:varchar(17);not null"`
-	Hostname     string    `json:"hostname" gorm:"type:varchar(255)"`
-	Domain       string    `json:"domain" gorm:"type:varchar(255)"`
-	Reimage      bool      `json:"reimage" gorm:"type:bool;index:uniqIp,unique"`
-	PoolID       NullInt32 `json:"pool_id" gorm:"type:BIGINT" swaggertype:"integer"`
-	GroupID      NullInt32 `json:"group_id" gorm:"type:BIGINT" swaggertype:"integer"`
-	Progress     int       `json:"progress" gorm:"type:INT"`
-	Progresstext string    `json:"progresstext" gorm:"type:varchar(255)"`
-	Ks           string    `json:"ks" gorm:"type:text"`
+	IP            string    `json:"ip" gorm:"type:varchar(15);not null;index:uniqIp,unique"`
+	IloIP         string    `json:"ilo_ip" gorm:"type:varchar(15);index:uniqIp,unique"`
+	IloUser       string    `json:"ilo_user" gorm:"type:varchar(255)"`
+	IloPassword   string    `json:"ilo_password" gorm:"type:varchar(255)"`
+	IloPort       string    `json:"ilo_port" gorm:"type:varchar(255)"`
+	IloApiFlavour string    `json:"ilo_api_flavour" gorm:"type:varchar(255)"`
+	IloFqdn       string    `json:"ilo_fqdn" gorm:"type:varchar(255)"`
+	HostFqdn      string    `json:"host_fqdn" gorm:"type:varchar(255)"`
+	Mac           string    `json:"mac" gorm:"type:varchar(17);not null"`
+	Hostname      string    `json:"hostname" gorm:"type:varchar(255)"`
+	Domain        string    `json:"domain" gorm:"type:varchar(255)"`
+	Reimage       bool      `json:"reimage" gorm:"type:bool;index:uniqIp,unique"`
+	PoolID        NullInt32 `json:"pool_id" gorm:"type:BIGINT" swaggertype:"integer"`
+	GroupID       NullInt32 `json:"group_id" gorm:"type:BIGINT" swaggertype:"integer"`
+	Progress      int       `json:"progress" gorm:"type:INT"`
+	Progresstext  string    `json:"progresstext" gorm:"type:varchar(255)"`
+	Ks            string    `json:"ks" gorm:"type:text"`
 }
 
 type Host struct {

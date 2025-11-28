@@ -1,0 +1,26 @@
+<div class="dhcp-leases">
+  <h2>DHCP Leases</h2>
+  <clr-datagrid>
+    <clr-dg-column>Domain</clr-dg-column>
+    <clr-dg-column *ngIf="false"></clr-dg-column> <!-- Placeholder for expand icon -->
+    
+    <clr-dg-row *ngFor="let group of groupedLeases">
+      <clr-dg-cell>{{ group.domain }}</clr-dg-cell>
+      <clr-dg-cell *ngIf="false"></clr-dg-cell> <!-- Placeholder for expand icon -->
+      <clr-dg-row-detail *clrIfExpanded>
+        <clr-datagrid>
+          <clr-dg-column>IP Address</clr-dg-column>
+          <clr-dg-column>Hostname</clr-dg-column>
+          <clr-dg-column>Expires At</clr-dg-column>
+          <clr-dg-row *ngFor="let lease of group.leases">
+            <clr-dg-cell>{{ lease.ip }}</clr-dg-cell>
+            <clr-dg-cell>{{ lease.hostname }}.{{ group.domain }}</clr-dg-cell>
+            <clr-dg-cell>
+              {{ lease.expires_at === '0001-01-01T00:00:00Z' ? 'Static (Never Expires)' : lease.expires_at }}
+            </clr-dg-cell>
+          </clr-dg-row>
+        </clr-datagrid>
+      </clr-dg-row-detail>
+    </clr-dg-row>
+  </clr-datagrid>
+</div>

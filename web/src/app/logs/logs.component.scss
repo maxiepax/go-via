@@ -1,0 +1,66 @@
+@use '@cds/core/tokens/tokens.scss';
+
+.limit-height clr-datagrid {
+  height: 15rem;
+}
+
+
+#wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+  
+.table {
+    width: 100%;
+    overflow-y: auto;
+}
+  
+table {
+    width: 100%;
+    table-layout: fixed; /* Fix the column width */
+    border-collapse: collapse; /* Remove gaps between cells */
+}
+  
+
+  
+.info {
+    background: lightgray;
+}
+  
+.debug {
+    background: orange;
+}
+  
+.warning { 
+    background: yellow;
+}
+  
+.service {
+    background: #e6ffff;
+}
+  
+/* Optional: Set fixed widths for the columns */
+th:nth-child(1), td:nth-child(1) {
+    width: 20%; /* Time column */
+}
+  
+th:nth-child(2), td:nth-child(2) {
+    width: 15%; /* Level column */
+}
+  
+th:nth-child(3), td:nth-child(3) {
+    width: 30%; /* Service column */
+}
+  
+th:nth-child(4), td:nth-child(4) {
+    width: 35%; /* Payload column */
+}
+  
+tr {
+    height: 15px !important; /* Fix the row height to 15px */
+    line-height: 15px !important; /* Ensure text is vertically centered */
+}
+

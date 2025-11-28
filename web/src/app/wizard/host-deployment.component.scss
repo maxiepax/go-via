@@ -1,0 +1,32 @@
+.credentials-container {
+    display: flex;
+    gap: 20px; /* Adjust the gap between the fields as needed */
+    align-items: center;
+  }
+
+
+clr-wizard-page {
+    min-height: 500px; /* Adjust this value as needed */
+    min-width: 840px; /* Adjust this value as needed */
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  clr-wizard {
+
+    overflow-y: auto;
+
+  }
+  
+
+  /* Make the wizard footer sticky */
+clr-wizard-footer {
+  position: sticky;
+  bottom: 0;
+
+  z-index: 10; /* Ensure it stays above the content */
+  padding: 1rem; /* Add padding for better usability */
+}
+
+  

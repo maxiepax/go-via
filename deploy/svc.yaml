@@ -1,0 +1,15 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: souldeploy-service
+  labels:
+    app: souldeploy
+spec:
+  type: LoadBalancer
+  selector:
+    app: souldeploy
+  ports:
+  - protocol: TCP
+    port: 443
+    targetPort: 8443

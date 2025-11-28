@@ -1,0 +1,5 @@
+fqdn,ip,mac
+machine1.domain.ch,192.168.1.10,80:3f:5d:00:0c:65
+hodor1.domain.ch,192.168.1.13,16:34:c3:14:11:90
+chasperli1.domain.ch,192.168.1.14,76:34:c3:13:11:90
+sennehund24.domain.ch,192.168.1.15,80:3f:5d:00:14:65

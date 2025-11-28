@@ -13,16 +13,18 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/db"
-	"github.com/maxiepax/go-via/models"
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 
 	//"github.com/davecgh/go-spew/spew"
 	"github.com/google/gopacket"
 	"github.com/mdlayher/raw"
+
+	"github.com/maxiepax/go-via/models"
+	"github.com/sirupsen/logrus"
+
+	"gorm.io/gorm"
 )
 
-func processPacket(t layers.DHCPMsgType, req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *layers.DHCPv4, err error) {
+func ProcessPacket(t layers.DHCPMsgType, req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *layers.DHCPv4, err error) {
 	switch t {
 	case layers.DHCPMsgTypeDiscover:
 		return processDiscover(req, sourceNet, ip)
@@ -49,7 +51,7 @@ func processPacket(t layers.DHCPMsgType, req *layers.DHCPv4, sourceNet net.IP, i
 }
 
 func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *layers.DHCPv4, err error) {
-	// Find all reimage hosts that is not yet assigned a pool
+	// Find all reimage Hosts that is not yet assigned a pool
 	var reimageHosts []models.Host
 	if res := db.DB.Where("pool_id IS NULL").Where("reimage = 1").Find(&reimageHosts); res.Error != nil {
 		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -62,13 +64,13 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 		return nil, err
 	}
 
-	// Make a list of all reimage and pool hosts
-	hosts := append(reimageHosts, pool.Hosts...)
+	// Make a list of all reimage and pool Hosts
+	Hosts := append(reimageHosts, pool.Hosts...)
 
-	// Search in the list for our mac address
+	// Search in the list for our mac Host
 	var leaseIP net.IP
 	var lease *models.Host
-	for _, v := range hosts {
+	for _, v := range Hosts {
 		// Make sure the reimage IP is within the pool
 		parsedIp := net.ParseIP(v.IP)
 		ok, _ := pool.Contains(parsedIp)
@@ -85,17 +87,15 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 
 	// Dont answer pools with "only serve requested" flag set
 	if pool.OnlyServeReimage && (lease == nil || !lease.Reimage) {
-		return nil, fmt.Errorf("ignored because mac address is not flagged for re-imaging")
+		return nil, fmt.Errorf("ignored because mac Host is not flagged for re-imaging")
 	}
 
-	/*
 	if leaseIP == nil {
 		leaseIP, err = pool.Next()
 		if err != nil {
 			return nil, err
 		}
 	}
-	*/
 
 	resp = &layers.DHCPv4{
 		Operation:    layers.DHCPOpReply,
@@ -109,7 +109,13 @@ func processDiscover(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (resp *lay
 
 	resp.Options = append(resp.Options, layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeOffer)}))
 
-	AddOptions(req, resp, *pool, lease, ip)
+	err = AddOptions(req, resp, *pool, lease, ip)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not add options to DHCP response")
+		return nil, err
+	}
 
 	//req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithHosts, lease *models.Host, ip net.IP
 
@@ -121,7 +127,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		spew.Dump(opt82)
 	}*/
 
-	// Find all reimage hosts that is not yet assigned a pool
+	// Find all reimage Hosts that is not yet assigned a pool
 	var reimageHosts []models.Host
 	if res := db.DB.Where("pool_id IS NULL").Where("reimage = 1").Find(&reimageHosts); res.Error != nil {
 		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -135,11 +141,11 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		return nil, err
 	}
 
-	// Make a list of all reimage and pool hosts
-	hosts := append(reimageHosts, pool.Hosts...)
+	// Make a list of all reimage and pool Hosts
+	Hosts := append(reimageHosts, pool.Hosts...)
 
 	// Extract the requested IP
-	var requestedIP net.IP = req.ClientIP
+	var requestedIP = req.ClientIP
 	for _, v := range req.Options {
 		if v.Type == layers.DHCPOptRequestIP {
 			requestedIP = net.IP(v.Data)
@@ -156,9 +162,9 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		NextServerIP: ip.To4(),
 	}
 
-	// Try to find the lease in our host list
+	// Try to find the lease in our Host list
 	var lease *models.Host
-	for _, v := range hosts {
+	for _, v := range Hosts {
 		// Check so the IP is part of the pool
 		parsedIp := net.ParseIP(v.IP)
 		ok, _ := pool.Contains(parsedIp)
@@ -195,7 +201,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		}
 	}
 
-	// Make sure the host isnt already used
+	// Make sure the Host isnt already used
 	if lease != nil {
 		if err := pool.IsAvailableExcept(requestedIP, req.ClientHWAddr.String()); err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -210,7 +216,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 
 	// Dont answer pools with "only serve requested" flag set
 	if pool.OnlyServeReimage && (lease == nil || !lease.Reimage) {
-		return nil, fmt.Errorf("ignored because mac address is not flagged for reimaging")
+		return nil, fmt.Errorf("ignored because mac Host is not flagged for reimaging")
 	}
 
 	// Its a new lease!
@@ -234,12 +240,18 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	resp.YourClientIP = requestedIP
 
 	resp.Options = append(resp.Options, layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeAck)}))
-	AddOptions(req, resp, *pool, lease, ip)
+	err = AddOptions(req, resp, *pool, lease, ip)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Warn("could not add options to DHCP response")
+		return nil, err
+	}
 
 	lease.IP = requestedIP.String()
-	lease.PoolID = models.NullInt32{sql.NullInt32{int32(pool.ID), true}}
+	lease.PoolID = models.NullInt32{NullInt32: sql.NullInt32{Int32: int32(pool.ID), Valid: true}}
 	lease.LastSeenRelay = req.RelayAgentIP.String()
-	if (lease.FirstSeen == time.Time{}) {
+	if (lease.FirstSeen.Equal(time.Time{})) {
 		lease.FirstSeen = time.Now()
 	}
 	lease.LastSeen = time.Now()
@@ -250,7 +262,7 @@ func processRequest(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		db.DB.Create(lease)
 	} else {
 		// Remove the previous record if there is any
-		db.DB.Exec("DELETE FROM hosts WHERE ip=? AND reimage=0 AND expires <= datetime('now', 'utc')", lease.IP)
+		db.DB.Exec("DELETE FROM Hosts WHERE ip=? AND reimage=0 AND expires <= datetime('now', 'utc')", lease.IP)
 		db.DB.Save(lease)
 	}
 
@@ -268,9 +280,7 @@ func listMissingOptions(req *layers.DHCPv4, resp *layers.DHCPv4) string {
 	}
 
 	for _, v := range resp.Options {
-		if _, ok := requested[byte(v.Type)]; ok {
-			delete(requested, byte(v.Type))
-		}
+		delete(requested, byte(v.Type))
 	}
 
 	var list []string
@@ -281,7 +291,7 @@ func listMissingOptions(req *layers.DHCPv4, resp *layers.DHCPv4) string {
 	return strings.Join(list, ",")
 }
 
-// a IP address conflict was detected, add/update the address table to block that address from being used for a while (lease time)
+// a IP Host conflict was detected, add/update the Host table to block that Host from being used for a while (lease time)
 func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DHCPv4, error) {
 
 	pool, err := api.FindPool(sourceNet.String())
@@ -296,7 +306,7 @@ func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 		}
 	}
 
-	// Try to find the lease in our host history
+	// Try to find the lease in our Host history
 	var lease *models.Host
 	for _, v := range pool.Hosts {
 		if v.IP == requestedIP.To4().String() {
@@ -316,7 +326,7 @@ func processDecline(req *layers.DHCPv4, sourceNet net.IP, ip net.IP) (*layers.DH
 	}
 
 	lease.Mac = ""
-	lease.PoolID = models.NullInt32{sql.NullInt32{int32(pool.ID), true}}
+	lease.PoolID = models.NullInt32{NullInt32: sql.NullInt32{Int32: int32(pool.ID), Valid: true}}
 	lease.LastSeenRelay = req.RelayAgentIP.String()
 	lease.LastSeen = time.Now()
 	lease.Expires = time.Now().Add(3600 * time.Second)
@@ -347,7 +357,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithHos
 		}
 	}
 
-	if res := db.DB.Where("((pool_id = 0 AND device_class_id = 0 AND host_id = 0) OR pool_id = ? OR host_id = ?) AND (device_class_id = 0 OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("host_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+	if res := db.DB.Where("((pool_id = 0 AND device_class_id = 0 AND Host_id = 0) OR pool_id = ? OR Host_id = ?) AND (device_class_id = 0 OR device_class_id = ?)", pool.ID, leaseID, deviceClass.ID).Order("device_class_id desc").Order("Host_id desc").Order("pool_id desc").Find(&options); res.Error != nil && !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 
 		return res.Error
 	}
@@ -360,7 +370,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithHos
 		}
 
 		// Only add the highest level options to the list
-		// The level is decided on pool_id and host_id fields
+		// The level is decided on pool_id and Host_id fields
 		// addess+device_class specific = 5
 		// pool+device_class specific = 4
 		// global+device_class = 3
@@ -397,7 +407,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithHos
 	}
 
 	// Add the requested options to the response
-	var leaseTime float64 = float64(pool.LeaseTime)
+	var leaseTime = float64(pool.LeaseTime)
 	if leaseTime == 0 {
 		leaseTime = 3600
 	}
@@ -448,7 +458,7 @@ func AddOptions(req *layers.DHCPv4, resp *layers.DHCPv4, pool models.PoolWithHos
 					"opcode": opCode,
 					"name":   layers.DHCPOpt(opCode).String(),
 					"err":    err,
-				}).Warn("dhcp: could not get broadcast address")
+				}).Warn("dhcp: could not get broadcast Host")
 				continue
 			}
 
@@ -530,7 +540,15 @@ func Init(intf string) {
 	if err != nil {
 		logrus.Fatalf("dhcp: failed to listen: %v", err)
 	}
-	defer c.Close()
+	defer func() {
+		err := c.Close()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"if":  intf,
+				"err": err,
+			}).Errorf("dhcp: failed to close socket")
+		}
+	}()
 
 	logrus.WithFields(logrus.Fields{
 		"mac": mac,
@@ -576,7 +594,7 @@ func Init(intf string) {
 				source = "relayed"
 			}
 
-			resp, err := processPacket(t, req, sourceNet, ip)
+			resp, err := ProcessPacket(t, req, sourceNet, ip)
 
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
@@ -622,7 +640,16 @@ func Init(intf string) {
 				continue
 			}
 
-			c.WriteTo(buf.Bytes(), src)
+			_, err = c.WriteTo(buf.Bytes(), src)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"response":   findMsgType(resp).String(),
+					"client-mac": req.ClientHWAddr.String(),
+					"ip":         resp.YourClientIP,
+					"relay":      req.RelayAgentIP,
+				}).Warnf("dhcp: failed to send response to %s %s", source, t)
+				continue
+			}
 
 			//spew.Dump(resp)
 			logrus.WithFields(logrus.Fields{
@@ -676,7 +703,16 @@ func buildHeaders(mac net.HardwareAddr, ip net.IP, srcEth *layers.Ethernet, srcI
 		udp.DstPort = 68
 	}
 
-	udp.SetNetworkLayerForChecksum(ip4)
+	err := udp.SetNetworkLayerForChecksum(ip4)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"src-ip":   ip4.SrcIP,
+			"dst-ip":   ip4.DstIP,
+			"src-port": udp.SrcPort,
+			"dst-port": udp.DstPort,
+			"err":      err,
+		}).Errorf("dhcp: failed to set network layer for checksum")
+	}
 
 	return []gopacket.SerializableLayer{eth, ip4, udp}
 }

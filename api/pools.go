@@ -145,6 +145,50 @@ func CreatePool(c *gin.Context) {
 	c.JSON(http.StatusOK, item) // 200
 }
 
+// GetNextFreeIP Get the next free lease from a pool
+// @Summary Get the next free lease from a pool
+// @Tags pools
+// @Accept  json
+// @Produce  json
+// @Param  id path int true "Pool ID"
+// @Success 200 {object} models.Host
+// @Failure 400 {object} models.APIError
+// @Failure 404 {object} models.APIError
+// @Failure 500 {object} models.APIError
+// @Router /pools/{id}/next [get]
+func GetNextFreeIP(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		Error(c, http.StatusBadRequest, err) // 400
+		return
+	}
+
+	// Load the item
+	var item models.PoolWithHosts
+	if res := db.DB.Table("pools").Preload("Hosts", "reimage OR expires > NOW()").First(&item, id); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			Error(c, http.StatusNotFound, fmt.Errorf("not found")) // 404
+		} else {
+			Error(c, http.StatusInternalServerError, res.Error) // 500
+		}
+		return
+	}
+
+	// ip, err := item.Next()
+	// if err != nil {
+	// 	Error(c, http.StatusInternalServerError, err) // 500
+	// 	return
+	// }
+
+	resp := models.Host{
+		HostForm: models.HostForm{
+			IP: "ip.String()",
+		},
+	}
+
+	c.JSON(http.StatusOK, resp) // 200
+}
+
 // GetPoolByRelay Get an existing pool by the relay host IP
 // @Summary Get an existing pool by the relay host IP
 // @Tags pools

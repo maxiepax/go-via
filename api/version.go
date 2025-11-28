@@ -6,16 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Version(version string, commit string, date string) func(c *gin.Context) {
+func Version(commit string, date string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 
 		type Version struct {
-			Version string
-			Commit  string
-			Date    string
+			Commit string
+			Date   string
 		}
 
-		item := Version{version, commit, date}
+		item := Version{commit, date}
 
 		c.JSON(http.StatusOK, item) // 200
 	}

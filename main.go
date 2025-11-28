@@ -1,22 +1,25 @@
-//go:generate bash -c "go get github.com/swaggo/swag/cmd/swag && swag init"
-//go:generate bash -c "cd web && rm -rf ./web/dist && npm install --legacy-peer-deps && npm run build && cd .. && go get github.com/rakyll/statik && statik -src ./web/dist -f"
+//go:generate bash -c "swag init"
+//go:generate bash -c "cd web && rm -rf ./web/dist && npm install --legacy-peer-deps && npm run build && cd .. && statik -src ./web/dist/web -f"
 
 package main
 
 import (
+	"flag"
+	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/maxiepax/go-via/api"
 	"github.com/maxiepax/go-via/config"
 	ca "github.com/maxiepax/go-via/crypto"
 	"github.com/maxiepax/go-via/db"
-	"github.com/maxiepax/go-via/dhcpd"
 	"github.com/maxiepax/go-via/models"
 	"github.com/maxiepax/go-via/secrets"
 	"github.com/maxiepax/go-via/websockets"
-	"github.com/rakyll/statik/fs"
+
+	"github.com/gin-contrib/static"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -24,16 +27,16 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/sirupsen/logrus"
-
+	"github.com/koding/multiconfig"
 	_ "github.com/maxiepax/go-via/docs"
 	_ "github.com/maxiepax/go-via/statik"
+	"github.com/rakyll/statik/fs"
+	"github.com/sirupsen/logrus"
 )
 
 var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
+	commit = "none"
+	date   = "unknown"
 )
 
 // @title go-via
@@ -46,16 +49,81 @@ func main() {
 
 	logServer := websockets.NewLogServer()
 	logrus.AddHook(logServer.Hook)
+	ConfigureLogger()
+	//setup logging
 	logrus.WithFields(logrus.Fields{
-		"version": version,
-		"commit":  commit,
-		"date":    date,
+		"commit": commit,
 	}).Infof("Startup")
 
-	// load config file
-	conf := config.Load()
+	//enable config
+	d := multiconfig.New()
+
+	conf := new(config.Config)
+
+	//try to load environment variables and flags.
+	err := d.Load(conf)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Info("failed to load config")
+	}
+
+	//if a file has been implied, also load the content of the configuration file.
+	if conf.File != "" {
+		d = multiconfig.NewWithPath(conf.File)
+
+		err = d.Load(conf)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Info("failed to load config")
+		}
+	}
+
+	//validate configuration file
+	err = d.Validate(conf)
+	if err != nil {
+		flag.Usage()
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Info("failed to load config")
+	}
+
+	//if no environemnt variables, or configuration file has been declared, serve on all interfaces.
+	if len(conf.Network.Interfaces) == 0 {
+		logrus.Warning("no interfaces have been configured, trying to find interfaces to serve to, will serve on all.")
+		i, err := net.Interfaces()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Info("failed to find a usable interface")
+		}
+		for _, v := range i {
+			// dont use loopback interfaces
+			if v.Flags&net.FlagLoopback != 0 {
+				continue
+			}
+			// dont use ptp interfaces
+			if v.Flags&net.FlagPointToPoint != 0 {
+				continue
+			}
+			_, _, err := findIPv4Addr(&v)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"err":   err,
+					"iface": v.Name,
+				}).Warning("interaces does not have a usable ipv4 address")
+				continue
+			}
+			conf.Network.Interfaces = append(conf.Network.Interfaces, v.Name)
+		}
+	}
+
+	// load secrets key
+	key := secrets.Init()
 
 	//connect to database
+	//db.Connect(true)
 	if conf.Debug {
 		db.Connect(true)
 		logrus.SetLevel(logrus.DebugLevel)
@@ -65,9 +133,22 @@ func main() {
 	}
 
 	//migrate all models
-	err := db.DB.AutoMigrate(&models.Pool{}, &models.Host{}, &models.Option{}, &models.DeviceClass{}, &models.Group{}, &models.Image{}, &models.User{})
+	err = db.DB.AutoMigrate(&models.Pool{}, &models.Host{}, &models.Option{}, &models.DeviceClass{}, &models.Group{}, &models.Image{}, &models.User{})
 	if err != nil {
 		logrus.Fatal(err)
+	}
+
+	//create the device classes for x86 and arm
+	//64bit x86 UEFI
+	var x86_64 models.DeviceClass
+
+	if res := db.DB.FirstOrCreate(&x86_64, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_x64", VendorClass: "PXEClient:Arch:00007"}}); res.Error != nil {
+		logrus.Warning(res.Error)
+	}
+	//64bit ARM UEFI
+	var arm_64 models.DeviceClass
+	if res := db.DB.FirstOrCreate(&arm_64, models.DeviceClass{DeviceClassForm: models.DeviceClassForm{Name: "PXE-UEFI_ARM64", VendorClass: "PXEClient:Arch:00011"}}); res.Error != nil {
+		logrus.Warning(res.Error)
 	}
 
 	//create admin user if it doesn't exist
@@ -77,13 +158,13 @@ func main() {
 		logrus.Warning(res.Error)
 	}
 
-	// load secrets key
-	key := secrets.Init()
-
 	// DHCPd
+	logrus.Info("Check Config for DHCP", conf, conf.DisableDhcp)
 	if !conf.DisableDhcp {
+		logrus.Info("Starting DHCP")
 		for _, v := range conf.Network.Interfaces {
-			go dhcpd.Init(v)
+			logrus.Infof("Starting DHCP on %s", v)
+			go serve(v)
 		}
 	}
 
@@ -94,71 +175,35 @@ func main() {
 	r := gin.New()
 	r.Use(cors.Default())
 
+	// ks.cfg is served at top to not place it behind BasicAuth
+	r.GET("ks.cfg", api.Ks(key))
+
 	statikFS, err := fs.New()
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	// ks.cfg is served at top to not place it behind BasicAuth
-	r.GET("ks.cfg", api.Ks(key))
-
-	// middleware to check if user is logged in
-	r.Use(func(c *gin.Context) {
-		username, password, hasAuth := c.Request.BasicAuth()
-		if !hasAuth {
-			logrus.WithFields(logrus.Fields{
-				"login": "unauthorized request",
-			}).Info("auth")
-			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		//get the user that is trying to authenticate
-		var user models.User
-		if res := db.DB.Select("username", "password").Where("username = ?", username).First(&user); res.Error != nil {
-			logrus.WithFields(logrus.Fields{
-				"username": username,
-				"status":   "supplied username does not exist",
-			}).Info("auth")
-			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		//check if passwords match
-		if api.ComparePasswords(user.Password, []byte(password), username) {
-			logrus.WithFields(logrus.Fields{
-				"username": username,
-				"status":   "successfully authenticated",
-			}).Debug("auth")
-		} else {
-			logrus.WithFields(logrus.Fields{
-				"username": username,
-				"status":   "invalid password supplied",
-			}).Info("auth")
-			c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-		c.Next()
-	})
+	r.Use(static.Serve("/", NewMyServeFileSystem(statikFS)))
 
 	r.NoRoute(func(c *gin.Context) {
-		c.Request.URL.Path = "/web/" // force us to always return index.html and not the requested page to be compatible with HTML5 routing
-		http.FileServer(statikFS).ServeHTTP(c.Writer, c.Request)
+		logrus.Debugf("%s doesn't exists, redirect on /\n", c.Request.URL.Path)
+		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 
 	ui := r.Group("/")
 	{
-		ui.GET("/web/*all", gin.WrapH(http.FileServer(statikFS)))
 
-		ui.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		ui.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	v1 := r.Group("/v1")
 	{
-		//v1.GET("log", logServer.Handle)
+		// Theme endpoints
+		theme := v1.Group("/theme")
+		{
+			theme.POST("/image", api.UploadThemeImage)
+			theme.GET("/image", api.GetThemeImage)
+		}
 
 		pools := v1.Group("/pools")
 		{
@@ -238,9 +283,30 @@ func main() {
 			postconfig.GET(":id", api.PostConfigID(key))
 		}
 
+		login := v1.Group("/login")
+		{
+			login.POST("", api.Login)
+		}
+
+		hostConfig := v1.Group("/hostconfig")
+		{
+			hostConfig.GET("", api.HostConfig)
+		}
+		ilohosts := v1.Group("/ilohosts")
+		{
+			ilohosts.POST(":id/setvlanID", api.SetVLANID)      // Set VLAN ID
+			ilohosts.POST(":id/start", api.StartIloHost)       // Start the host
+			ilohosts.POST(":id/shutdown", api.ShutdownIloHost) // Shutdown the host
+			ilohosts.POST(":id/reboot", api.RebootIloHost)     // Reboot the host
+			ilohosts.POST(":id/onetimeboot", api.OneTimeBoot)  // Set one time boot
+
+			ilohosts.POST("/checkilo", api.CheckIP) // Check ILO IP
+
+			ilohosts.POST(":id/powerstate", api.GetServerPowerStateFromIlo) // Get power state
+		}
 		v1.GET("log", logServer.Handle)
 
-		v1.GET("version", api.Version(version, commit, date))
+		v1.GET("version", api.Version(commit, date))
 	}
 
 	/*	r.GET("postconfig", api.PostConfig) */
@@ -252,7 +318,12 @@ func main() {
 		logrus.WithFields(logrus.Fields{
 			"certificate": "server.crt does not exist, initiating new CA and creating self-signed ceritificate server.crt",
 		}).Info("cert")
-		os.MkdirAll("cert", os.ModePerm)
+		err := os.MkdirAll("cert", os.ModePerm)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Warn("could not create cert directory")
+		}
 		ca.CreateCA()
 		ca.CreateCert("./cert", "server", "server")
 	} else {
@@ -271,4 +342,29 @@ func main() {
 		"error": err,
 	}).Error("Webserver")
 
+}
+
+// ServeFileSystem implementation that wraps around http.FileSystem
+type MyServeFileSystem struct {
+	fs http.FileSystem
+}
+
+// NewMyServeFileSystem creates a new instance of MyServeFileSystem
+func NewMyServeFileSystem(fs http.FileSystem) *MyServeFileSystem {
+	return &MyServeFileSystem{fs: fs}
+}
+
+// Open implements the http.FileSystem interface
+func (fs *MyServeFileSystem) Open(name string) (http.File, error) {
+	return fs.fs.Open(name)
+}
+
+// Exists implements the Exists method to check if a file exists
+func (fs *MyServeFileSystem) Exists(prefix string, path string) bool {
+	// Join prefix and path to create the full file path
+	fullPath := filepath.Join(prefix, path)
+
+	// Check if the file exists in the wrapped file system
+	_, err := fs.fs.Open(fullPath)
+	return err == nil // If there's no error, the file exists
 }

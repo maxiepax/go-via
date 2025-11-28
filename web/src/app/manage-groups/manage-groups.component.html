@@ -1,0 +1,244 @@
+<h3> Host groups </h3>
+<p>Host groups are used to organize your hosts into groups that share the same image and configuration properties. This
+    saves you time by being able to organize all hosts that will look the same, and simply configure the group with
+    properties.</p>
+<button class="btn btn-outline btn-sm" (click)="showGroupModal('add')">Add Group</button>
+<div class="alert alert-danger" role="alert" *ngIf="errors">
+    <div class="alert-items">
+        <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+            <div class="alert-icon-wrapper">
+                <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="alert-icon">
+                    <path d="M18,6A12,12,0,1,0,30,18,12,12,0,0,0,18,6Zm0,22A10,10,0,1,1,28,18,10,10,0,0,1,18,28Z">
+                    </path>
+                    <path d="M18,20.07a1.3,1.3,0,0,1-1.3-1.3v-6a1.3,1.3,0,1,1,2.6,0v6A1.3,1.3,0,0,1,18,20.07Z"></path>
+                    <circle cx="17.95" cy="23.02" r="1.5"></circle>
+                </svg>
+            </div>
+            <span class="alert-text">
+                {{error.value}}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div *ngFor="let group of groups">
+    <h6>{{group.name}}</h6>
+    <clr-toggle-container class="clr-toggle-right">
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle [checked]="isDatagridVisible(group.id)" (change)="toggleDatagrid(group.id)"
+                [attr.aria-checked]="isDatagridVisible(group.id)" [id]="'toggle-hosts-' + group.id" />
+            <label [for]="'toggle-hosts-' + group.id">
+                {{ isDatagridVisible(group.id) ? 'Hide' : 'Show' }} Hosts
+            </label>
+        </clr-toggle-wrapper>
+
+    </clr-toggle-container>
+    <button class="btn btn-sm btn-icon btn-outline" 
+            (click)="refreshPowerStatesForGroup(group.id)" 
+            title="Refresh Power States"
+            *ngIf="isDatagridVisible(group.id)">
+        <clr-icon shape="refresh">refresh</clr-icon>
+    </button>
+    <clr-datagrid *ngIf="isDatagridVisible(group.id)">
+        <clr-dg-column>fqdn</clr-dg-column>
+        <clr-dg-column>ip address</clr-dg-column>
+        <clr-dg-column>ilo fqdn</clr-dg-column>
+        <clr-dg-column>ilo ip address</clr-dg-column>
+        <clr-dg-column>mac address</clr-dg-column>
+        <clr-dg-column>progress</clr-dg-column>
+        <clr-dg-column>Server Power State</clr-dg-column>
+        <clr-dg-row *ngFor="let host of group.hosts">
+            <clr-dg-cell>{{host.hostname}}.{{host.domain}}</clr-dg-cell>
+            <clr-dg-cell>{{host.ip}}</clr-dg-cell>
+            <clr-dg-cell>{{host.ilo_fqdn}}</clr-dg-cell>
+            <clr-dg-cell>{{host.ilo_ip}}</clr-dg-cell>
+            <clr-dg-cell>{{host.mac}}</clr-dg-cell>
+            <clr-dg-cell>
+                <div class="progress top">
+                    <progress value="{{ progress[host.id] }}" max="100"></progress>
+                </div>
+                {{ progresstext[host.id] }}
+            </clr-dg-cell>
+            <clr-dg-cell>
+                <div class="power-state">
+                    <!-- Show loading spinner when no power state is available yet -->
+                    <clr-spinner *ngIf="!serverPowerStates[host.id]" clrInline clrSmall>Loading</clr-spinner>
+                    
+                    <!-- Show power state badge when available -->
+                    <span *ngIf="serverPowerStates[host.id]" class="badge" 
+                          [class.badge-success]="serverPowerStates[host.id] === 'on'"
+                          [class.badge-danger]="serverPowerStates[host.id] === 'off'"
+                          [class.badge-warning]="serverPowerStates[host.id] === 'starting' || serverPowerStates[host.id] === 'stopping'"
+                          [class.badge-info]="serverPowerStates[host.id] === 'unknown' || serverPowerStates[host.id] === 'refreshing...'"
+                          [class.badge-danger-outline]="serverPowerStates[host.id] === 'error'">
+                        {{ serverPowerStates[host.id] }}
+                    </span>
+                </div>
+            </clr-dg-cell>
+            <clr-dg-row-detail>
+                <ng-template clrIfExpanded>
+                    <button class="btn btn-outline btn-sm"
+                        (click)="showHostModal('edit', group.id, host.id)">edit</button>
+                    <button class="btn btn-warning-outline btn-sm" (click)="removeHost(host.id)">remove</button>
+                    <button *ngIf="host.reimage === false" class="btn btn-warning-outline btn-sm"
+                        (click)="reImageHost(host.id)">re-image</button>
+                    <button *ngIf="host.reimage === true" class="btn btn-warning-outline btn-sm"
+                        (click)="cancelImageHost(host.id)">cancel</button>
+
+
+                    <button class="btn btn-outline btn-sm" (click)="showVlanModal(host.id)"> Set VLAN ID</button>
+                    <clr-dropdown>
+                        <button class="btn btn-outline" clrDropdownTrigger aria-label="open user profile">
+                            power &nbsp;
+                            <cds-icon shape="angle" direction="down"></cds-icon>
+                        </button>
+                        <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                            <a class="btn btn-outline btn-sm" (click)="restartHost(host.id)" clrDropdownItem>Restart</a>
+                            <a class="btn btn-outline btn-sm" (click)="shutdownHost(host.id)"
+                                clrDropdownItem>Shutdown</a>
+                            <a class="btn btn-outline btn-sm" (click)="startHost(host.id)" clrDropdownItem>Start</a>
+                        </clr-dropdown-menu>
+                    </clr-dropdown>
+                </ng-template>
+            </clr-dg-row-detail>
+        </clr-dg-row>
+        <clr-dg-footer>{{ (group.hosts ?? []).length }} Hosts</clr-dg-footer>
+    </clr-datagrid>
+
+    <button class="btn btn-outline btn-sm" (click)="addHostToGroup(group.id, group.pool_id)">Add host</button>
+    <button class="btn btn-outline btn-sm" (click)="triggerFileInput()">Import Hosts</button>
+    <input type="file" #fileInput accept=".csv" (change)="importHostsFromCSVToGroup(group.id, group.pool_id)"
+        style="display: none;" />
+    <button class="btn btn-outline btn-sm" (click)="showGroupModal('edit', group.id)">Edit Group</button>
+    <button class="btn btn-warning-outline btn-sm" (click)="removeGroup(group.id)">Remove</button>
+</div>
+
+<clr-modal [(clrModalOpen)]="showHostModalMode">
+    <h3 *ngIf="showHostModalMode === 'add'" class="modal-title">Add Host</h3>
+    <h3 *ngIf="showHostModalMode === 'edit'" class="modal-title">Edit Host</h3>
+    <div class="modal-body">
+        <form clrForm [formGroup]="Hostform" (ngSubmit)="submitHost()">
+            <cds-form-group layout="vertical">
+                <cds-input>
+                    <label class="clr-col-6 form-input">FQDN</label>
+                    <input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="fqdn" name="fqdn" />
+                </cds-input>
+                <cds-input>
+                    <label class="clr-col-6 form-input">IP Address</label>
+                    <input placeholder="eg. 172.16.13.11" type="text" formControlName="ip" name="ip" />
+                </cds-input>
+                <cds-input>
+                    <label class="clr-col-6 form-input">ILO FQDN</label>
+                    <input placeholder="eg. esxi01.rainpole.io" type="text" formControlName="ilo_fqdn"
+                        name="ilo_fqdn" />
+                </cds-input>
+                <cds-input>
+                    <label class="clr-col-6 form-input">ILO IP Address</label>
+                    <input placeholder="eg. 172.16.13.11" type="text" formControlName="ilo_ip" name="ilo_p" />
+                </cds-input>
+
+                <cds-input>
+                    <label class="clr-col-6 form-input">mac</label>
+                    <input placeholder="eg. aa:bb:cc:00:11:22" type="text" formControlName="mac" name="mac" />
+                </cds-input>
+            </cds-form-group>
+            <div id="host_ks">
+                <cds-toggle>
+                    <label>Show advanced options</label>
+                    <input type="checkbox" [(ngModel)]="advanced" [ngModelOptions]="{standalone: true}" />
+                </cds-toggle>
+                <cds-textarea layout="vertical" *ngIf="advanced" id="ks_textarea">
+                    <label>ks.cfg</label>
+                    <textarea formControlName="ks" name="ks"></textarea>
+                    <cds-control-message>Modify the default ks.cfg file</cds-control-message>
+                </cds-textarea>
+            </div>
+        </form>
+        <div class="alert alert-danger" role="alert" *ngIf="errors">
+            <div class="alert-items">
+                <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                        {{error.value}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="modal-buttons">
+            <button type="button" class="btn btn-outline" (click)="showHostModalMode = ''">Cancel</button>
+            <button *ngIf="showHostModalMode === 'add'" type="button" class="btn btn-primary"
+                (click)="submitHost()">Add</button>
+            <button *ngIf="showHostModalMode === 'edit'" type="button" class="btn btn-primary"
+                (click)="updateHost()">Update</button>
+        </div>
+    </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="showGroupModalMode">
+    <h3 *ngIf="showGroupModalMode === 'add'" class="modal-title">Add Group</h3>
+    <h3 *ngIf="showGroupModalMode === 'edit'" class="modal-title">Edit Group</h3>
+    <div class="modal-body">
+        <!-- Group-Manager-Add is needed here -->
+        <app-group-manager [group]="selectedGroup" [mode]="showGroupModalMode" [errors]="errors" [pools]="pools"
+            [images]="images" (submit)="onGroupSubmit($event)">
+        </app-group-manager>
+    </div>
+    <div class="modal-footer modal-vertical">
+        <div class="alert alert-danger" role="alert" *ngIf="errors">
+            <div class="alert-items">
+                <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                        {{error.value}}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button type="button" class="btn btn-outline" (click)="showGroupModalMode = ''">Cancel</button>
+            <button *ngIf="showGroupModalMode === 'add'" type="button" class="btn btn-primary"
+                (click)="onGroupSubmit($event)">Add</button>
+            <button *ngIf="showGroupModalMode === 'edit'" type="button" class="btn btn-primary"
+                (click)="updateGroup()">Update</button>
+        </div>
+    </div>
+</clr-modal>
+<clr-modal [(clrModalOpen)]="showVlanModalMode">
+    <h3 class="modal-title">Set VLAN ID</h3>
+    <div class="modal-body">
+
+        <form clrForm [formGroup]="HostVlanform" (ngSubmit)="submitHostVlan()">
+            <cds-form-group layout="vertical">
+                <cds-input>
+                    <label class="clr-col-6 form-input">VLAN ID</label>
+                    <input placeholder="eg. 4567" type="number" formControlName="vlanID" name="vlanID" />
+                </cds-input>
+            </cds-form-group>
+        </form>
+        <clr-spinner *ngIf="loadingFlag">Loading</clr-spinner>
+        <div class="alert alert-danger" role="alert" *ngIf="errors">
+            <div class="alert-items">
+                <div class="alert-item static" *ngFor="let error of errors | keyvalue">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                        {{error.value}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="modal-buttons">
+            <button type="button" class="btn btn-outline" (click)="closeVlanModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="submitHostVlan()">Commit</button>
+        </div>
+    </div>
+</clr-modal>

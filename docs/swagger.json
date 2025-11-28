@@ -1,281 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "VMware Imaging Appliances written in GO with full HTTP-REST",
+        "description": "VMware Imaging Appliances written in GO with full HTTP-REST API",
         "title": "go-via",
         "contact": {},
         "version": "0.1"
     },
     "basePath": "/v1",
     "paths": {
-        "/addresses": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Get all addresses",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Address"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Create a new addresses",
-                "parameters": [
-                    {
-                        "description": "Add ip address",
-                        "name": "item",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.AddressForm"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Address"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/addresses/search": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Search for an address",
-                "parameters": [
-                    {
-                        "description": "Fields to search for",
-                        "name": "item",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Address"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Address"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/addresses/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Get an existing address",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Address ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Address"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Remove an existing address",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Address ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "addresses"
-                ],
-                "summary": "Update an existing address",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Address ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update an ip address",
-                        "name": "item",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.AddressForm"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Address"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIError"
-                        }
-                    }
-                }
-            }
-        },
         "/device_classes": {
             "get": {
                 "consumes": [
@@ -738,6 +470,274 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Group"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/hosts": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Get all hosts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Host"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Create a new host",
+                "parameters": [
+                    {
+                        "description": "Add a host",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HostForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Host"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/hosts/search": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Search for an host",
+                "parameters": [
+                    {
+                        "description": "Fields to search for",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Host"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Host"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/hosts/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Get an existing Host",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Host ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Host"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Remove an existing host",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Host ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hosts"
+                ],
+                "summary": "Update an existing host",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Host ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update a host",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HostForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Host"
                         }
                     },
                     "400": {
@@ -1539,7 +1539,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Address"
+                            "$ref": "#/definitions/models.Host"
                         }
                     },
                     "400": {
@@ -1893,110 +1893,6 @@
                 }
             }
         },
-        "models.Address": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "domain": {
-                    "type": "string"
-                },
-                "expires_at": {
-                    "type": "string"
-                },
-                "first_seen": {
-                    "type": "string"
-                },
-                "group": {
-                    "$ref": "#/definitions/models.Group"
-                },
-                "group_id": {
-                    "type": "integer"
-                },
-                "hostname": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "ip": {
-                    "type": "string"
-                },
-                "ks": {
-                    "type": "string"
-                },
-                "last_seen": {
-                    "type": "string"
-                },
-                "last_seen_relay": {
-                    "description": "DHCP parameters",
-                    "type": "string"
-                },
-                "mac": {
-                    "type": "string"
-                },
-                "missing_options": {
-                    "type": "string"
-                },
-                "pool": {
-                    "$ref": "#/definitions/models.Pool"
-                },
-                "pool_id": {
-                    "type": "integer"
-                },
-                "progress": {
-                    "type": "integer"
-                },
-                "progresstext": {
-                    "type": "string"
-                },
-                "reimage": {
-                    "type": "boolean"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.AddressForm": {
-            "type": "object",
-            "properties": {
-                "domain": {
-                    "type": "string"
-                },
-                "group_id": {
-                    "type": "integer"
-                },
-                "hostname": {
-                    "type": "string"
-                },
-                "ip": {
-                    "type": "string"
-                },
-                "ks": {
-                    "type": "string"
-                },
-                "mac": {
-                    "type": "string"
-                },
-                "pool_id": {
-                    "type": "integer"
-                },
-                "progress": {
-                    "type": "integer"
-                },
-                "progresstext": {
-                    "type": "string"
-                },
-                "reimage": {
-                    "type": "boolean"
-                }
-            }
-        },
         "models.DeviceClass": {
             "type": "object",
             "properties": {
@@ -2034,12 +1930,6 @@
         "models.Group": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Address"
-                    }
-                },
                 "bootdisk": {
                     "type": "string"
                 },
@@ -2052,8 +1942,20 @@
                 "deleted_at": {
                     "type": "string"
                 },
+                "device": {
+                    "type": "string"
+                },
                 "dns": {
                     "type": "string"
+                },
+                "gateway": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Host"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -2065,6 +1967,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "netmask": {
                     "type": "string"
                 },
                 "ntp": {
@@ -2111,7 +2016,13 @@
                 "callbackurl": {
                     "type": "string"
                 },
+                "device": {
+                    "type": "string"
+                },
                 "dns": {
+                    "type": "string"
+                },
+                "gateway": {
                     "type": "string"
                 },
                 "image_id": {
@@ -2121,6 +2032,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "netmask": {
                     "type": "string"
                 },
                 "ntp": {
@@ -2143,6 +2057,152 @@
                 },
                 "vlan": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Host": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "first_seen": {
+                    "type": "string"
+                },
+                "group": {
+                    "$ref": "#/definitions/models.Group"
+                },
+                "group_id": {
+                    "type": "integer"
+                },
+                "host_fqdn": {
+                    "type": "string"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ilo_api_flavour": {
+                    "type": "string"
+                },
+                "ilo_fqdn": {
+                    "type": "string"
+                },
+                "ilo_ip": {
+                    "type": "string"
+                },
+                "ilo_password": {
+                    "type": "string"
+                },
+                "ilo_port": {
+                    "type": "string"
+                },
+                "ilo_user": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "ks": {
+                    "type": "string"
+                },
+                "last_seen": {
+                    "type": "string"
+                },
+                "last_seen_relay": {
+                    "description": "DHCP parameters",
+                    "type": "string"
+                },
+                "mac": {
+                    "type": "string"
+                },
+                "missing_options": {
+                    "type": "string"
+                },
+                "pool": {
+                    "$ref": "#/definitions/models.Pool"
+                },
+                "pool_id": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "integer"
+                },
+                "progresstext": {
+                    "type": "string"
+                },
+                "reimage": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.HostForm": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "group_id": {
+                    "type": "integer"
+                },
+                "host_fqdn": {
+                    "type": "string"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "ilo_api_flavour": {
+                    "type": "string"
+                },
+                "ilo_fqdn": {
+                    "type": "string"
+                },
+                "ilo_ip": {
+                    "type": "string"
+                },
+                "ilo_password": {
+                    "type": "string"
+                },
+                "ilo_port": {
+                    "type": "string"
+                },
+                "ilo_user": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "ks": {
+                    "type": "string"
+                },
+                "mac": {
+                    "type": "string"
+                },
+                "pool_id": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "integer"
+                },
+                "progresstext": {
+                    "type": "string"
+                },
+                "reimage": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2206,12 +2266,6 @@
                 "priority"
             ],
             "properties": {
-                "address": {
-                    "$ref": "#/definitions/models.Address"
-                },
-                "address_id": {
-                    "type": "integer"
-                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2222,6 +2276,12 @@
                     "type": "string"
                 },
                 "device_class_id": {
+                    "type": "integer"
+                },
+                "host": {
+                    "$ref": "#/definitions/models.Host"
+                },
+                "host_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -2252,13 +2312,13 @@
                 "priority"
             ],
             "properties": {
-                "address_id": {
-                    "type": "integer"
-                },
                 "data": {
                     "type": "string"
                 },
                 "device_class_id": {
+                    "type": "integer"
+                },
+                "host_id": {
                     "type": "integer"
                 },
                 "opcode": {
@@ -2354,6 +2414,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "net_address": {
                     "type": "string"
                 },
                 "netmask": {

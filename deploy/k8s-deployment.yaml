@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: souldeploy
+  labels:
+    app: souldeploy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: souldeploy
+  template:
+    metadata:
+      labels:
+        app: souldeploy
+    spec:
+      containers:
+      - name: souldeploy
+        image: ghcr.io/lba-soultec/go-via:v1.0.3
+        imagePullPolicy: IfNotPresent
+        args:
+          - -file 
+          - /app/config/app-config.yaml
+        volumeMounts:
+        - name: tftp-volume
+          mountPath: /app/tftp
+        - name: database-volume
+          mountPath: /app/database
+        - name: cert-volume
+          mountPath: /app/cert
+        - name: secret-volume
+          mountPath: /app/secret
+        - name: config-volume
+          mountPath: /app/config    
+        env:
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8443   
+      volumes:
+      - name: tftp-volume
+        persistentVolumeClaim:
+          claimName: tftp-pvc
+      - name: database-volume
+        persistentVolumeClaim:
+          claimName: database-pvc
+      - name: cert-volume
+        persistentVolumeClaim:
+          claimName: cert-pvc
+      - name: secret-volume
+        persistentVolumeClaim:
+          claimName: secret-pvc
+      - name: config-volume
+        configMap:
+          name: souldeploy-config

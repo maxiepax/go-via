@@ -18,7 +18,12 @@ func Init() string {
 	var key []byte
 	if _, err := os.Stat("secret/secret.key"); os.IsNotExist(err) {
 		//secrets file does not exist, create folder and file
-		os.MkdirAll("secret", os.ModePerm)
+		err = os.MkdirAll("secret", os.ModePerm)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Warn("could not create secrets directory")
+		}
 		logrus.WithFields(logrus.Fields{
 			"key": "no secrets file has been detected, attempting to create a new one and generate secret key",
 		}).Info("secrets")
@@ -46,7 +51,12 @@ func Init() string {
 			"key":   "secret key persisted to file",
 			"bytes": wr,
 		}).Info("secrets")
-		file.Close()
+		err = file.Close()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"err": err,
+			}).Warn("could not close secrets file")
+		}
 		key, _ = os.ReadFile("secret/secret.key")
 	} else {
 		//Database exists, moving on.
@@ -118,5 +128,5 @@ func Decrypt(encryptedString string, keyString string) (decryptedString string) 
 		panic(err.Error())
 	}
 
-	return fmt.Sprintf("%s", plaintext)
+	return string(plaintext)
 }

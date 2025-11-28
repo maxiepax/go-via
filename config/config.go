@@ -5,17 +5,16 @@ import (
 	"net"
 
 	"github.com/koding/multiconfig"
-	"github.com/sirupsen/logrus"
 	"github.com/maxiepax/go-via/dhcpd"
-
+	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
-	Debug   		bool
-	Port    		int 	`default:"8443"`
-	File    		string
-	Network 		Network
-	DisableDhcp 	bool
+	Debug       bool
+	Port        int `default:"8443"`
+	File        string
+	Network     Network
+	DisableDhcp bool
 }
 
 type Network struct {
